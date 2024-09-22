@@ -19,7 +19,8 @@ span a i .css-icon-custom{
     background-size: cover;
     background-position: center;
     object-fit: cover;
-    background-image: url('/image/sample\ bg\ 1st\ section.jpg');
+    background-image: url('/image/sample bg 1st section.jpg');
+
 }
 .css-text-shadow-custom{
     text-shadow: 4px 7px 14px rgba(0,0,0,0.41);
