@@ -190,7 +190,7 @@
                 </div>
         </ContentTemplate>
         <Triggers>
-            <asp:AsyncPostBackTrigger ControlID="btnadd" />
+            <asp:PostBackTrigger ControlID="btnadd" />
             <asp:AsyncPostBackTrigger ControlID="btnclose" />
             <asp:PostBackTrigger ControlID="btnsubmit" />
         </Triggers>
