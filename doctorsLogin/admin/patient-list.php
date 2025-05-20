@@ -1,6 +1,6 @@
 <?php 
 include "../includes/header.php";
-include "../includes/sidebar.php";
+include "../includes/sidebar-admin.php";
 require_once "../connection/globalConnection.php";
 $con = connection();
 ?>

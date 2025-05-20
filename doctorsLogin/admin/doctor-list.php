@@ -1,6 +1,6 @@
 <?php
 include "../includes/header.php";
-include "../includes/sidebar.php";
+include "../includes/sidebar-admin.php";
 require_once "../connection/globalConnection.php";
 
 //session start
@@ -100,6 +100,14 @@ if (isset($_POST['btnupdate'])) {
     }
 }
 
+//delete data doctor
+// if(isset($_GET['delete'])){
+//     $delete_id = $_GET['delete'];
+
+//     $sql_remove_data_doctor = "DELETE FROM USER_INFO WHERE ID = '$id'";
+// }
+
+
 ?>
 <div class="container-fluid pt-4 px-4">
     <div class=" d-flex justify-content-between mb-3 ">
@@ -138,7 +146,7 @@ if (isset($_POST['btnupdate'])) {
                                 <td>" . $rows["Email_address"] . "</td> 
                                 <td><div class='float-end'>
                                 <a class='btn btn-sm btn-primary' href='doctor-list.php?edit=" . $rows['doctor_id'] . "'><i class='fa-solid fa-pencil'></i></a>
-                                <button class='btn btn-sm btn-danger'><i class='fa-solid fa-trash'></i></button>
+                                <button class='btn btn-sm btn-danger' href='doctor-list.php?delete=" . $rows['doctor_id'] . "'><i class='fa-solid fa-trash'></i></button>
                                 </div></td>
                                 </tr>";
                                     }
@@ -224,7 +232,7 @@ if (isset($_POST['btnupdate'])) {
             </div>
         </div>
     </div>
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999999">
         <div id="loginToast" class="toast <?php echo $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header <?php echo $isSuccess ? 'bg-success text-white' : 'bg-danger text-white'; ?>">
                 <strong class="me-auto" id="toastTitle"><?php echo $isSuccess ? 'Success' : 'Error'; ?></strong>

@@ -1,3 +1,52 @@
+<?php 
+include("includes/header.php");
+include_once("connection/globalConnection.php");
+
+$con = connection();
+
+if(isset($_POST['submit'])){
+    
+    $firstname = $_POST['firstname'];
+    $lastname = $_POST['lastname'];
+    $email = $_POST['emailaddress'];
+    $phone_number = $_POST['phonenumber'];
+    $dob = $_POST['dob'];
+    $password = $_POST['password'];
+    $username = $_POST['username'];
+    $usertype ="Patient";
+
+
+    try{
+        
+            $fname = $con->real_escape_string($firstname);
+            $lastname = $con->real_escape_string($lastname);
+            $email = $con->real_escape_string($email);
+            $phone_number = $con->real_escape_string($phone_number);
+            $dob = $con->real_escape_string($dob);
+            $username = $con->real_escape_string($username);
+            $password = $con->real_escape_string($password);
+            
+            
+            $sql_login_patient = "INSERT INTO userlogintb (User_Name, Password, User_Type) VALUES ('$username', '$password', '$usertype')";
+
+           
+
+        if($con->query($sql_login_patient) === TRUE){
+            
+            $get_id_from_patient = $con->insert_id;
+
+            $sql_insert_patient = "INSERT INTO patienttb (First_Name, Last_Name, Email_address, Phone_Number, Date_Birth) VALUES 
+                        ('$fname', '$lastname', $email, '$phone_number', '$dob')";
+        }
+    }
+    catch (\Throwable $e) {
+        # code...
+    }
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,10 +167,7 @@
             border: 2px solid #22a6ce;
         }
 
-        .form-control {
-            padding: 12px;
-            border-color: #e1e1e1;
-        }
+        
 
         .form-label {
             font-size: 14px;
@@ -245,38 +291,43 @@
                             <h4 class="mb-4 text-center">Create your account</h4>
                             <p class="text-center text-muted mb-4">Sign up to connect with our network of medical professionals.</p>
                             
-                            <form>
+                            <form action="" method="post">
                                 <div class="row mb-3">
                                     <div class="col-md-6 mb-3 mb-md-0">
                                         <label for="firstName" class="form-label">First Name</label>
-                                        <input type="text" class="form-control" id="firstName" placeholder="First Name" required>
+                                        <input type="text" name="firstname" class="form-control" id="firstName" placeholder="First Name" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="lastName" class="form-label">Last Name</label>
-                                        <input type="text" class="form-control" id="lastName" placeholder="Last Name" required>
+                                        <input type="text" name="lastname" class="form-control" id="lastName" placeholder="Last Name" required>
                                     </div>
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email Address</label>
-                                    <input type="email" class="form-control" id="email" placeholder="Email Address" required>
+                                    <input type="email" name="emailaddress" class="form-control" id="email" placeholder="Email Address" required>
                                     <div class="text-muted mt-1" style="font-size: 12px;">We'll never share your email with anyone else</div>
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="phone" class="form-label">Phone Number</label>
-                                    <input type="tel" class="form-control" id="phone" placeholder="Phone Number">
+                                    <input type="tel" name="phonenumber" class="form-control" id="phone" placeholder="Phone Number">
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="dob" class="form-label">Date of Birth</label>
-                                    <input type="date" class="form-control" id="dob" required>
+                                    <input type="date" name="dob" class="form-control" id="dob" required>
+                                </div>
+
+                                 <div class="mb-3">
+                                    <label for="phone" class="form-label">Username</label>
+                                    <input type="text" name="username" class="form-control" id="username" placeholder="Username">
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="password" class="form-label">Create Password</label>
                                     <div class="input-group">
-                                        <input type="password" class="form-control" id="password" placeholder="Password" required>
+                                        <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
                                         <span class="input-group-text">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
                                                 <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
@@ -298,12 +349,12 @@
                                 </div>
                                 
                                 <div class="mb-3 mt-4">
-                                    <button type="submit" class="btn sign-up-btn">Create Account</button>
+                                    <input type="submit" class="btn sign-up-btn" name="submit" value="Create Account">
                                 </div>
                             </form>
                             
                             <div class="text-center mt-4">
-                                Already have an account? <a href="#" class="login-link">Sign in</a>
+                                Already have an account? <a href="login.php" class="login-link">Sign in</a>
                             </div>
                         </div>
                     </div>
