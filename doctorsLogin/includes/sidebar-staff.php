@@ -3,7 +3,7 @@ include "../includes/header.php";
 include_once(__DIR__ . "/../connection/globalConnection.php");
 
 $con = connection();
-session_start();
+    session_start();
 
 if(!isset($_SESSION['user_id'])){
     header('Location: /login.php');
@@ -14,12 +14,12 @@ else{
 }
 $user_id = $_SESSION['user_id'];
  
-$query = "SELECT * FROM s_admintb WHERE id = '$user_id'";
+$query = "SELECT * FROM stafftb WHERE staff_acc_id = '$user_id'";
 $result = $con->query(query: $query);
 $row = $result->fetch_assoc();
 ?>
 
-<a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+<a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i 11lass="bi bi-arrow-up"></i></a>
 
 <!-- Sidebar Start -->
 <div class="sidebar pe-4 pb-3">
@@ -34,34 +34,19 @@ $row = $result->fetch_assoc();
                     </div>
                     <div class="ms-3">
                         <h6 class="mb-0"><?=$row['First_Name']. " " . $row['Last_Name']?></h6>
-                        <span>Super Admin</span>
+                        <span>Staff</span>
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
                     <a href="../admin/dashboard.php" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-regular fa-calendar-check me-2"></i>Appointment</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <a href="signin.html" class="dropdown-item">Upcoming</a>
-                            <a href="signup.html" class="dropdown-item">Completed</a>
-                            <a href="404.html" class="dropdown-item">Reschedule</a>
-                        </div>
-                    </div>
-                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-user me-2"></i>Account</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <a href="../admin/doctor-list.php" class="dropdown-item">Doctor</a>
-                            <a href="../admin/patient-list.php" class="dropdown-item">Patient</a>
-                            <a href="../admin/staff-list.php" class="dropdown-item">Staff</a>
-                        </div>
-                    </div>
-                    <a href="form.html" class="nav-item nav-link"><i class="fa-solid fa-right-from-bracket me-2"></i>Leave</a>
+                    <a href="widget.html" class="nav-item nav-link"><i class="fa-solid fa-calendar-plus me-2"></i>Appointments</a>
+                    <a href="widget.html" class="nav-item nav-link"><i class="fa-solid fa-file me-2"></i>Health Reports</a>
+                    <a href="form.html" class="nav-item nav-link"><i class="fa-solid fa-clock-rotate-left me-2"></i>Medical History</a>
+                    <a href="table.html" class="nav-item nav-link"><i class="fa-solid fa-file-circle-plus me-2"></i>Doctor Notes</a>
                 </div>
             </nav>
         </div>
         <!-- Sidebar End -->
-
-
         <!-- Content Start -->
         <div class="content">
             <!-- Navbar Start -->

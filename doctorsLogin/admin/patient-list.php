@@ -11,8 +11,7 @@ $con = connection();
     </div>
     <div class="row">
         <div class="col-lg-12">
-        <div class="card">
-            <div class=" card-body">
+        <div class="bg-light rounded h-100 p-4">
                 <div class="table-responsive">
                     <table id="myTable" class="table table-striped table-hover">
                         <thead>
@@ -36,8 +35,8 @@ $con = connection();
                                 <td>" . $rows["Last_Name"] . "</td>
                                 <td>" . $rows["Email_address"] . "</td> 
                                 <td><div class='float-end'>
-                                <button class='btn btn-sm btn-primary' onclick='viewDoctor(" . $rows["patient_id"] . ")'>View</button>
-                                <button class='btn btn-sm btn-danger' onclick='viewDoctor(" . $rows["patient_id"] . ")'>Delete</button>
+                                <button class='btn btn-sm btn-primary' tooltip='Edit account' onclick='viewDoctor(" . $rows["patient_id"] . ")'><i class='fa-solid fa-pencil'></i></button>
+                                <button class='btn btn-sm btn-danger' tooltip='Deactivate account' onclick='viewDoctor(" . $rows["patient_id"] . ")'><i class='fa-solid fa-user-xmark'></i></button>
                                 </div></td>
                                 </tr>";
                             }
@@ -46,7 +45,6 @@ $con = connection();
                         </tbody>
                     </table>
                 </div>
-            </div>
         </div>
         </div>
     </div>

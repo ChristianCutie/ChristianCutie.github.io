@@ -111,8 +111,8 @@ if (isset($_POST['btnupdate'])) {
 ?>
 <div class="container-fluid pt-4 px-4">
     <div class=" d-flex justify-content-between mb-3 ">
-        <h5 class=" fw-light"><span class="text-muted">List</span><span class="text-dark">/Doctor List</span></h5>
-        <a href="../admin/add-doctor.php" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Doctor</a>
+        <h5 class=" fw-light"><span class="text-muted">List</span><span class="text-dark">/Staff List</span></h5>
+        <a href="../admin/add-staff.php" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Staff</a>
     </div>
     <div class="row">
         <div class="col-lg-12">
@@ -121,7 +121,7 @@ if (isset($_POST['btnupdate'])) {
                     <table id="myTable" class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <td>Doctor Id</td>
+                                <td>Staff Id</td>
                                 <td>Full Name</td>
                                 <td>Gender</td>
                                 <td>Contact Number</td>
@@ -131,21 +131,21 @@ if (isset($_POST['btnupdate'])) {
                         </thead>
                         <tbody>
                             <?php
-                            $sql = "SELECT * FROM  doctortb";
+                            $sql = "SELECT * FROM  stafftb";
                             $result = $con->query($sql);
                             if ($result->num_rows > 0) {
                                 while ($rows = $result->fetch_assoc()) {
 
-                                    $fullname = $rows["First_Name"] . " " . $rows["Middle_Name"] . " " . $rows["Last_Name"];
+                                    $fullname = $rows["First_Name"] . " " . $rows["Last_Name"];
                                     echo "<tr>
-                                <td>" . $rows["doctor_id"] . "</td>
+                                <td>" . $rows["id"] . "</td>
                                 <td>" . $fullname . "</td>
                                 <td>" . $rows["Gender"] . "</td>
-                                <td>" . $rows["Phone_Number"] . "</td>
                                 <td>" . $rows["Email_address"] . "</td> 
+                                <td>" . $rows["Phone_Number"] . "</td>
                                 <td><div class='float-end'>
-                                <a class='btn btn-sm btn-primary' href='doctor-list.php?edit=" . $rows['doctor_id'] . "'><i class='fa-solid fa-pencil'></i></a>
-                                <button class='btn btn-sm btn-danger' href='doctor-list.php?delete=" . $rows['doctor_id'] . "'><i class='fa-solid fa-user-xmark'></i></button>
+                                <a class='btn btn-sm btn-primary' href='staff-list.php?edit=" . $rows['id'] . "'><i class='fa-solid fa-pencil'></i></a>
+                                <button class='btn btn-sm btn-danger' href='staff-list.php?delete=" . $rows['id'] . "'><i class='fa-solid fa-trash'></i></button>
                                 </div></td>
                                 </tr>";
                                 }
@@ -164,13 +164,13 @@ if (isset($_POST['btnupdate'])) {
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="updateModalLabel">Update Doctor</h5>
-                    <a href="doctor-list.php" class="btn-close" aria-label="Close"></a>
+                    <h5 class="modal-title" id="updateModalLabel">Update staff</h5>
+                    <a href="staff-list.php" class="btn-close" aria-label="Close"></a>
                 </div>
-                <form action="doctor-list.php" method="POST">
+                <form action="staff-list.php" method="POST">
                     <div class="modal-body" style="overflow-y: scroll; height:75vh">
-                        <input type="hidden" name="doctor_id" value="<?php echo $edit_id; ?>">
-                        <input type="hidden" name="doctor_acc_id" value="<?php echo $edit_acc_id; ?>">
+                        <input type="hidden" name="staff_id" value="<?php echo $edit_id; ?>">
+                        <input type="hidden" name="staff_acc_id" value="<?php echo $edit_acc_id; ?>">
 
                         <h6 class="mb-2">Personal Information</h6>
                         <div class="alert alert-success p-2" role="alert">
@@ -223,7 +223,7 @@ if (isset($_POST['btnupdate'])) {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <a href="doctor-list.php" class="btn btn-secondary">Close</a>
+                        <a href="staff-list.php" class="btn btn-secondary">Close</a>
                         <input type="submit" class="btn btn-primary" name="btnupdate" value="Save changes">
                     </div>
                 </form>
@@ -248,7 +248,7 @@ if (isset($_POST['btnupdate'])) {
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('.modal').addEventListener('click', function(e) {
                 if (e.target === this) {
-                    window.location.href = 'doctor-list.php';
+                    window.location.href = 'staff-list.php';
                 }
             });
         });

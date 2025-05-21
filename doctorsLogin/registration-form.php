@@ -37,7 +37,7 @@ if (isset($_POST['submit'])) {
             if ($con->query($sql_insert_patient) === TRUE) {
                 $con->commit();
                 $showToast = true;
-                $toastMessage = "Successfully Added!";
+                $toastMessage = "Successfully Added You can back to login page and sign in your account.";
                 $isSuccess = true;
             } else {
                 $showToast = true;
@@ -368,6 +368,20 @@ if (isset($_POST['submit'])) {
         </div>
     </div>
 
+        <!-- Toast for success -->
+
+     <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+        <div id="loginToast" class="toast <?php echo $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header <?php echo $isSuccess ? 'bg-success text-white' : 'bg-danger text-white'; ?>">
+                <strong class="me-auto" id="toastTitle"><?php echo $isSuccess ? 'Success' : 'Error'; ?></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                <?php echo $showToast ? $toastMessage : ''; ?>
+            </div>
+        </div>
+    </div>  
+
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -408,6 +422,21 @@ if (isset($_POST['submit'])) {
                 event.preventDefault();
                 alert('Password must be at least 8 characters long!');
             }
+        });
+    </script>
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function(toastEl) {
+                return new bootstrap.Toast(toastEl, {
+                    autohide: true,
+                    delay: 5000
+                });
+            });
+
+            <?php if ($showToast): ?>
+                toastList[0].show();
+            <?php endif; ?>
         });
     </script>
 </body>

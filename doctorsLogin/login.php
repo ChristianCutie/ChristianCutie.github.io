@@ -1,4 +1,5 @@
 <?php
+
 include("includes/header.php");
 include_once("connection/globalConnection.php");
 
@@ -30,13 +31,30 @@ if (isset($_POST['login'])) {
    
 
   if ($result && $result->num_rows == 1) {
-        $user = $result->fetch_assoc();
+        $rows = $result->fetch_assoc();
 
-             $_SESSION['user_id'] = $user['id'];
+        if($rows['User_Type'] === 'Super Admin'){
 
+             $_SESSION['user_id'] = $rows['id'];
             header("Location: /doctorsLogin/admin/dashboard.php");
         exit();
-       
+
+        }
+        else if($rows['User_Type'] === 'Doctor'){
+              $_SESSION['user_id'] = $rows['id'];
+            header("Location: /doctorsLogin/doctor/dashboard.php");
+        exit();
+        }
+        else if($rows['User_Type'] === 'Patient'){
+              $_SESSION['user_id'] = $rows['id'];
+            header("Location: /doctorsLogin/patient/dashboard.php");
+        exit(); 
+        }
+        else if($rows['User_Type'] === 'Staff'){
+              $_SESSION['user_id'] = $rows['id'];
+            header("Location: /doctorsLogin/staff/dashboard.php");
+        exit(); 
+        }
     } else {
 
         $showToast = true;

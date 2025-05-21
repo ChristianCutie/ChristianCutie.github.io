@@ -14,7 +14,7 @@ else{
 }
 $user_id = $_SESSION['user_id'];
  
-$query = "SELECT * FROM s_admintb WHERE id = '$user_id'";
+$query = "SELECT * FROM doctortb WHERE doctor_acc_id = '$user_id'";
 $result = $con->query(query: $query);
 $row = $result->fetch_assoc();
 ?>
