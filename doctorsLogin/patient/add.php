@@ -31,16 +31,16 @@ if (isset($_POST['save'])) {
             if ($stmt === false) {
                 throw new Exception("Prepare failed: " . htmlspecialchars($con->error));
             }
-            
+
             $stmt->bind_param("sssssss", $user_id, $doctor_id, $patient_name, $doctor_name, $type, $date, $notes);
-            
+
             if ($stmt->execute()) {
                 $_SESSION['toast'] = [
                     'show' => true,
                     'message' => 'Appointment successfully created',
                     'success' => true
                 ];
-                
+
                 // Clean output buffer and redirect
                 ob_end_clean();
                 header("Location: ../patient/appointment.php");
@@ -280,17 +280,17 @@ if ($result->num_rows > 0) {
             </div>
         </div>
     </div>
-</div>
 
-<!-- Toast Notification -->
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 99999">
-    <div id="loginToast" class="toast <?= $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header <?= $isSuccess ? 'bg-success' : 'bg-danger'; ?> text-white">
-            <strong class="me-auto"><?= $isSuccess ? 'Success' : 'Error'; ?></strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-            <?= $showToast ? $toastMessage : ''; ?>
+    <!-- Toast Notification -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 99999">
+        <div id="loginToast" class="toast <?= $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header <?= $isSuccess ? 'bg-success' : 'bg-danger'; ?> text-white">
+                <strong class="me-auto"><?= $isSuccess ? 'Success' : 'Error'; ?></strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <?= $showToast ? $toastMessage : ''; ?>
+            </div>
         </div>
     </div>
 </div>

@@ -5,29 +5,24 @@ require_once "../connection/globalConnection.php";
 
 
 if (session_status()  == PHP_SESSION_NONE) {
-
     session_start();
+
 }
 
-$showToast = isset($_SESSION['toast']['show']) ? $_SESSION['toast']['show'] : false;
-$toastMessage = isset($_SESSION['toast']['message']) ? $_SESSION['toast']['message'] : '';
-$isSuccess = isset($_SESSION['toast']['success']) ? $_SESSION['toast']['success'] : false;
+    $showToast = isset($_SESSION['toast']['show']) ? $_SESSION['toast']['show'] : false;
+    $toastMessage = isset($_SESSION['toast']['message']) ? $_SESSION['toast']['message'] : '';
+    $isSuccess = isset($_SESSION['toast']['success']) ? $_SESSION['toast']['success'] : false;
 
-// Clear the toast session data after retrieving
-unset($_SESSION['toast']);
+    // Clear the toast session data after retrieving
+    unset($_SESSION['toast']);
 $con = connection();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: /login.php');
     exit();
-} else {
-    if ($con->connect_error) {
-        die("Connection failed: " . htmlspecialchars($con->connect_error));
-    }
-}
+} 
 
-// fetching user data
 $sql = "SELECT * FROM appointmenttb WHERE patient_app_acc_id = '{$_SESSION['user_id']}'";
 $result = $con->query($sql);
 if ($result === false) {
@@ -273,19 +268,19 @@ if ($cancelled_result === false) {
     </div>
 
 
-    <!-- Toast Notification -->
+<!-- Toast Notification -->
 
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 99999">
-        <div id="appointmentToast" class="toast <?= $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header <?= $isSuccess ? 'bg-success' : 'bg-danger'; ?> text-white">
-                <strong class="me-auto"><?= $isSuccess ? 'Success' : 'Error'; ?></strong>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <?= $showToast ? $toastMessage : ''; ?>
-            </div>
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 99999">
+    <div id="appointmentToast" class="toast <?= $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header <?= $isSuccess ? 'bg-success' : 'bg-danger'; ?> text-white">
+            <strong class="me-auto"><?= $isSuccess ? 'Success' : 'Error'; ?></strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <?= $showToast ? $toastMessage : ''; ?>
         </div>
     </div>
+</div>
 </div>
 
 <?php
@@ -330,7 +325,7 @@ include "../includes/script.php";
         myModal.show();
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+     document.addEventListener('DOMContentLoaded', function() {
         // Initialize toast
         var toastElList = [].slice.call(document.querySelectorAll('.toast'));
         var toastList = toastElList.map(function(toastEl) {
