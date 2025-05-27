@@ -9,14 +9,19 @@ $con = connection();
 /*Doctor List count*/
 $sql = "SELECT COUNT(*) AS doctor_count FROM doctortb";
 $result = $con->query($sql);
-$doctor_count = 0;  
-if($result-> num_rows > 0)
-{
+$doctor_count = 0;
+if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $doctor_count = $row["doctor_count"];
 }
 /*/Doctor List count*/
 ?>
+<div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
 <!-- Sale & Revenue Start -->
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
@@ -25,7 +30,7 @@ if($result-> num_rows > 0)
                 <i class="fa fa-user-doctor fa-3x text-primary"></i>
                 <div class="ms-3">
                     <p class="mb-2">Doctor List</p>
-                    <h6 class="mb-0"><?php echo $doctor_count;?></h6>
+                    <h6 class="mb-0"><?php echo $doctor_count; ?></h6>
                 </div>
             </div>
         </div>
@@ -58,8 +63,9 @@ if($result-> num_rows > 0)
         </div>
     </div>
 </div>
-<?php 
+<?php
 
 include "../includes/script.php";
 
 ?>
+

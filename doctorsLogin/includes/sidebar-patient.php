@@ -17,6 +17,10 @@ $user_id = $_SESSION['user_id'];
 $query = "SELECT * FROM patienttb WHERE patient_acc_id = '$user_id'";
 $result = $con->query(query: $query);
 $row = $result->fetch_assoc();
+
+
+
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
 <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -38,8 +42,8 @@ $row = $result->fetch_assoc();
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="../admin/dashboard.php" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                    <a href="widget.html" class="nav-item nav-link"><i class="fa-solid fa-calendar-plus me-2"></i>Appointments</a>
+                    <a href="../patient/dashboard.php" class="nav-item nav-link <?= ($current_page == 'dashboard.php') ? 'active' : '' ?>"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <a href="../patient/appointment.php" class="nav-item nav-link <?= ($current_page == 'appointment.php') ? 'active' : '' ?> <?= ($current_page == 'add.php') ? 'active' : '' ?>"><i class="fa-solid fa-calendar-plus me-2"></i>Appointments</a>
                     <a href="widget.html" class="nav-item nav-link"><i class="fa-solid fa-file me-2"></i>Health Reports</a>
                     <a href="form.html" class="nav-item nav-link"><i class="fa-solid fa-clock-rotate-left me-2"></i>Medical History</a>
                     <a href="table.html" class="nav-item nav-link"><i class="fa-solid fa-file-circle-plus me-2"></i>Doctor Notes</a>
@@ -132,7 +136,7 @@ $row = $result->fetch_assoc();
                             <span class="d-none d-lg-inline-flex"><?=$row['First_Name']. " " . $row['Last_Name']?></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">My Profile</a>
+                            <a href="../patient/profile.php" class="dropdown-item">My Profile</a>
                             <a href="#" class="dropdown-item">Change Password</a>
                             <a href="../login.php" class="dropdown-item">Log Out</a>
                         </div>
