@@ -3,7 +3,10 @@ include "../includes/header.php";
 include_once(__DIR__ . "/../connection/globalConnection.php");
 
 $con = connection();
-session_start();
+
+if(session_status()  == PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: /login.php');
@@ -20,6 +23,13 @@ $row = $result->fetch_assoc();
 
 
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Fetch user profile image
+if (!empty($row['Profile_img']) && file_exists('../images/' . $row['Profile_img'])) {
+    $profile_photo_default = '../images/' . $row['Profile_img'];
+} else {
+    $profile_photo_default = '../images/team_placeholder.jpg';
+}
 ?>
 
 <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -32,7 +42,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </a>
         <div class="d-flex align-items-center ms-4 mb-4">
             <div class="position-relative">
-                <img class="rounded-circle" src="../images/team_placeholder.jpg" alt="" style="width: 40px; height: 40px;">
+                <img class="rounded-circle" src="<?= htmlspecialchars($profile_photo_default) ?>" alt="" style="width: 40px; height: 40px;">
                 <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
             </div>
             <div class="ms-3">
@@ -131,14 +141,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <img class="rounded-circle me-lg-2" src="../images/team_placeholder.jpg" alt="" style="width: 40px; height: 40px;">
+                    <img class="rounded-circle me-lg-2" src="<?= htmlspecialchars($profile_photo_default) ?>" alt="" style="width: 40px; height: 40px;">
                     <span class="d-none d-lg-inline-flex"><?= $row['First_Name'] . " " . $row['Last_Name'] ?></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                     <a href="../patient/profile.php" class="dropdown-item">
                         <i class="fa-solid fa-user me-2"></i>My Profile
                     </a>
-                    <a href="#" class="dropdown-item">
+                    <a href="../patient/change-pass.php" class="dropdown-item">
                         <i class="fa-solid fa-key me-2"></i>Change Password
                     </a>
                     <div class="dropdown-divider"></div>
