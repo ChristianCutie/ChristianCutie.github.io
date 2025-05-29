@@ -91,7 +91,7 @@ $history_result = $con->query($sql_history);
                 <?php endwhile; 
                 else: ?>
                     <div class="text-center py-5">
-                        <img src="../images/no-data.svg" alt="No Records" width="120" class="mb-3">
+                           <i class="fa-solid fa-file-excel fa-2x text-secondary mb-3"></i>
                         <h6 class="text-muted">No medical records found</h6>
                         <button class="btn btn-primary btn-sm mt-3  rounded-0" data-bs-toggle="modal" data-bs-target="#addRecordModal">
                             <i class="fa-solid fa-plus me-2"></i>Add First Record

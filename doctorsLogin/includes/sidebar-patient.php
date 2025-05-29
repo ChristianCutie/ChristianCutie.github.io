@@ -4,7 +4,7 @@ include_once(__DIR__ . "/../connection/globalConnection.php");
 
 $con = connection();
 
-if(session_status()  == PHP_SESSION_NONE) {
+if (session_status()  == PHP_SESSION_NONE) {
     session_start();
 }
 
@@ -55,7 +55,7 @@ if (!empty($row['Profile_img']) && file_exists('../images/' . $row['Profile_img'
             <a href="../patient/appointment.php" class="nav-item nav-link <?= ($current_page == 'appointment.php') ? 'active' : '' ?> <?= ($current_page == 'add.php') ? 'active' : '' ?>"><i class="fa-solid fa-calendar-plus me-2"></i>Appointments</a>
             <a href="../patient/health-report.php" class="nav-item nav-link  <?= ($current_page == 'health-report.php') ? 'active' : '' ?>"><i class="fa-solid fa-file me-2"></i>Health Reports</a>
             <a href="../patient/medical-history.php" class="nav-item nav-link  <?= ($current_page == 'medical-history.php') ? 'active' : '' ?>"><i class="fa-solid fa-clock-rotate-left me-2"></i>Medical History</a>
-            <a href="table.html" class="nav-item nav-link"><i class="fa-solid fa-file-circle-plus me-2"></i>Doctor Notes</a>
+            <a href="../patient/notes.php" class="nav-item nav-link  <?= ($current_page == 'notes.php') ? 'active' : '' ?>"><i class="fa-solid fa-file-circle-plus me-2"></i>Doctor Notes</a>
         </div>
     </nav>
 </div>

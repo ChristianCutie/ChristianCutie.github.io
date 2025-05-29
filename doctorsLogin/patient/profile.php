@@ -12,8 +12,8 @@ $showToast = isset($_SESSION['toast']['show']) ? $_SESSION['toast']['show'] : fa
 $toastMessage = isset($_SESSION['toast']['message']) ? $_SESSION['toast']['message'] : '';
 $isSuccess = isset($_SESSION['toast']['success']) ? $_SESSION['toast']['success'] : false;
 
-
 unset($_SESSION['toast']);
+
 $con = connection();
 
 if (!isset($_SESSION['user_id'])) {

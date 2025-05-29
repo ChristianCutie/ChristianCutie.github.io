@@ -1,167 +1,337 @@
 <?php
-include ("../includes/header.php");
 include "../includes/sidebar-admin.php";
-require_once("../connection/globalConnection.php");
+
 $con = connection();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$showToast = isset($_SESSION['toast']['show']) ? $_SESSION['toast']['show'] : false;
+$toastMessage = isset($_SESSION['toast']['message']) ? $_SESSION['toast']['message'] : '';
+$isSuccess = isset($_SESSION['toast']['success']) ? $_SESSION['toast']['success'] : false;
+
+unset($_SESSION['toast']);
 
 $showToast = false;
 $toastMessage = '';
 $isSuccess = true;
 
-if (isset($_POST['save'])) {
 
+if (isset($_POST['save'])) {
     $firstname = $_POST['firstname'];
+    $middlename = $_POST['middlename'];
     $lastname = $_POST['lastname'];
+    $birthdate = $_POST['birthdate'];
     $age = $_POST['age'];
+    $gender = $_POST['gender'];
+    $blood_type = $_POST['blood_type'];
+    $civil_status = $_POST['civil_status'];
+    $nationality = $_POST['nationality'];
+    $emailaddress = $_POST['emailaddress'];
     $pnum = $_POST['pnum'];
     $address = $_POST['address'];
-    $eaddress = $_POST['emailaddress'];
+    $medical_conditions = $_POST['medical_conditions'];
     $username = $_POST['username'];
     $password = $_POST['password'];
 
 
+    if (empty($firstname) || empty($lastname) || empty($birthdate) || empty($gender) || empty($blood_type) ||
+     empty($civil_status) || empty($nationality) || empty($emailaddress) || empty($pnum) || empty($address) ||
+      empty($username) || empty($password)) {
 
-    //data for insertion to database
-    if (empty($firstname) || empty($lastname) || empty($age) || empty($pnum) || empty($address) || empty($eaddress) ||
-        empty($username) || empty($password)) 
-        {
-            $showToast = true;
-            $toastMessage = "Please fill the required field";
+        $_SESSION['toast'] = [
+            'show' => true,
+            'message' => 'Profile added successfully',
+            'success' => true
+        ];
+        echo "<script>window.location.href='patient-list.php';</script>";
+        exit();
+    } else {
+        // Handle file upload
+        $profile_photo = $_FILES['profile_photo']['name'];
+        $target_dir = "../images/";
+        $target_file = $target_dir . basename($profile_photo);
+        $uploadOk = 1;
+
+        // Check if image file is a actual image or fake image
+        $check = getimagesize($_FILES['profile_photo']['tmp_name']);
+        if ($check === false) {
             $isSuccess = false;
-            $con->connect_error;
-
-        } 
-        else 
-        {
-            try
-            {
-                $fname = $con->real_escape_string($firstname);
-            $lname = $con->real_escape_string($lastname);
-            $page = $con->real_escape_string($age);
-            $contact = $con->real_escape_string($pnum);
-            $addr = $con->real_escape_string($address);
-            $email = $con->real_escape_string($eaddress);
-            $user = $con->real_escape_string($username);
-            $pword = $con->real_escape_string($password);
-            $userType = "Doctor";
-
-
-            $sql_login = "INSERT INTO userlogintb (User_Name, Password, User_Type) 
-                VALUES ('$user', '$pword', '$userType')";
-
-                if ($con->query($sql_login) === TRUE)
-                {
-                    $login_doctor_id = $con->insert_id;
-
-                        $sql_doctor = "INSERT INTO doctortb (doctor_acc_id, First_Name, Last_Name, Age, Phone_Number, Address,Email_address) 
-                VALUES ('$login_doctor_id', '$fname', '$lname', '$age', '$pnum', '$addr', '$email')";
-
-                    if($con->query($sql_doctor) === TRUE)
-                    {
-                        $con->commit();
-                        $showToast = true;
-                        $toastMessage = "Successfully Added!";
-                        $isSuccess = true;
-                    }
-                    else
-                    {
-                         throw new Exception("Error adding doctor: " . $con->error);
-                    }
-                }
-                else
-                {
-                     throw new Exception("Error adding login: " . $con->error);
-                }
-            }
-            catch (Throwable $e) {
-                $con->rollback();
-                $showToast = true;
-                $toastMessage = $e->getMessage();
-                $isSuccess = false;
-            }
+            $toastMessage = 'File is not an image.';
+            $uploadOk = 0;
         }
-} 
-else 
-{
-    $con->connect_error;
+
+        // Check file size
+        if ($_FILES['profile_photo']['size'] > 5000000) {
+            $isSuccess = false;
+            $toastMessage = 'Sorry, your file is too large.';
+            $uploadOk = 0;
+        }
+
+        // Allow certain file formats
+        if (!in_array(pathinfo($target_file, PATHINFO_EXTENSION), ['jpg', 'png', 'jpeg', 'gif'])) {
+            $isSuccess = false;
+            $toastMessage = 'Sorry, only JPG, JPEG, PNG & GIF files are allowed.';
+            $uploadOk = 0;
+        }
+    }
 }
 
 ?>
-<div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-        <span class="sr-only">Loading...</span>
-    </div>
-</div>
+
 <div class="container-fluid pt-4 px-4">
-    <div class=" d-flex justify-content-between">
-        <h5 class=" fw-light"><a href="../admin/doctor-list.php"><span class="text-muted">Doctor</span></a>
-            <span class="text-dark"> / Add New</span>
-        </h5>
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Add New Patient</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="dashboard.php">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="patient-list.php">Patients</a></li>
+                    <li class="breadcrumb-item active">Add New</li>
+                </ol>
+            </nav>
+        </div>
+        <a href="../admin/patient-list.php" class="btn btn-outline-secondary btn-sm  rounded-0">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back
+        </a>
     </div>
 
-    <div class="row py-4">
-        <div class="col-lg-9">
-            <div class="card bg-light border-0">
-                <div class="card-body">
-                    <form action="" method="post">
-                        <h6 class="mb-2">Personal Information</h6>
-                        <div class="alert alert-success p-2" role="alert">
-                            <span style="font-size: 14px;" class="fst-italic"> Please fill the required field</span>
+    <!-- Form Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-0">
+                <div class="card-body p-4">
+                    <form method="post" action="" class="needs-validation" novalidate enctype="multipart/form-data">
+                        <!-- Profile Photo -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <div class="position-relative d-inline-block">
+                                    <img src="../images/team_placeholder.jpg"
+                                        id="profilePreview"
+                                        class="rounded-circle border"
+                                        style="width: 150px; height: 150px; object-fit: cover;">
+                                    <label for="profile_photo"
+                                        class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </label>
+                                    <input type="file"
+                                        id="profile_photo"
+                                        name="profile_photo"
+                                        class="d-none"
+                                        accept="image/*"
+                                        onchange="previewImage(this);">
+                                </div>
+                                <p class="text-muted small mt-2">Click the camera icon to upload profile photo</p>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-6"><input name="firstname" type="text" class=" form-control mb-4" placeholder="First name *"></div>
-                            <div class="col-lg-6"><input name="lastname" type="text" class=" form-control mb-4" placeholder="Last name *"></div>
+
+                        <!-- Personal Information -->
+                        <div class="card border-0 bg-light mb-4">
+                            <div class="card-body p-4">
+                                <h6 class="card-title mb-4">Personal Information</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">First Name *</label>
+                                        <input type="text" class="form-control rounded-0" name="firstname" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">Middle Name</label>
+                                        <input type="text" class="form-control rounded-0" name="middlename">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">Last Name *</label>
+                                        <input type="text" class="form-control rounded-0" name="lastname" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">Date of Birth *</label>
+                                        <input type="date" class="form-control rounded-0" name="birthdate" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">Age</label>
+                                        <input type="number" class="form-control rounded-0" name="age" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">Gender *</label>
+                                        <select class="form-select rounded-0" name="gender" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">Blood Type *</label>
+                                        <select class="form-select rounded-0" name="blood_type" required>
+                                            <option value="">Select Blood Type</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">Civil Status *</label>
+                                        <select class="form-select rounded-0" name="civil_status" required>
+                                            <option value="">Select Status</option>
+                                            <option value="Single">Single</option>
+                                            <option value="Married">Married</option>
+                                            <option value="Widowed">Widowed</option>
+                                            <option value="Divorced">Divorced</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">Nationality *</label>
+                                        <input type="text" class="form-control rounded-0" name="nationality" required>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-4"><input name="age" type="number" class=" form-control mb-4" placeholder="Age *"></div>
-                            <div class="col-lg-8"><input name="pnum" type="tel" class=" form-control mb-4" placeholder="Phone number *"></div>
+
+                        <!-- Contact Information -->
+                        <div class="card border-0 bg-light mb-4">
+                            <div class="card-body p-4">
+                                <h6 class="card-title mb-4">Contact Information</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold">Email Address *</label>
+                                        <input type="email" class="form-control rounded-0" name="emailaddress" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold">Phone Number *</label>
+                                        <input type="tel" class="form-control rounded-0" name="pnum" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold">Home Address *</label>
+                                        <textarea class="form-control rounded-0" name="address" rows="2" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-12"><input name="address" type="text" class=" form-control mb-4" placeholder="Address *"></div>
-                            <div class="col-lg-12"><input name="emailaddress" type="email" class=" form-control mb-4" placeholder="Email address *"></div>
+
+                        <!-- Medical Information -->
+                        <div class="card border-0 bg-light mb-4">
+                            <div class="card-body p-4">
+                                <h6 class="card-title mb-4">Medical Information</h6>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold">Medical Conditions</label>
+                                        <textarea class="form-control rounded-0" name="medical_conditions" rows="3"
+                                            placeholder="List any existing medical conditions..."></textarea>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
-                        <hr>
-                        <h6 class="mb-2 mt-2">Account Information</h6>
-                        <div class="alert alert-success p-2" role="alert">
-                            <span style="font-size: 14px;" class="fst-italic"> Please fill the required field</span>
+
+                        <!-- Account Information -->
+                        <div class="card border-0 bg-light mb-4">
+                            <div class="card-body p-4">
+                                <h6 class="card-title mb-4">Account Information</h6>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold">Username *</label>
+                                        <input type="text" class="form-control rounded-0" name="username" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold">Password *</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control rounded-0" name="password" required>
+                                            <button class="btn btn-outline-secondary rounded-0 toggle-password" type="button">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold">Confirm Password *</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control rounded-0" name="confirm_password" required>
+                                            <button class="btn btn-outline-secondary rounded-0 toggle-password" type="button">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-12"><input name="username" type="text" class=" form-control mb-4" placeholder="User name *"></div>
-                            <div class="col-lg-6"><input name="password" type="password" class=" form-control mb-4" placeholder="Password *"></div>
-                            <div class="col-lg-6"><input type="password" class=" form-control mb-4" placeholder="Confirm password *"></div>
+
+                        <div class="text-end">
+                            <a href="patient-list.php" class="btn btn-light rounded-0">Cancel</a>
+                            <button type="submit" name="save" class="btn btn-primary rounded-0">
+                                <i class="fa-solid fa-save me-2"></i>Save Patient
+                            </button>
                         </div>
-                        <input name="save" type="submit" value="Save" class="btn btn-primary">
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
-        <div id="loginToast" class="toast <?php echo $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header <?php echo $isSuccess ? 'bg-success text-white' : 'bg-danger text-white'; ?>">
-                <strong class="me-auto" id="toastTitle"><?php echo $isSuccess ? 'Success' : 'Error'; ?></strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="toastMessage">
-                <?php echo $showToast ? $toastMessage : ''; ?>
-            </div>
-        </div>
-    </div>  
 </div>
-    <?php include("../includes/script.php");?>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
-            var toastList = toastElList.map(function(toastEl) {
-                return new bootstrap.Toast(toastEl, {
-                    autohide: true,
-                    delay: 5000
-                });
-            });
+<?php
 
-            <?php if ($showToast): ?>
-                toastList[0].show();
-            <?php endif; ?>
+include "../includes/script.php";
+?>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profilePreview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password toggle functionality
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                const icon = this.querySelector('i');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
         });
-    </script>
+
+        // Age calculation
+        const birthdateInput = document.querySelector('input[name="birthdate"]');
+        const ageInput = document.querySelector('input[name="age"]');
+
+        birthdateInput.addEventListener('change', function() {
+            if (this.value) {
+                const birthDate = new Date(this.value);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+
+                ageInput.value = age;
+            }
+        });
+
+        // Form validation
+        const form = document.querySelector('.needs-validation');
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    });
+</script>

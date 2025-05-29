@@ -27,7 +27,7 @@ if ($result === false) {
 // $health_data = $health_result->fetch_assoc();
 
 // Fetch recent appointments
-$sql_appointments = "SELECT * FROM appointmenttb WHERE patient_app_acc_id = '$user_id' ORDER BY appt_date DESC LIMIT 3";
+$sql_appointments = "SELECT * FROM appointmenttb WHERE patient_app_acc_id = '$user_id' ORDER BY appt_date DESC LIMIT 5";
 $appointments_result = $con->query($sql_appointments);
 ?>
 
@@ -49,8 +49,15 @@ $appointments_result = $con->query($sql_appointments);
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
                     <div class="row align-items-center">
+                        <?php
+                            if (!empty($user_name['Profile_img']) && file_exists('../images/' . $user_name['Profile_img'])) {
+                                $profile_photo_default = '../images/' . $user_name['Profile_img'];
+                            } else {
+                                $profile_photo_default = '../images/team_placeholder.jpg';
+                            }
+                            ?>
                         <div class="col-auto">
-                            <img src="../images/team_placeholder.jpg" class="rounded-circle" width="80" height="80">
+                            <img src="<?= htmlspecialchars($profile_photo_default)?>" class="rounded-circle" width="80" height="80">
                         </div>
                         <div class="col">
                             <h5 class="mb-1"><?= htmlspecialchars($fullname) ?></h5>
