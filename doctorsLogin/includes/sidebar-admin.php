@@ -48,13 +48,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
         </div>
         <div class="navbar-nav w-100">
-            <a href="../admin/dashboard.php" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+            <a href="../admin/dashboard.php" class="nav-item nav-link <?= ($current_page == 'dashboard.php') ? 'active' : '' ?>"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-regular fa-calendar-check me-2"></i>Appointment</a>
-                <div class="dropdown-menu bg-transparent border-0">
-                    <a href="signin.html" class="dropdown-item">Upcoming</a>
-                    <a href="signup.html" class="dropdown-item">Completed</a>
-                    <a href="404.html" class="dropdown-item">Reschedule</a>
+                <a href="#" class="nav-link dropdown-toggle <?= in_array($current_page, ['upcoming.php']) ? 'active show' : '' ?>" data-bs-toggle="dropdown"><i class="fa-regular fa-calendar-check me-2"></i>Appointment</a>
+                <div class="dropdown-menu bg-transparent border-0 <?= in_array($current_page, ['upcoming.php']) ? 'show' : '' ?>">
+                    <a href="../admin/upcoming.php" class="dropdown-item <?= in_array($current_page, ['upcoming.php']) ? 'active' : '' ?>">
+                        <i class="fa-solid fa-calendar-day me-2"></i>Upcoming
+                    </a>
+                    <a href="signup.html" class="dropdown-item">
+                        <i class="fa-solid fa-calendar-check me-2"></i>Completed
+                    </a>
+                    <a href="404.html" class="dropdown-item">
+                        <i class="fa-solid fa-calendar-xmark me-2"></i>Reschedule
+                    </a>
                 </div>
             </div>
             <div class="nav-item dropdown">
@@ -178,5 +184,4 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
         </div>
     </nav>
-    <!-- Navbar End -->
-    <!-- Sidebar End -->
+    <?php include "../includes/script.php";?>

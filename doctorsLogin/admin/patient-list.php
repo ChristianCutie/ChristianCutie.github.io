@@ -165,8 +165,6 @@ $con = connection();
         </div>
     </div>
 </div>
-
-<?php include "../includes/script.php"; ?>
 <script>
 $(document).ready(function() {
     // Initialize DataTable

@@ -247,8 +247,6 @@ if (isset($_POST['btnupdate'])) {
             </div>
         </div>
     </div>
-    <!-- /Modal -->
-    <?php include "../includes/script.php"; ?>
     <script>
         // Handle closing the modal with backdrop click
         document.addEventListener('DOMContentLoaded', function() {

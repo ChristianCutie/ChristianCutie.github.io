@@ -270,11 +270,6 @@ if (isset($_POST['save'])) {
         </div>
     </div>
 </div>
-<?php
-
-include "../includes/script.php";
-?>
-
 <script>
     function previewImage(input) {
         if (input.files && input.files[0]) {

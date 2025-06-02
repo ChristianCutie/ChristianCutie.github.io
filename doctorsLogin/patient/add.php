@@ -38,10 +38,7 @@ if (isset($_POST['save'])) {
                     'message' => 'Appointment successfully created',
                     'success' => true
                 ];
-
-                // Clean output buffer and redirect
-                ob_end_clean();
-                header("Location: ../patient/appointment.php");
+                  echo "<script>window.location.href='appointment.php';</script>";
                 exit();
             } else {
                 throw new Exception("Error creating appointment: " . $stmt->error);
