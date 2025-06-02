@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3390
--- Generation Time: May 23, 2025 at 11:33 PM
+-- Generation Time: Jun 02, 2025 at 10:27 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,6 +35,7 @@ CREATE TABLE `appointmenttb` (
   `doctor_name` varchar(100) NOT NULL,
   `appt_type` varchar(100) NOT NULL,
   `appt_date` varchar(100) NOT NULL,
+  `appt_time` varchar(30) NOT NULL,
   `notes` varchar(225) NOT NULL,
   `status` char(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -43,8 +44,23 @@ CREATE TABLE `appointmenttb` (
 -- Dumping data for table `appointmenttb`
 --
 
-INSERT INTO `appointmenttb` (`appt_id`, `patient_app_acc_id`, `doctor_app_acc_id`, `patient_name`, `doctor_name`, `appt_type`, `appt_date`, `notes`, `status`) VALUES
-(1, 4, 6, 'Jolet Santos', 'Kaloy E Enriquez', 'Cardiology', '2025-05-15', 'may ubo ako sa ilong', 'Pending');
+INSERT INTO `appointmenttb` (`appt_id`, `patient_app_acc_id`, `doctor_app_acc_id`, `patient_name`, `doctor_name`, `appt_type`, `appt_date`, `appt_time`, `notes`, `status`) VALUES
+(1, 4, 6, 'Jolet Santos', 'Kaloy E Enriquez', 'Cardiology', '2025-05-15', '', 'may ubo ako sa ilong', 'Pending'),
+(2, 2, 3, 'Christian Buenaflor', 'Patricksss Bulak Balak', 'Cardiology', '2025-05-14', '', 'Hi doc !!', 'Pending'),
+(3, 2, 6, 'Christian Buenaflor', 'Kaloy E Enriquez', 'Cardiology', '2025-06-11', '', 'asdas', 'Pending'),
+(4, 2, 6, 'Christian Buenaflor', 'Kaloy E Enriquez', 'Cardiology', '2025-06-05', '', 'this is a test notes', 'Pending'),
+(5, 2, 6, 'Christian Buenaflor', 'Kaloy E Enriquez', 'Cardiology', '2025-07-01', '', 'sdfwer', 'Pending'),
+(6, 2, 3, 'Christian Buenaflor', 'Patricksss Bulak Balak', 'Cardiology', '2025-05-29', '', 'asdasd', 'Pending'),
+(7, 2, 6, 'Christian Buenaflor', 'Kaloy E Enriquez', 'Cardiology', '2025-06-02', '', 'asdasd', 'Pending'),
+(8, 2, 3, 'Christian Buenaflor', 'Patricksss Bulak Balak', 'Cardiology', '2025-06-03', '', 'asdasd', 'Pending'),
+(9, 2, 6, 'Christian Buenaflor', 'Kaloy E Enriquez', 'Cardiology', '2025-05-29', '', 'asddad2123', 'Pending'),
+(10, 4, 3, 'Jolet Santos', 'Patricksss Bulak Balak', 'Cardiology', '2025-06-02', '', 'hahha bulak', 'Pending'),
+(11, 4, 3, 'Jolet Santos', 'Patricksss Bulak Balak', 'Cardiology', '2025-05-30', '', 'hahaha manyak', 'Pending'),
+(12, 4, 6, 'Jolet Santos', 'Kaloy E Enriquez', 'Cardiology', '2025-06-26', '', 'hahahasdasd', 'Pending'),
+(13, 4, 6, 'Jolet Santos', 'Kaloy E Enriquez', 'Cardiology', '2025-05-30', '', 'asdasdascwetf', 'Pending'),
+(14, 2, 10, 'Christian Buenaflor', 'Edie Bulak Namoka', 'Psychiatrist ', '2025-06-11', '', 'Hello doc!!', 'Pending'),
+(15, 2, 11, 'Christian Buenaflor', 'test De Ver test', 'OB-GYN', '2025-06-11', '', 'hey!!!', 'Pending'),
+(16, 2, 10, 'Christian Buenaflor', 'Edie Bulak Namoka', 'Psychiatrist ', '2025-06-11', '', 'asq1eqwe', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -1084,18 +1100,57 @@ CREATE TABLE `doctortb` (
   `Address` varchar(75) NOT NULL,
   `Email_address` varchar(100) NOT NULL,
   `Specialization` varchar(50) NOT NULL,
-  `Med_lic_num` int(100) NOT NULL,
+  `Med_lic_num` varchar(100) NOT NULL,
   `Affiliation` varchar(100) NOT NULL,
-  `Biography` varchar(255) NOT NULL
+  `Biography` varchar(255) NOT NULL,
+  `Status` varchar(20) NOT NULL,
+  `Profile_img` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `doctortb`
 --
 
-INSERT INTO `doctortb` (`doctor_id`, `doctor_acc_id`, `First_Name`, `Middle_Name`, `Last_Name`, `Gender`, `Age`, `Date_Birth`, `Phone_Number`, `Address`, `Email_address`, `Specialization`, `Med_lic_num`, `Affiliation`, `Biography`) VALUES
-(1, 3, 'Patricksss', 'Bulak', 'Balak', 'Male', 33, '1999-10-03', 94613215, '620 Treeline Rd', 'pat@testing.com', 'Cardiology', 0, 'City Heart Care Hospital', 'hahah mabait naman ako pogi lang konti'),
-(2, 6, 'Kaloy', 'E', 'Enriquez', 'Male', 52, '', 963453462, 'Testing', 'test@mail.com', 'Cardiology', 0, 'City Heart Care Hospital', 'He hehehehe');
+INSERT INTO `doctortb` (`doctor_id`, `doctor_acc_id`, `First_Name`, `Middle_Name`, `Last_Name`, `Gender`, `Age`, `Date_Birth`, `Phone_Number`, `Address`, `Email_address`, `Specialization`, `Med_lic_num`, `Affiliation`, `Biography`, `Status`, `Profile_img`) VALUES
+(1, 3, 'Patricksss', 'Bulak', 'Balak', 'Male', 33, '1999-10-03', 94613215, '620 Treeline Rd', 'pat@testing.com', 'Cardiology', 'OB-126767', 'City Heart Care Hospital', 'hahah mabait naman ako pogi lang konti', 'Active', '0'),
+(2, 6, 'Kaloy', 'E', 'Enriquez', 'Male', 52, '', 963453462, 'Testing', 'test@mail.com', 'Cardiology', 'OB-126767', 'City Heart Care Hospital', 'He hehehehe', 'Active', '0'),
+(3, 10, 'Edie', 'Bulak', 'Namoka', 'Female', 50, '1974-11-21', 9543216, '600 25th St. N', 'edie@testing.com', 'Psychiatrist ', 'ABC-12345', 'ACE Medical Center', 'A professional doctor in the world', 'Active', '1748534492_Pete-Mellides.jpg'),
+(4, 11, 'test', 'De Ver', 'test', 'Female', 47, '1977-10-07', 2147483647, 'Testingtest', 'test@mail.com', 'OB-GYN', 'DMC-55845', 'ACE Medical Center', 'I am a good doctor', 'Active', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `doctor_notestb`
+--
+
+CREATE TABLE `doctor_notestb` (
+  `note_id` int(11) NOT NULL,
+  `patient_id` int(11) NOT NULL,
+  `doctor_id` int(11) NOT NULL,
+  `Visit_Type` varchar(100) NOT NULL,
+  `Diagnosis` text NOT NULL,
+  `Prescription` text NOT NULL,
+  `Additional_notes` text NOT NULL,
+  `Attachments` text NOT NULL,
+  `created_at` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `medical_historytb`
+--
+
+CREATE TABLE `medical_historytb` (
+  `record_id` int(11) NOT NULL,
+  `patient_id` int(11) DEFAULT NULL,
+  `condition_name` varchar(255) DEFAULT NULL,
+  `diagnosis` text DEFAULT NULL,
+  `medications` varchar(255) DEFAULT NULL,
+  `treatment` varchar(255) DEFAULT NULL,
+  `record_date` date DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1107,22 +1162,29 @@ CREATE TABLE `patienttb` (
   `patient_id` int(11) NOT NULL,
   `patient_acc_id` int(11) DEFAULT NULL,
   `First_Name` varchar(50) DEFAULT NULL,
+  `Middle_Name` varchar(50) DEFAULT NULL,
   `Last_Name` varchar(50) DEFAULT NULL,
   `Blood_Type` char(8) DEFAULT NULL,
   `Date_Birth` varchar(50) DEFAULT NULL,
   `Age` int(11) DEFAULT NULL,
-  `Phone_Number` int(11) DEFAULT NULL,
+  `Gender` varchar(20) NOT NULL,
+  `Phone_Number` varchar(20) DEFAULT NULL,
   `Address` varchar(75) DEFAULT NULL,
-  `Email_address` varchar(100) DEFAULT NULL
+  `Email_address` varchar(100) DEFAULT NULL,
+  `Civil_Status` varchar(20) DEFAULT NULL,
+  `Nationality` varchar(50) DEFAULT NULL,
+  `Occupation` varchar(100) DEFAULT NULL,
+  `Medical_Conditions` text DEFAULT NULL,
+  `Profile_img` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `patienttb`
 --
 
-INSERT INTO `patienttb` (`patient_id`, `patient_acc_id`, `First_Name`, `Last_Name`, `Blood_Type`, `Date_Birth`, `Age`, `Phone_Number`, `Address`, `Email_address`) VALUES
-(1, 2, 'Christian', 'Buenaflor', NULL, '1990-11-07', NULL, 2147483647, NULL, 'test@testing.com'),
-(2, 4, 'Jolet', 'Santos', NULL, '2025-05-06', NULL, 2147483647, NULL, 'jolet@sample.com');
+INSERT INTO `patienttb` (`patient_id`, `patient_acc_id`, `First_Name`, `Middle_Name`, `Last_Name`, `Blood_Type`, `Date_Birth`, `Age`, `Gender`, `Phone_Number`, `Address`, `Email_address`, `Civil_Status`, `Nationality`, `Occupation`, `Medical_Conditions`, `Profile_img`) VALUES
+(1, 2, 'Christian', 'Eumague', 'Buenaflor', 'A-', '1990-11-07', 0, 'Male', '09484413543', 'Malolos Bulacan', 'chris.kanski@gmail.com', 'Single', 'PHL', 'WordPress Developer', '', '1748465410_dennis-spring-business-box.jpg'),
+(2, 4, 'Jolet', 'De Vera', 'Santos', 'O+', '1991-06-27', 0, 'Male', '0948843216', '620 Treeline Rd', 'jolet@sample.com', 'Single', 'PHL', 'Web Developer', 'Asthma, skin allergy, trypophobia', '1748460111_452493804_994324222187597_1043996487041941187_n.jpg');
 
 -- --------------------------------------------------------
 
@@ -1159,15 +1221,16 @@ CREATE TABLE `s_admintb` (
   `id` int(11) NOT NULL,
   `First_Name` varchar(50) NOT NULL,
   `Last_Name` varchar(50) NOT NULL,
-  `Email_address` varchar(100) NOT NULL
+  `Email_address` varchar(100) NOT NULL,
+  `Profile_img` varchar(225) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `s_admintb`
 --
 
-INSERT INTO `s_admintb` (`id`, `First_Name`, `Last_Name`, `Email_address`) VALUES
-(1, 'Juan', 'Dela Cruz', 'juandelacruz@gmail.com');
+INSERT INTO `s_admintb` (`id`, `First_Name`, `Last_Name`, `Email_address`, `Profile_img`) VALUES
+(1, 'Juan', 'Dela Cruz', 'juandelacruz@gmail.com', '');
 
 -- --------------------------------------------------------
 
@@ -1195,7 +1258,9 @@ INSERT INTO `userlogintb` (`id`, `User_Name`, `Password`, `User_Type`) VALUES
 (6, 'chano@gmail.com', '123', 'Doctor'),
 (7, 'chano@gmail.com', '123', 'Staff'),
 (8, 'qweqwe', '123', 'Staff'),
-(9, 'asd123', '123123', 'Staff');
+(9, 'asd123', '123123', 'Staff'),
+(10, 'edie123', '@Edie123', 'Doctor'),
+(11, 'chano@gmail.com', '12345', 'Doctor');
 
 --
 -- Indexes for dumped tables
@@ -1220,6 +1285,18 @@ ALTER TABLE `crud_tb`
 --
 ALTER TABLE `doctortb`
   ADD PRIMARY KEY (`doctor_id`);
+
+--
+-- Indexes for table `doctor_notestb`
+--
+ALTER TABLE `doctor_notestb`
+  ADD PRIMARY KEY (`note_id`);
+
+--
+-- Indexes for table `medical_historytb`
+--
+ALTER TABLE `medical_historytb`
+  ADD PRIMARY KEY (`record_id`);
 
 --
 -- Indexes for table `patienttb`
@@ -1253,7 +1330,7 @@ ALTER TABLE `userlogintb`
 -- AUTO_INCREMENT for table `appointmenttb`
 --
 ALTER TABLE `appointmenttb`
-  MODIFY `appt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `appt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `crud_tb`
@@ -1265,7 +1342,19 @@ ALTER TABLE `crud_tb`
 -- AUTO_INCREMENT for table `doctortb`
 --
 ALTER TABLE `doctortb`
-  MODIFY `doctor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `doctor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `doctor_notestb`
+--
+ALTER TABLE `doctor_notestb`
+  MODIFY `note_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `medical_historytb`
+--
+ALTER TABLE `medical_historytb`
+  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `patienttb`
@@ -1289,7 +1378,7 @@ ALTER TABLE `s_admintb`
 -- AUTO_INCREMENT for table `userlogintb`
 --
 ALTER TABLE `userlogintb`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
