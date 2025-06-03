@@ -122,7 +122,7 @@ if (isset($_POST['id'])) {
                     <p class="mb-2">Total Upcoming<br>Appointments</p>
                     <h6 class="mb-0">
                         <?php
-                        $total_result = $con->query("SELECT COUNT(*) as total FROM appointmenttb WHERE status='Pending' AND appt_date >= CURDATE()");
+                        $total_result = $con->query("SELECT COUNT(*) as total FROM appointmenttb WHERE status='Approved' AND appt_date >= CURDATE()");
                         echo $total_result->fetch_assoc()['total'];
                         ?>
                     </h6>
@@ -154,6 +154,7 @@ if (isset($_POST['id'])) {
             </div>
         </div>
 
+        <!-- Replace the table section -->
         <div class="table-responsive">
             <table id="myTable" class="table table-hover align-middle">
                 <thead>
@@ -167,29 +168,14 @@ if (isset($_POST['id'])) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $sql = "SELECT a.*, 
-                    p.First_Name as patient_fname, 
-                    p.Last_Name as patient_lname, 
-                    p.Profile_img as patient_img, 
-                    d.First_Name as doctor_fname, 
-                    d.Last_Name as doctor_lname, 
-                    d.Specialization,
-                    d.Profile_img as doctor_profile_img
-                    FROM appointmenttb a 
-                    LEFT JOIN patienttb p ON a.patient_app_acc_id = p.patient_acc_id 
-                    LEFT JOIN doctortb d ON a.doctor_app_acc_id = d.doctor_acc_id 
-                    WHERE a.status='Pending' AND a.appt_date >= CURDATE() 
-                    ORDER BY a.appt_date ASC, a.appt_time ASC";
-                    $result = $con->query($sql);
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                    ?>
+                    <?php if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) { ?>
                             <tr>
                                 <td>
                                     <span class="fw-bold">#<?= htmlspecialchars($row["appt_id"]) ?></span>
                                 </td>
                                 <td>
+                                    <!-- Patient Info column -->
                                     <div class="d-flex align-items-center">
                                         <div class="position-relative">
                                             <?php
@@ -198,19 +184,18 @@ if (isset($_POST['id'])) {
                                                 : '../images/team_placeholder.jpg';
                                             ?>
                                             <img src="<?= htmlspecialchars($profile_image) ?>"
-                                                class="rounded-circle"
-                                                width="40" height="40"
-                                                style="object-fit: cover;">
+                                                 class="rounded-circle"
+                                                 width="40" height="40"
+                                                 style="object-fit: cover;">
                                         </div>
                                         <div class="ms-3">
-                                            <h6 class="mb-0">
-                                                <?= htmlspecialchars($row["patient_fname"] . " " . $row["patient_lname"]) ?>
-                                            </h6>
+                                            <h6 class="mb-0"><?= htmlspecialchars($row["patient_fname"] . " " . $row["patient_lname"]) ?></h6>
                                             <small class="text-muted">Patient</small>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
+                                    <!-- Doctor column -->
                                     <div>
                                         <h6 class="mb-0">Dr. <?= htmlspecialchars($row["doctor_fname"] . " " . $row["doctor_lname"]) ?></h6>
                                         <span class="badge bg-primary-subtle text-primary">
@@ -219,17 +204,20 @@ if (isset($_POST['id'])) {
                                     </div>
                                 </td>
                                 <td>
+                                    <!-- Schedule column -->
                                     <div class="small">
                                         <div><i class="fa fa-calendar text-primary me-2"></i><?= date('F d, Y', strtotime($row["appt_date"])) ?></div>
                                         <div><i class="fa fa-clock text-primary me-2"></i><?= date('h:i A', strtotime($row["appt_time"])) ?></div>
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-success-subtle text-warning px-3 rounded-pill">
+                                    <!-- Status column -->
+                                    <span class="badge bg-success-subtle text-success px-3 rounded-pill">
                                         <?= htmlspecialchars($row["status"]) ?>
                                     </span>
                                 </td>
-                                <td>
+                                <td class="text-end">
+                                    <!-- Actions column -->
                                     <div class="d-flex justify-content-end gap-2">
                                         <button class="btn btn-sm btn-light"
                                             onclick="openEditModal(
@@ -254,19 +242,15 @@ if (isset($_POST['id'])) {
                                     </div>
                                 </td>
                             </tr>
-                        <?php
-                        }
-                    } else {
-                        ?>
+                        <?php }
+                    } else { ?>
                         <tr>
                             <td colspan="6" class="text-center py-5">
-                           <i class="fa-solid fa-file-excel fa-2x text-secondary mb-3"></i>
-                                <h6 class="text-muted">No upcoming appointments found</h6>
+                                <i class="fa-solid fa-file-excel fa-2x text-secondary mb-3"></i>
+                                <h6 class="text-muted">No approved appointments found</h6>
                             </td>
                         </tr>
-                    <?php
-                    }
-                    ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

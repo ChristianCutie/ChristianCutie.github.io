@@ -50,15 +50,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <div class="navbar-nav w-100">
             <a href="../admin/dashboard.php" class="nav-item nav-link <?= ($current_page == 'dashboard.php') ? 'active' : '' ?>"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle <?= in_array($current_page, ['upcoming.php']) ? 'active show' : '' ?>" data-bs-toggle="dropdown"><i class="fa-regular fa-calendar-check me-2"></i>Appointment</a>
-                <div class="dropdown-menu bg-transparent border-0 <?= in_array($current_page, ['upcoming.php']) ? 'show' : '' ?>">
+                <a href="#" class="nav-link dropdown-toggle <?= in_array($current_page, ['upcoming.php', 'completed.php', 'approved.php', 'rechedule.php']) ? 'active show' : '' ?>" data-bs-toggle="dropdown"><i class="fa-regular fa-calendar-check me-2"></i>Appointment</a>
+                <div class="dropdown-menu bg-transparent border-0 <?= in_array($current_page, ['upcoming.php', 'completed.php', 'approved.php', 'rechedule.php']) ? 'show' : '' ?>">
                     <a href="../admin/upcoming.php" class="dropdown-item <?= in_array($current_page, ['upcoming.php']) ? 'active' : '' ?>">
                         <i class="fa-solid fa-calendar-day me-2"></i>Upcoming
                     </a>
-                    <a href="signup.html" class="dropdown-item">
+                    <a href="../admin/approved.php" class="dropdown-item <?= in_array($current_page, ['approved.php']) ? 'active' : '' ?>">
+                        <i class="fa-solid fa-calendar-check me-2"></i>Approved
+                    </a>
+                    <a href="../admin/completed.php" class=" dropdown-item <?= in_array($current_page, ['completed.php']) ? 'active' : '' ?>">
                         <i class="fa-solid fa-calendar-check me-2"></i>Completed
                     </a>
-                    <a href="404.html" class="dropdown-item">
+                    <a href="404.html" class="dropdown-item <?= in_array($current_page, ['rechedule.php']) ? 'active' : '' ?>">
                         <i class="fa-solid fa-calendar-xmark me-2"></i>Reschedule
                     </a>
                 </div>
