@@ -91,13 +91,6 @@ if (isset($_POST['btnupdate'])) {
         $isSuccess = false;
     }
 }
-
-//delete data doctor
-// if(isset($_GET['delete'])){
-//     $delete_id = $_GET['delete'];
-
-//     $sql_remove_data_doctor = "DELETE FROM USER_INFO WHERE ID = '$id'";
-// }
 ?>
 <div class="container-fluid pt-4 px-4">
     <!-- Header Section with Statistics -->

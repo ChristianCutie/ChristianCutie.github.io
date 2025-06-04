@@ -30,7 +30,12 @@ if ($result === false) {
     $user_name = $result->fetch_assoc();
 }
 if ($result->num_rows === 0) {
-    echo "<div class='alert alert-info'>No appointments found.</div>";
+    echo "<div class='alert alert-info m-4'>
+    <div class='d-flex justify-content-between'>
+    <span class='fw-bold'>No Appointments Found</span>
+    <span class='text-muted'><a href='../patient/add.php' class='btn btn-primary rounded-0 btn-sm'><i class='fa fa-plus me-2'></i>Schedule New Appointment</a></span>
+    </div>
+    </div>";
     exit();
 }
 
