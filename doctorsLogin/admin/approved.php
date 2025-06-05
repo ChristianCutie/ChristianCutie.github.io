@@ -3,141 +3,122 @@ include "../includes/header.php";
 include "../includes/sidebar-admin.php";
 require_once "../connection/globalConnection.php";
 
-if (session_status()  == PHP_SESSION_NONE) {
+
+if(session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$showToast = false;
-$toastMessage = '';
-$isSuccess = true;
 $con = connection();
 
-if (isset($_POST['update_appointment'])) {
+// Initialize variables for modal and toast
+$show_modal = false;
+$showToast = false;
+$toastMessage = '';
+$isSuccess = false;
+$appointment_details = null;
+
+// Handle appointment status update
+if (isset($_POST['appointment_id']) && isset($_POST['status'])) {
     $appointment_id = $_POST['appointment_id'];
-    $appointment_date = $_POST['appointment_date'];
-    $appointment_time = $_POST['appointment_time'];
     $status = $_POST['status'];
-    $notes = $_POST['notes'];
 
-    $sql = "UPDATE appointmenttb SET 
-            appt_date = ?, 
-            appt_time = ?, 
-            status = ?, 
-            notes = ? 
-            WHERE appt_id = ?";
-
+    $sql = "UPDATE appointmenttb SET status = ? WHERE appt_id = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param("ssssi", $appointment_date, $appointment_time, $status, $notes, $appointment_id);
+    $stmt->bind_param("si", $status, $appointment_id);
 
     if ($stmt->execute()) {
-        $showToast = true;
-        $toastMessage = "Appointment updated successfully";
-        $isSuccess = true;
+        echo json_encode(['success' => true]);
+        exit;
     } else {
-        $showToast = true;
-        $toastMessage = "Error updating appointment";
-        $isSuccess = false;
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error updating appointment'
+        ]);
+        exit;
     }
 }
 
-if (isset($_POST['id'])) {
-    $id = $_POST['id'];
+// Handle view details request
+if (isset($_GET['edit'])) {
+    $appointment_id = $_GET['edit'];
+    $show_modal = true;
 
+    // Fetch appointment details
     $sql = "SELECT a.*, 
-            CONCAT(p.First_Name, ' ', p.Last_Name) as patient_name,
-            CONCAT(d.First_Name, ' ', d.Last_Name) as doctor_name,
-            d.Profile_img as profile_photo
-            FROM appointmenttb a
-            LEFT JOIN patienttb p ON a.patient_app_acc_id = p.patient_acc_id
-            LEFT JOIN doctortb d ON a.doctor_app_acc_id = d.doctor_acc_id
-            WHERE a.appt_id = ?";
+        CONCAT(COALESCE(p.First_Name, ''), ' ', COALESCE(p.Last_Name, '')) as patient_name,
+        p.Profile_img as patient_img,
+        p.Phone_Number as patient_phone,
+        p.Email_address as patient_email,
+        p.Address as patient_address,
+        CONCAT(COALESCE(d.First_Name, ''), ' ', COALESCE(d.Last_Name, '')) as doctor_name,
+        d.Profile_img as doctor_profile_img,
+        d.Phone_Number as doctor_phone,
+        d.Email_address as doctor_email,
+        COALESCE(d.Specialization, 'General') as Specialization
+        FROM appointmenttb a 
+        LEFT JOIN patienttb p ON a.patient_app_acc_id = p.patient_acc_id 
+        LEFT JOIN doctortb d ON a.doctor_app_acc_id = d.doctor_acc_id 
+        WHERE a.appt_id = ?";
 
     $stmt = $con->prepare($sql);
-    $stmt->bind_param("i", $id);
+    $stmt->bind_param("i", $appointment_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    $data = $result->fetch_assoc();
 
-    echo json_encode($data);
+    if ($result && $result->num_rows > 0) {
+        $appointment_details = $result->fetch_assoc();
+        // Clean up data
+        $appointment_details['patient_name'] = !empty(trim($appointment_details["patient_name"])) ? trim($appointment_details["patient_name"]) : 'Unknown Patient';
+        $appointment_details['doctor_name'] = !empty(trim($appointment_details["doctor_name"])) ? trim($appointment_details["doctor_name"]) : 'Unknown Doctor';
+        $appointment_details['Specialization'] = !empty($appointment_details["Specialization"]) ? $appointment_details["Specialization"] : 'General';
+        $appointment_details['doctor_hospital'] = !empty($appointment_details["doctor_hospital"]) ? $appointment_details["doctor_hospital"] : 'N/A';
+    }
 }
 
+if(isset($_POST['markCompleted'])) {
+    $approve_Id_appointment = $_POST['appointment_id'] ?? null;
+    
+    if($appointment_id) {
+        $status = 'Completed';
+        $sql = "UPDATE appointmenttb SET status = ? WHERE appt_id = ?";
+        $stmt = $con->prepare($sql);
+        $stmt->bind_param("si", $status, $approve_Id_appointment);
 
-
-?>
-<style>
-    .modal .rounded-circle.border {
-        border: 2px solid #fff !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .position-relative {
-        display: inline-block;
-    }
-
-    #edit_profile_photo {
-        background-color: #f8f9fa;
-    }
-
-    .table th {
-        font-weight: 600;
-        background-color: #f8f9fa;
-    }
-
-    .badge {
-        font-weight: 500;
-    }
-
-    .table> :not(caption)>*>* {
-        padding: 1rem 0.75rem;
-    }
-
-    .btn-light:hover {
-        background-color: #e9ecef;
-    }
-
-    @media print {
-
-        .sidebar,
-        .navbar,
-        .btn,
-        .dataTables_filter,
-        .dataTables_length,
-        .dataTables_paginate {
-            display: none !important;
+        if ($stmt->execute()) {
+          $showToast = true;
+            $toastMessage = 'Appointment completed successfully!';
+            $isSuccess = true;
+           
+        } else {
+            $toastMessage = 'Error approving appointment.';
+            $isSuccess = false;
+            $showToast = true;
+           
         }
+        $show_modal = false; // Hide modal after action
     }
-</style>
-<div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-        <span class="sr-only">Loading...</span>
-    </div>
-</div>
+}
+
+// Fetch aprroved appointments for the main table
+$sql = "SELECT * FROM appointmenttb WHERE status='Approved' AND appt_date >= CURDATE() ORDER BY appt_date ASC, appt_time ASC";
+$result = mysqli_query($con, $sql);
+if (!$result) {
+    die("Query failed: " . mysqli_error($con));
+}
+?>
+
 <div class="container-fluid pt-4 px-4">
-    <!-- Header Section with Statistics -->
-    <div class="row mb-4">
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
         <div class="col-sm-6 col-xl-3">
             <div class="bg-light rounded d-flex align-items-center p-4">
-                <i class="fa fa-calendar-check fa-3x text-primary"></i>
+                <i class="fa fa-thumbs-up fa-3x text-primary"></i>
                 <div class="ms-3">
-                    <p class="mb-2">Total Upcoming<br>Appointments</p>
+                    <p class="mb-2">Total Approved<br>Appointments</p>
                     <h6 class="mb-0">
                         <?php
                         $total_result = $con->query("SELECT COUNT(*) as total FROM appointmenttb WHERE status='Approved' AND appt_date >= CURDATE()");
                         echo $total_result->fetch_assoc()['total'];
-                        ?>
-                    </h6>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-            <div class="bg-light rounded d-flex align-items-center p-4">
-                <i class="fa fa-user-md fa-3x text-success"></i>
-                <div class="ms-3">
-                    <p class="mb-2">Available<br>Doctors</p>
-                    <h6 class="mb-0">
-                        <?php
-                        $doc_result = $con->query("SELECT COUNT(*) as docs FROM doctortb WHERE Status='Active'");
-                        echo $doc_result->fetch_assoc()['docs'];
                         ?>
                     </h6>
                 </div>
@@ -149,18 +130,18 @@ if (isset($_POST['id'])) {
     <div class="bg-light rounded p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h5 class="mb-0">Upcoming Appointments</h5>
-                <p class="text-muted small mb-0">Manage scheduled appointments</p>
+                <h5 class="mb-0">Approved Appointments</h5>
+                <p class="text-muted small mb-0">View all approved appointments</p>
             </div>
         </div>
 
-        <!-- Replace the table section -->
+        <!-- Table -->
         <div class="table-responsive">
             <table id="myTable" class="table table-hover align-middle">
                 <thead>
                     <tr>
-                        <th>Appointment ID</th>
-                        <th>Patient Info</th>
+                        <th>ID</th>
+                        <th>Patient</th>
                         <th>Doctor</th>
                         <th>Schedule</th>
                         <th>Status</th>
@@ -168,278 +149,421 @@ if (isset($_POST['id'])) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) { ?>
+                    <?php
+                    $sql = "SELECT a.*, 
+                        CONCAT(COALESCE(p.First_Name, ''), ' ', COALESCE(p.Last_Name, '')) as patient_name,
+                        p.Profile_img as patient_img,
+                        p.Phone_Number as patient_phone,
+                        p.Email_address as patient_email,
+                        p.Address as patient_address,
+                        CONCAT(COALESCE(d.First_Name, ''), ' ', COALESCE(d.Last_Name, '')) as doctor_name,
+                        d.Profile_img as doctor_profile_img,
+                        d.Phone_Number as doctor_phone,
+                        d.Email_address as doctor_email,
+                        COALESCE(d.Specialization, 'General') as Specialization,
+                        d.Address as doctor_address
+                        FROM appointmenttb a 
+                        LEFT JOIN patienttb p ON a.patient_app_acc_id = p.patient_acc_id 
+                        LEFT JOIN doctortb d ON a.doctor_app_acc_id = d.doctor_acc_id 
+                        WHERE a.status='Approved' AND a.appt_date >= CURDATE()
+                        ORDER BY a.appt_date ASC, a.appt_time ASC";
+
+                    $result = $con->query($sql);
+                    $hasData = false;
+
+                    if ($result && $result->num_rows > 0) {
+                        $hasData = true;
+                        while ($row = $result->fetch_assoc()) {
+                            // Ensure all required fields have values
+                            $patient_name = !empty(trim($row["patient_name"])) ? trim($row["patient_name"]) : 'Unknown Patient';
+                            $doctor_name = !empty(trim($row["doctor_name"])) ? trim($row["doctor_name"]) : 'Unknown Doctor';
+                            $specialization = !empty($row["Specialization"]) ? $row["Specialization"] : 'General';
+                    ?>
                             <tr>
+                                <td><span class="fw-bold">#<?= htmlspecialchars($row["appt_id"]) ?></span></td>
                                 <td>
-                                    <span class="fw-bold">#<?= htmlspecialchars($row["appt_id"]) ?></span>
-                                </td>
-                                <td>
-                                    <!-- Patient Info column -->
                                     <div class="d-flex align-items-center">
-                                        <div class="position-relative">
-                                            <?php
-                                            $profile_image = !empty($row['patient_img']) && file_exists('../images/' . $row['patient_img'])
-                                                ? '../images/' . $row['patient_img']
-                                                : '../images/team_placeholder.jpg';
-                                            ?>
-                                            <img src="<?= htmlspecialchars($profile_image) ?>"
-                                                 class="rounded-circle"
-                                                 width="40" height="40"
-                                                 style="object-fit: cover;">
-                                        </div>
+                                        <img src="<?= !empty($row['patient_img']) ? '../images/' . htmlspecialchars($row['patient_img']) : '../images/team_placeholder.jpg' ?>"
+                                            class="rounded-circle border"
+                                            width="40" height="40"
+                                            style="object-fit: cover;"
+                                            alt="Patient Image">
                                         <div class="ms-3">
-                                            <h6 class="mb-0"><?= htmlspecialchars($row["patient_fname"] . " " . $row["patient_lname"]) ?></h6>
+                                            <h6 class="mb-0"><?= htmlspecialchars($patient_name) ?></h6>
                                             <small class="text-muted">Patient</small>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <!-- Doctor column -->
-                                    <div>
-                                        <h6 class="mb-0">Dr. <?= htmlspecialchars($row["doctor_fname"] . " " . $row["doctor_lname"]) ?></h6>
-                                        <span class="badge bg-primary-subtle text-primary">
-                                            <?= htmlspecialchars($row["Specialization"]) ?>
-                                        </span>
+                                    <div class="d-flex align-items-center">
+                                        <img src="<?= !empty($row['doctor_profile_img']) ? '../images/' . htmlspecialchars($row['doctor_profile_img']) : '../images/team_placeholder.jpg' ?>"
+                                            class="rounded-circle border"
+                                            width="40" height="40"
+                                            style="object-fit: cover;"
+                                            alt="Doctor Image">
+                                        <div class="ms-3">
+                                            <h6 class="mb-0">Dr. <?= htmlspecialchars($doctor_name) ?></h6>
+                                            <span class="badge bg-primary-subtle text-primary">
+                                                <?= htmlspecialchars($specialization) ?>
+                                            </span>
+                                        </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <!-- Schedule column -->
                                     <div class="small">
-                                        <div><i class="fa fa-calendar text-primary me-2"></i><?= date('F d, Y', strtotime($row["appt_date"])) ?></div>
-                                        <div><i class="fa fa-clock text-primary me-2"></i><?= date('h:i A', strtotime($row["appt_time"])) ?></div>
+                                        <div><i class="far fa-calendar text-primary me-2"></i><?= date('F d, Y', strtotime($row["appt_date"])) ?></div>
+                                        <div><i class="far fa-clock text-primary me-2"></i><?= date('h:i A', strtotime($row["appt_time"])) ?></div>
                                     </div>
                                 </td>
                                 <td>
-                                    <!-- Status column -->
-                                    <span class="badge bg-success-subtle text-success px-3 rounded-pill">
+                                    <span class="badge bg-primary text-white px-3 rounded-pill">
                                         <?= htmlspecialchars($row["status"]) ?>
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <!-- Actions column -->
                                     <div class="d-flex justify-content-end gap-2">
-                                        <button class="btn btn-sm btn-light"
-                                            onclick="openEditModal(
-                                                '<?= $row['appt_id'] ?>', 
-                                                'Dr. <?= htmlspecialchars($row['doctor_fname'] . " " . $row['doctor_lname']) ?>', 
-                                                '<?= htmlspecialchars($row["Specialization"]) ?>', 
-                                                '<?= $row["appt_date"] ?>', 
-                                                '<?= $row["appt_time"] ?>', 
-                                                '<?= htmlspecialchars($row["status"]) ?>', 
-                                                '<?= !empty($row['doctor_profile_img']) ? "../images/" . htmlspecialchars($row['doctor_profile_img']) : "../images/team_placeholder.jpg" ?>'
-                                            )"
+                                        <button class="btn btn-sm btn-light view-details-btn"
+                                            data-appointment-id="<?= $row['appt_id'] ?>"
                                             data-bs-toggle="tooltip"
-                                            title="Edit Appointment">
-                                            <i class="fa fa-edit text-primary"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-light"
-                                            onclick="cancelAppointment(<?= $row['appt_id'] ?>)"
-                                            data-bs-toggle="tooltip"
-                                            title="Cancel Appointment">
-                                            <i class="fa fa-times text-danger"></i>
+                                            title="View Details">
+                                            <i class="fa fa-eye text-primary"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                        <?php }
-                    } else { ?>
-                        <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <i class="fa-solid fa-file-excel fa-2x text-secondary mb-3"></i>
-                                <h6 class="text-muted">No approved appointments found</h6>
-                            </td>
-                        </tr>
-                    <?php } ?>
+                    <?php }
+                    }
+                    ?>
                 </tbody>
             </table>
         </div>
+
+        <!-- No Data Message (Hidden by default, shown when table is empty) -->
+        <div id="noDataMessage" class="text-center py-5" style="display: none;">
+            <i class="fas fa-calendar fa-2x text-secondary mb-3"></i>
+            <h6 class="text-muted">No approved appointments found</h6>
+            <p class="text-muted small mb-0">Approved appointments will appear here.</p>
+        </div>
     </div>
-</div>
-<!-- Modal Section -->
 
-<div class="modal fade" id="editAppointmentModal" tabindex="-1" aria-labelledby="editAppointmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0">
-            <div class="modal-header bg-light border-0">
-                <h5 class="modal-title" id="editAppointmentModalLabel">Edit Appointment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <form id="editAppointmentForm" action="" method="post">
-                    <input type="hidden" name="appointment_id" id="edit_appointment_id">
+    <!-- Modal for View Details -->
+    <div class="modal fade <?php echo $show_modal ? 'show' : ''; ?>" id="viewDetailsModal" tabindex="-1"
+        aria-labelledby="viewDetailsModalLabel" aria-hidden="true"
+        style="<?php echo $show_modal ? 'display: block; background-color: rgba(0,0,0,0.5);' : ''; ?>">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 rounded-0">
+                <!-- Modal Header -->
+                <div class="modal-header bg-light border-0">
+                   
+                    <h5 class="modal-title" id="viewDetailsModalLabel">
+                        <i class="fas fa-calendar-check me-2"></i>Appointment Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="" method="POST">
+                    <!-- Modal Body -->
+                    <div class="modal-body p-4">
+                        <?php if ($appointment_details): ?>
+                            <!-- Patient & Doctor Info Cards -->
+                            <div class="row g-4 mb-4">
+                                <!-- Patient Card -->
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <img src="<?= !empty($appointment_details['patient_img']) ? '../images/' . htmlspecialchars($appointment_details['patient_img']) : '../images/team_placeholder.jpg' ?>"
+                                                    class="rounded-circle border"
+                                                    width="60" height="60"
+                                                    style="object-fit: cover;"
+                                                    alt="Patient Image">
+                                                <div class="ms-3">
+                                                    <h6 class="mb-1">Patient Information</h6>
+                                                    <span class="text-muted small">Patient Details</span>
+                                                </div>
+                                            </div>
+                                            <div class="list-group list-group-flush">
+                                                <div class="list-group-item bg-transparent px-0">
+                                                    <small class="text-muted d-block">Full Name</small>
+                                                    <span><?= htmlspecialchars($appointment_details['patient_name']) ?></span>
+                                                </div>
+                                                <div class="list-group-item bg-transparent px-0">
+                                                    <small class="text-muted d-block">Phone</small>
+                                                    <span><?= htmlspecialchars($appointment_details['patient_phone'] ?? 'N/A') ?></span>
+                                                </div>
+                                                <div class="list-group-item bg-transparent px-0">
+                                                    <small class="text-muted d-block">Email</small>
+                                                    <span><?= htmlspecialchars($appointment_details['patient_email'] ?? 'N/A') ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                    <!-- Doctor Info -->
-                    <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-                        <div class="position-relative">
-                            <img src="../images/team_placeholder.jpg"
-                                id="edit_profile_photo"
-                                class="rounded-circle border"
-                                width="50"
-                                height="50"
-                                style="object-fit: cover;">
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="mb-1" id="doctor_name_display"></h6>
-                            <span class="badge bg-primary-subtle text-primary" id="appointment_type_display"></span>
-                        </div>
+                                <!-- Doctor Card -->
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <img src="<?= !empty($appointment_details['doctor_profile_img']) ? '../images/' . htmlspecialchars($appointment_details['doctor_profile_img']) : '../images/team_placeholder.jpg' ?>"
+                                                    class="rounded-circle border"
+                                                    width="60" height="60"
+                                                    style="object-fit: cover;"
+                                                    alt="Doctor Image">
+                                                <div class="ms-3">
+                                                    <h6 class="mb-1">Doctor Information</h6>
+                                                    <span class="badge bg-primary-subtle text-primary"><?= htmlspecialchars($appointment_details['Specialization']) ?></span>
+                                                </div>
+                                            </div>
+                                            <div class="list-group list-group-flush">
+                                                <div class="list-group-item bg-transparent px-0">
+                                                    <small class="text-muted d-block">Doctor Name</small>
+                                                    <span>Dr. <?= htmlspecialchars($appointment_details['doctor_name']) ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Appointment Details Card -->
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title mb-4">
+                                        <i class="fas fa-info-circle me-2"></i>Appointment Details
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="p-3 bg-white rounded">
+                                                <small class="text-muted d-block">Appointment ID</small>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-hashtag text-primary me-2"></i>
+                                                    <span><?= htmlspecialchars($appointment_details['appt_id']) ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 bg-white rounded">
+                                                <small class="text-muted d-block">Status</small>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-thumbs-up text-primary me-2"></i>
+                                                    <span class="badge bg-primary text-white"><?= htmlspecialchars($appointment_details['status']) ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 bg-white rounded">
+                                                <small class="text-muted d-block">Date</small>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="far fa-calendar text-primary me-2"></i>
+                                                    <span><?= date('F d, Y', strtotime($appointment_details['appt_date'])) ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 bg-white rounded">
+                                                <small class="text-muted d-block">Time</small>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="far fa-clock text-primary me-2"></i>
+                                                    <span><?= date('h:i A', strtotime($appointment_details['appt_time'])) ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="p-3 bg-white rounded">
+                                                <small class="text-muted d-block">Reason for Visit</small>
+                                                <p class="mb-0"><?= htmlspecialchars($appointment_details['reason'] ?? 'No reason provided') ?></p>
+                                            </div>
+                                        </div>
+                                        <?php if (!empty($appointment_details['symptoms'])): ?>
+                                            <div class="col-12">
+                                                <div class="p-3 bg-white rounded">
+                                                    <small class="text-muted d-block">Symptoms</small>
+                                                    <p class="mb-0"><?= htmlspecialchars($appointment_details['symptoms']) ?></p>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center py-4">
+                                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i>
+                                <h6>Appointment not found</h6>
+                                <p class="text-muted">The requested appointment details could not be loaded.</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
-
-                    <!-- Appointment Details -->
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold">Date</label>
-                            <input type="date" class="form-control bg-light border-0"
-                                name="appointment_date" id="edit_appointment_date"
-                                min="<?= date('Y-m-d'); ?>" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold">Time</label>
-                            <input type="time" class="form-control bg-light border-0"
-                                name="appointment_time" id="edit_appointment_time" required>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label small fw-bold">Status</label>
-                            <select class="form-select bg-light border-0"
-                                name="status" id="edit_status" required>
-                                <option value="Pending">Pending</option>
-                                <option value="Approved">Approved</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label small fw-bold">Notes</label>
-                            <textarea class="form-control bg-light border-0"
-                                name="notes" id="edit_notes"
-                                rows="3" placeholder="Add notes..."></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Submit Buttons -->
-                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
-                        <button type="button" class="btn btn-light rounded-0" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" name="update_appointment" class="btn btn-primary rounded-0">
-                            <i class="fas fa-save me-2"></i>Save Changes
+                      <div class="modal-footer border-0">
+                    <div class="d-flex align-items-center">
+                         <input type="hidden" name="appointment_id" value="<?= htmlspecialchars($appointment_details['appt_id'])?>" >
+                        <button type="submit" name="markCompleted" class="btn btn-success rounded-0  btn-sm">
+                            <i class="fas fa-check me-2"></i>Mark as Complete
                         </button>
                     </div>
+                </div>
                 </form>
+                <!-- Modal Footer -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="position-fixed bottom-0 start-0 p-3" style="z-index: 9999;">
+        <div id="loginToast" class="toast <?php echo $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header <?php echo $isSuccess ? 'bg-success text-white' : 'bg-danger text-white'; ?>">
+                <strong class="me-auto" id="toastTitle"><?php echo $isSuccess ? 'Success' : 'Error'; ?></strong>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                <?php echo $showToast ? $toastMessage : ''; ?>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Pass PHP data to JavaScript -->
 <script>
-    function viewDetails(appointmentId) {
-        $.ajax({
-            url: 'upcoming.php',
-            type: 'POST',
-            data: {
-                id: appointmentId
-            },
-            success: function(response) {
-                const data = JSON.parse(response);
-
-                $('#edit_appointment_id').val(data.appointment_id);
-                $('#patient_name').val(data.patient_name);
-                $('#doctor_name').val('Dr. ' + data.doctor_name);
-                $('#edit_date').val(data.appointment_date);
-                $('#edit_time').val(data.appointment_time);
-                $('#edit_status').val(data.status);
-                $('#edit_notes').val(data.notes);
-                //$('#profile_photo').val(data.profile_photo);
-
-                $('#editModal').modal('show');
-            },
-            error: function() {
-                alert('Error fetching appointment details');
-            }
-        });
-    }
-
-    // Update the table action buttons
-    function editButton(appointmentId) {
-        return `
-        <button class="btn btn-sm btn-light" 
-                onclick="viewDetails(${appointmentId})"
-                data-bs-toggle="tooltip"
-                title="Edit Appointment">
-            <i class="fa fa-edit text-primary"></i>
-        </button>
-    `;
-    }
+    const hasData = <?= json_encode($hasData) ?>;
+    const showModal = <?= json_encode($show_modal) ?>;
 </script>
 
+<!-- Add CSS styles -->
+<style>
+    .badge.bg-primary-subtle {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+
+    .table img.rounded-circle.border {
+        border: 2px solid #fff !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-light:hover {
+        background-color: #e9ecef;
+    }
+
+    .modal.show {
+        display: block !important;
+    }
+
+    @media (max-width: 768px) {
+        .table-responsive {
+            font-size: 0.875rem;
+        }
+    }
+</style>
+ <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function(toastEl) {
+                return new bootstrap.Toast(toastEl, {
+                    autohide: true,
+                    delay: 5000
+                });
+            });
+
+            <?php if ($showToast): ?>
+                toastList[0].show();
+            <?php endif; ?>
+        });
+    </script>
+
+<!-- Add JavaScript for DataTable and functionality -->
 <script>
     $(document).ready(function() {
-        // Initialize DataTable
-        $('#myTable').DataTable({
-            "dom": '<"row"<"col-md-6"l><"col-md-6"f>>rtip',
-            "pageLength": 10,
-            "ordering": true,
-            "autoWidth": false,
-            "responsive": true,
-            "language": {
-                "search": "<i class='fa fa-search'></i>",
-                "searchPlaceholder": "Search appointments...",
-                "lengthMenu": "_MENU_ per page",
-                "info": "Showing _START_ to _END_ of _TOTAL_ appointments",
-                "infoEmpty": "No appointments found",
-                "infoFiltered": "(filtered from _MAX_ total appointments)"
-            }
+        // Check if table has data
+        if (hasData) {
+            // Initialize DataTable only if there's data
+            $('#myTable').DataTable({
+                "dom": '<"row"<"col-md-6"l><"col-md-6"f>>rtip',
+                "pageLength": 10,
+                "ordering": true,
+                "autoWidth": false,
+                "responsive": true,
+                "columnDefs": [{
+                    "targets": [5], // Actions column
+                    "orderable": false,
+                    "searchable": false
+                }],
+                "language": {
+                    "search": "<i class='fa fa-search'></i>",
+                    "searchPlaceholder": "Search appointments...",
+                    "lengthMenu": "_MENU_ per page",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ appointments",
+                    "infoEmpty": "No appointments found",
+                    "infoFiltered": "(filtered from _MAX_ total appointments)",
+                    "emptyTable": "No upcoming appointments found",
+                    "zeroRecords": "No matching appointments found"
+                },
+                "initComplete": function() {
+                    console.log('DataTable initialized successfully');
+                },
+                "drawCallback": function() {
+                    // Reinitialize tooltips after each draw
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
+            });
+
+            // Initialize tooltips for the table data
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl =>
+                new bootstrap.Tooltip(tooltipTriggerEl)
+            );
+        } else {
+            // Hide the table and show the no data message
+            $('#myTable').hide();
+            $('#noDataMessage').show();
+            console.log('No data available - DataTable not initialized');
+        }
+
+        // Handle view details button click
+        $(document).on('click', '.view-details-btn', function() {
+            const appointmentId = $(this).data('appointment-id');
+            viewDetails(appointmentId);
         });
 
-        // Initialize tooltips
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl =>
-            new bootstrap.Tooltip(tooltipTriggerEl)
-        );
+        // Show modal if PHP indicates it should be shown
+        if (showModal) {
+            $('#viewDetailsModal').modal('show');
+        }
+
+        // Handle modal close and clean URL
+        $('#viewDetailsModal').on('hidden.bs.modal', function() {
+            // Clean the URL by removing the edit parameter
+            const url = new URL(window.location);
+            url.searchParams.delete('edit');
+            window.history.replaceState({}, document.title, url.pathname + url.search);
+        });
     });
 
     function viewDetails(appointmentId) {
-        // Implement view details functionality
-        window.location.href = `appointment-details.php?id=${appointmentId}`;
+        // Redirect to the same page with edit parameter to show modal
+        window.location.href = 'approved.php?edit=' + appointmentId;
     }
 
-    function cancelAppointment(appointmentId) {
-        if (confirm('Are you sure you want to cancel this appointment?')) {
-            window.location.href = `upcoming.php?cancel=${appointmentId}`;
+    function updateStatus(appointmentId, status) {
+        if (confirm('Are you sure you want to mark this appointment as completed?')) {
+            $.ajax({
+                url: 'approved.php',
+                type: 'POST',
+                data: {
+                    appointment_id: appointmentId,
+                    status: status
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        // Show success message and reload
+                        alert('Appointment status updated successfully!');
+                        location.reload();
+                    } else {
+                        alert(response.message || 'Error updating appointment status');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    alert('Error updating appointment status. Please try again.');
+                }
+            });
         }
     }
-
-    function openEditModal(apptId, doctorName, specialization, apptDate, apptTime, status, profilePhoto) {
-        // Set the values in the modal fields
-        document.getElementById('edit_appointment_id').value = apptId;
-        document.getElementById('doctor_name_display').textContent = doctorName;
-        document.getElementById('appointment_type_display').textContent = specialization;
-        document.getElementById('edit_appointment_date').value = apptDate;
-        document.getElementById('edit_appointment_time').value = apptTime;
-        document.getElementById('edit_status').value = status;
-        document.getElementById('edit_notes').value = '';
-
-        const profileImage = document.getElementById('edit_profile_photo');
-        if (profilePhoto && profilePhoto.trim() !== '') {
-            profileImage.src = profilePhoto;
-        } else {
-            profileImage.src = '../images/team_placeholder.jpg';
-        }
-
-        // Add error handler for image loading
-        profileImage.onerror = function() {
-            this.src = '../images/team_placeholder.jpg';
-            this.onerror = null; // Prevent infinite loop
-        };
-
-        // Show the modal
-        const modal = new bootstrap.Modal(document.getElementById('editAppointmentModal'));
-        modal.show();
-    }
-
-    // Add form validation
-    document.getElementById('editAppointmentForm').addEventListener('submit', function(e) {
-        if (!this.checkValidity()) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        this.classList.add('was-validated');
-    });
 </script>

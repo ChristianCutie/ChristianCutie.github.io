@@ -74,15 +74,15 @@ if (isset($_GET['edit'])) {
         $appointment_details['doctor_hospital'] = !empty($appointment_details["doctor_hospital"]) ? $appointment_details["doctor_hospital"] : 'N/A';
     }
 }
-
-if(isset($_POST['markApprove'])) {
-    $approve_Id_appointment = $_POST['appointment_id'] ?? null;
+// Handle mark as approved request
+if(isset($_POST['markApprove']) && isset($_POST['appointment_id'])) {
+    $appointment_id = $_POST['appointment_id'];
     
     if($appointment_id) {
         $status = 'Approved';
         $sql = "UPDATE appointmenttb SET status = ? WHERE appt_id = ?";
         $stmt = $con->prepare($sql);
-        $stmt->bind_param("si", $status, $approve_Id_appointment);
+        $stmt->bind_param("si", $status, $appointment_id);
 
         if ($stmt->execute()) {
           $showToast = true;
@@ -95,7 +95,34 @@ if(isset($_POST['markApprove'])) {
             $showToast = true;
            
         }
-        $show_modal = false; // Hide modal after action
+        $show_modal = false; 
+    }
+}
+
+// Handle mark as completed request
+
+
+if(isset($_POST['markCompleted']) && isset($_POST['appointment_id'])) {
+    $appointment_id = $_POST['appointment_id'];
+    
+    if($appointment_id) {
+        $status = 'Completed';
+        $sql = "UPDATE appointmenttb SET status = ? WHERE appt_id = ?";
+        $stmt = $con->prepare($sql);
+        $stmt->bind_param("si", $status, $appointment_id);
+
+        if ($stmt->execute()) {
+          $showToast = true;
+            $toastMessage = 'Appointment completed successfully!';
+            $isSuccess = true;
+           
+        } else {
+            $toastMessage = 'Error completing appointment.';
+            $isSuccess = false;
+            $showToast = true;
+           
+        }
+        $show_modal = false;
     }
 }
 
@@ -230,7 +257,7 @@ if (!$result) {
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-warning text-dark px-3 rounded-pill">
+                                    <span class="badge bg-warning text-white px-3 rounded-pill">
                                         <?= htmlspecialchars($row["status"]) ?>
                                     </span>
                                 </td>
@@ -360,7 +387,7 @@ if (!$result) {
                                                 <small class="text-muted d-block">Status</small>
                                                 <div class="d-flex align-items-center">
                                                     <i class="fas fa-info-circle text-warning me-2"></i>
-                                                    <span class="badge bg-warning text-dark"><?= htmlspecialchars($appointment_details['status']) ?></span>
+                                                    <span class="badge bg-warning text-white"><?= htmlspecialchars($appointment_details['status']) ?></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -410,10 +437,10 @@ if (!$result) {
                       <div class="modal-footer border-0">
                     <div class="d-flex align-items-center">
                          <input type="hidden" name="appointment_id" value="<?= htmlspecialchars($appointment_details['appt_id'])?>" >
-                        <button type="submit" name="markApprove" class="btn btn-warning rounded-0 me-3  btn-sm">
+                        <button type="submit" name="markApprove" class="btn btn-primary rounded-0 me-3  btn-sm">
                             <i class="fas fa-check me-2"></i> Mark as Approve
                         </button>
-                        <button type="button" name="markCompleted" class="btn btn-success rounded-0  btn-sm">
+                        <button type="submit" name="markCompleted" class="btn btn-success rounded-0  btn-sm">
                             <i class="fas fa-check me-2"></i>Mark as Complete
                         </button>
                     </div>
