@@ -231,4 +231,5 @@ function deletePatient(patientId) {
     }
 }
 </style>
+<?php include "../includes/script.php";?>
 

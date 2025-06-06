@@ -102,7 +102,7 @@ if ($result->num_rows > 0) {
             <p class="text-muted small mb-0">Schedule a new appointment with our doctors</p>
         </div>
         <a href="../patient/appointment.php" class="btn btn-outline-secondary btn-sm  rounded-0">
-            <i class="fa-solid fa-arrow-left me-1"></i> Back
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Appointments
         </a>
     </div>
 

@@ -110,7 +110,7 @@ $history_result = $con->query($sql_history);
 <!-- Add Record Modal -->
 <div class="modal fade" id="addRecordModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0">
+        <div class="modal-content border-0 rounded-0">
             <div class="modal-header border-0">
                 <h5 class="modal-title">Add Medical Record</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -138,18 +138,15 @@ $history_result = $con->query($sql_history);
                         <input type="date" class="form-control bg-light border-0" name="record_date" required>
                     </div>
                     <div class="text-end mt-4">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Record</button>
+                        <button type="button" class="btn btn-light  btn-sm rounded-0" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm rounded-0"> <i class="fa-solid fa-floppy-disk"></i> Save Record</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-<?php 
-
-include "../includes/script.php";
-?>
+<?php include "../includes/script.php";?>
 
 <style>
 .timeline::before {

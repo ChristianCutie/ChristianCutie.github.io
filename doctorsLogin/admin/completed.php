@@ -421,6 +421,7 @@ if (!$result) {
     </div>
 </div>
 
+<?php include "../includes/script.php"; ?>
 <!-- Pass PHP data to JavaScript -->
 <script>
     const hasData = <?= json_encode($hasData) ?>;

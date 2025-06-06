@@ -190,4 +190,5 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
         </div>
     </nav>
-    <?php include "../includes/script.php";?>
+    <!-- Navbar End -->
+    <!-- Sidebar End -->

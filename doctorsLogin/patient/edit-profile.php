@@ -185,7 +185,7 @@ if ($result === false) {
             <span class="text-dark"> / Edit Profile</span>
         </h5>
         <a href="../patient/profile.php" class="btn btn-outline-secondary btn-sm rounded-0">
-            <i class="fa-solid fa-arrow-left"></i> Back
+            <i class="fa-solid fa-arrow-left"></i> Back to Profile
         </a>
     </div>
 

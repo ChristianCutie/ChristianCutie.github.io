@@ -277,3 +277,4 @@ if (isset($_POST['btnupdate'])) {
             $('#myTable').DataTable();
         });
     </script>
+<?php include "../includes/script.php";?>

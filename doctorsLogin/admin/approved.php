@@ -241,8 +241,8 @@ if (!$result) {
         <!-- No Data Message (Hidden by default, shown when table is empty) -->
         <div id="noDataMessage" class="text-center py-5" style="display: none;">
             <i class="fas fa-calendar fa-2x text-secondary mb-3"></i>
-            <h6 class="text-muted">No approved appointments found</h6>
-            <p class="text-muted small mb-0">Approved appointments will appear here.</p>
+            <h6 class="text-muted">No Approved Appointments</h6>
+            <p class="text-muted small mb-0">There are currently no approved appointments to display.</p>
         </div>
     </div>
 
@@ -420,6 +420,7 @@ if (!$result) {
     </div>
 </div>
 
+<?php include "../includes/script.php"; ?>
 <!-- Pass PHP data to JavaScript -->
 <script>
     const hasData = <?= json_encode($hasData) ?>;
@@ -471,8 +472,10 @@ if (!$result) {
 <script>
     $(document).ready(function() {
         // Check if table has data
+        const hasData = <?= $result && $result->num_rows > 0 ? 'true' : 'false' ?>;
+        
         if (hasData) {
-            // Initialize DataTable only if there's data
+            // Initialize DataTable if there's data
             $('#myTable').DataTable({
                 "dom": '<"row"<"col-md-6"l><"col-md-6"f>>rtip',
                 "pageLength": 10,
@@ -480,7 +483,7 @@ if (!$result) {
                 "autoWidth": false,
                 "responsive": true,
                 "columnDefs": [{
-                    "targets": [5], // Actions column
+                    "targets": [5],
                     "orderable": false,
                     "searchable": false
                 }],
@@ -493,26 +496,16 @@ if (!$result) {
                     "infoFiltered": "(filtered from _MAX_ total appointments)",
                     "emptyTable": "No upcoming appointments found",
                     "zeroRecords": "No matching appointments found"
-                },
-                "initComplete": function() {
-                    console.log('DataTable initialized successfully');
-                },
-                "drawCallback": function() {
-                    // Reinitialize tooltips after each draw
-                    $('[data-bs-toggle="tooltip"]').tooltip();
                 }
             });
-
-            // Initialize tooltips for the table data
-            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl =>
-                new bootstrap.Tooltip(tooltipTriggerEl)
-            );
+            
+            // Show table and hide no data message
+            $('#myTable').show();
+            $('#noDataMessage').hide();
         } else {
-            // Hide the table and show the no data message
-            $('#myTable').hide();
+            // Hide table and show no data message
+            $('.table-responsive').hide();
             $('#noDataMessage').show();
-            console.log('No data available - DataTable not initialized');
         }
 
         // Handle view details button click

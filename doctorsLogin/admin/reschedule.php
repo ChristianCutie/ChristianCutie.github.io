@@ -283,6 +283,9 @@ if (isset($_GET['edit'])) {
         </div>
     </div>
 </div>
+
+<?php include "../includes/script.php"; ?>
+
 <!-- Pass PHP data to JavaScript -->
 <script>
     const hasData = <?= json_encode($hasData) ?>;
@@ -420,5 +423,3 @@ if (isset($_GET['edit'])) {
         border-radius: 0;
     }
 </style>
-
-<?php include "../includes/script.php"; ?>

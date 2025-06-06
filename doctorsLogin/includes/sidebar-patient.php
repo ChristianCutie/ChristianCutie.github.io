@@ -52,10 +52,26 @@ if (!empty($row['Profile_img']) && file_exists('../images/' . $row['Profile_img'
         </div>
         <div class="navbar-nav w-100">
             <a href="../patient/dashboard.php" class="nav-item nav-link <?= ($current_page == 'dashboard.php') ? 'active' : '' ?>"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-            <a href="../patient/appointment.php" class="nav-item nav-link <?= ($current_page == 'appointment.php') ? 'active' : '' ?> <?= ($current_page == 'add.php') ? 'active' : '' ?>"><i class="fa-solid fa-calendar-plus me-2"></i>Appointments</a>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle <?= in_array($current_page, ['appointment.php', 'app-history.php','add.php']) ? 'active show' : '' ?>" data-bs-toggle="dropdown"><i class="fa-regular fa-calendar-check me-2"></i>Appointments</a>
+                 <div class="dropdown-menu bg-transparent border-0 <?= in_array($current_page, ['appointment.php', 'app-history.php','add.php']) ? 'show' : '' ?>"> 
+                     <!--New Apointment-->
+                    <a href="../patient/add.php" class="dropdown-item <?= in_array($current_page, ['add.php']) ? 'active' : '' ?>">
+                        <i class="fa-solid fa-plus me-2"></i>New
+                    </a>
+                    <!--Apointment List-->
+                    <a href="../patient/appointment.php" class="dropdown-item <?= in_array($current_page, ['appointment.php']) ? 'active' : '' ?>">
+                        <i class="fa-solid fa-list me-2"></i>List
+                    </a>
+                     <!--Apointment History-->
+                     <a href="../patient/app-history.php" class="dropdown-item <?= in_array($current_page, ['app-history.php']) ? 'active' : '' ?>">
+                        <i class="fa-solid fa-clock-rotate-left me-2"></i>History
+                    </a>
+                   </div>  
             <a href="../patient/health-report.php" class="nav-item nav-link  <?= ($current_page == 'health-report.php') ? 'active' : '' ?>"><i class="fa-solid fa-file me-2"></i>Health Reports</a>
             <a href="../patient/medical-history.php" class="nav-item nav-link  <?= ($current_page == 'medical-history.php') ? 'active' : '' ?>"><i class="fa-solid fa-clock-rotate-left me-2"></i>Medical History</a>
             <a href="../patient/notes.php" class="nav-item nav-link  <?= ($current_page == 'notes.php') ? 'active' : '' ?>"><i class="fa-solid fa-file-circle-plus me-2"></i>Doctor Notes</a>
+           
         </div>
     </nav>
 </div>

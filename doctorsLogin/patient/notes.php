@@ -139,6 +139,7 @@ $notes_result = $stmt->get_result();
         </div>
     </div>
 </div>
+<?php include "../includes/script.php";?>
 
 <style>
 @media print {

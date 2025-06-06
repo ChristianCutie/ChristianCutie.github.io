@@ -87,7 +87,7 @@ if ($cancelled_result === false) {
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="bg-light rounded d-flex align-items-center p-4">
-                <i class="fa fa-xmark fa-3x text-danger"></i>
+                <i class="fa fa-xmark-circle fa-3x text-danger"></i>
                 <div class="ms-3">
                     <p class="mb-2">Cancelled Appointments</p>
                     <h6 class="mb-0"><?= htmlspecialchars($cancelled_count) ?></h6>
@@ -105,7 +105,7 @@ if ($cancelled_result === false) {
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="bg-light rounded d-flex align-items-center p-4">
-                <i class="fa fa-check fa-3x text-success"></i>
+                <i class="fa fa-check-circle fa-3x text-success"></i>
                 <div class="ms-3">
                     <p class="mb-2">Completed Appointments</p>
                     <h6 class="mb-0"><?= htmlspecialchars($completed_count) ?></h6>
@@ -287,11 +287,7 @@ if ($cancelled_result === false) {
     </div>
 </div>
 
-<?php
-
-include "../includes/script.php";
-
-?>
+<?php include "../includes/script.php";?>
 <script>
     $(document).ready(function() {
         // Initialize DataTable with custom options

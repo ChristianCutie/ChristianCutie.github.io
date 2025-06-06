@@ -73,7 +73,7 @@ if (isset($_POST['change_pass'])) {
             <span class="text-dark"> / Change Password</span>
         </h5>
         <a href="../patient/profile.php" class="btn btn-outline-secondary btn-sm rounded-0">
-            <i class="fa-solid fa-arrow-left"></i> Back
+            <i class="fa-solid fa-arrow-left"></i> Back to Profile
         </a>
     </div>
 

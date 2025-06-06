@@ -463,9 +463,10 @@ if (!$result) {
         </div>
     </div>
 </div>
+<?php include "../includes/script.php";?>
 
 <!-- Pass PHP data to JavaScript -->
-<script>
+<script>    
     const hasData = <?= json_encode($hasData) ?>;
     const showModal = <?= json_encode($show_modal) ?>;
 </script>

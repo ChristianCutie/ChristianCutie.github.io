@@ -522,3 +522,5 @@ if (isset($_POST['btnupdate'])) {
             }
         }
     </style>
+    
+<?php include "../includes/script.php";?>
