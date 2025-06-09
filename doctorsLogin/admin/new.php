@@ -131,7 +131,7 @@ if(isset($_POST['submit'])) {
 
                         <!-- Submit Button -->
                         <div class="col-12">
-                            <button type="submit" name="submit" class="btn btn-primary">
+                            <button type="submit" name="submit" class="btn btn-primary btn-sm rounded-0">
                                 <i class="fas fa-calendar-plus me-2"></i>Create Appointment
                             </button>
                         </div>
