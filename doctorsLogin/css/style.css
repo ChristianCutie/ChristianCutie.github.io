@@ -1,4 +1,10 @@
 /********** Template CSS **********/
+
+
+body{
+    font-family: "poppins", sans-serif !important;
+    font-weight: 600 !important;
+}
 :root {
     --primary: #009CFF;
     --light: #F3F6F9;

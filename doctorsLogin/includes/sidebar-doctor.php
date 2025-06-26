@@ -155,7 +155,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <img class="rounded-circle me-lg-2" src="../images/team_placeholder.jpg" alt="" style="width: 40px; height: 40px;">
+                    <img class="rounded-circle me-lg-2" src="<?= htmlspecialchars($profile_photo_default) ?>" alt="" style="width: 40px; height: 40px;">
                     <span class="d-none d-lg-inline-flex"><?= $row['First_Name'] . " " . $row['Last_Name'] ?></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
