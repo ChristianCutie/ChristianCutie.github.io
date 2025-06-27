@@ -2,6 +2,7 @@
 include "../includes/header.php";
 include "../includes/sidebar-admin.php";
 require_once "../connection/globalConnection.php";
+$con = connection();
 
 //session start
 if (session_status()  == PHP_SESSION_NONE) {
@@ -110,171 +111,339 @@ if (isset($_POST['btnupdate'])) {
 
 
 ?>
-<div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+<!-- <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
     <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
         <span class="sr-only">Loading...</span>
     </div>
-</div>
+</div> -->
 <div class="container-fluid pt-4 px-4">
-    <div class=" d-flex justify-content-between mb-3 ">
-        <h5 class=" fw-light"><span class="text-muted">List</span><span class="text-dark">/Staff List</span></h5>
-        <a href="../admin/add-staff.php" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Staff</a>
+    <!-- Header Section with Statistics -->
+    <div class="row mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center p-4">
+                <i class="fa fa-users fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Total</p>
+                    <h6 class="mb-0">
+                        <?php
+                        $total_result = $con->query("SELECT COUNT(*) as total FROM stafftb");
+                        echo $total_result->fetch_assoc()['total'];
+                        ?>
+                    </h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center p-4">
+                <i class="fa-solid fa-user-check fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Active</p>
+                    <h6 class="mb-0">
+                        <?php
+                        $active_result = $con->query("SELECT COUNT(*) as active FROM stafftb WHERE Status = 'Active'");
+                        echo $active_result->fetch_assoc()['active'];
+                        ?>
+                    </h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center p-4">
+                <i class="fa-solid fa-user-xmark fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Deactivated</p>
+                    <h6 class="mb-0">
+                        <?php
+                        $deact_result = $con->query("SELECT COUNT(*) as deactivated FROM stafftb WHERE Status = 'Deactivated'");
+                        echo $deact_result->fetch_assoc()['deactivated'];
+                        ?>
+                    </h6>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="bg-light rounded h-100 p-4">
-                <div class="table-responsive">
-                    <table id="myTable" class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <td>Staff Id</td>
-                                <td>Full Name</td>
-                                <td>Date Birth</td>
-                                <td>Contact Number</td>
-                                <td>Email Address</td>
-                                <td> Action</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $sql = "SELECT * FROM  stafftb";
-                            $result = $con->query($sql);
-                            if ($result->num_rows > 0) {
-                                while ($rows = $result->fetch_assoc()) {
 
-                                    $fullname = $rows["First_Name"] . " " . $rows["Last_Name"];
-                                    echo "<tr>
-                                <td>" . $rows["id"] . "</td>
-                                <td>" . $fullname . "</td>
-                                <td>" . $rows["Date_Birth"] . "</td>
-                                <td>" . $rows["Email_address"] . "</td> 
-                                <td>" . $rows["Phone_Number"] . "</td>
-                                <td><div class='float-end'>
-                                <a class='btn btn-sm btn-primary' href='staff-list.php?edit=" . $rows['id'] . "'><i class='fa-solid fa-pencil'></i></a>
-                                <button class='btn btn-sm btn-danger' href='staff-list.php?delete=" . $rows['id'] . "'><i class='fa-solid fa-trash'></i></button>
-                                </div></td>
-                                </tr>";
+    <!-- Staff List Section -->
+    <div class="bg-light rounded p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h5 class="mb-0">Staff List</h5>
+                <p class="text-muted small mb-0">Manage registered staff</p>
+            </div>
+            <a href="../admin/add-staff.php" class="btn btn-primary btn-sm rounded-0">
+                <i class="fa fa-plus me-2"></i>Add Staff
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-active-tab" data-bs-toggle="tab" data-bs-target="#nav-active" type="button" role="tab" aria-controls="nav-active" aria-selected="true">Active</button>
+                    <button class="nav-link" id="nav-deact-tab" data-bs-toggle="tab" data-bs-target="#nav-deact" type="button" role="tab" aria-controls="nav-deact" aria-selected="false">Deactivated</button>
+                </div>
+            </nav>
+            <div class="tab-content pt-3" id="nav-tabContent">
+                <!-- Active Staff Table -->
+                <div class="tab-pane fade show active" id="nav-active" role="tabpanel" aria-labelledby="nav-active-tab">
+                    <div class="table-responsive">
+                        <table id="activeStaffTable" class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Staff ID</th>
+                                    <th>Staff Info</th>
+                                    <th>Job Title</th>
+                                    <th>Department</th>
+                                    <th>Contact</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $sql = "SELECT * FROM stafftb WHERE Status = 'Active' ORDER BY id DESC";
+                                $result = $con->query($sql);
+                                $activeHasData = false;
+                                if ($result->num_rows > 0) {
+                                    $activeHasData = true;
+                                    while ($row = $result->fetch_assoc()) {
+                                        $profile_image = !empty($row['Profile_img']) && file_exists('../images/' . $row['Profile_img'])
+                                            ? '../images/' . $row['Profile_img']
+                                            : '../images/team_placeholder.jpg';
+                                ?>
+                                        <tr>
+                                            <td><span class="fw-bold">#<?= htmlspecialchars($row["id"]) ?></span></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="<?= htmlspecialchars($profile_image) ?>" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                                                    <div class="ms-3">
+                                                        <h6 class="mb-0"><?= htmlspecialchars($row["First_Name"] . " " . $row["Last_Name"]) ?></h6>
+                                                        <small class="text-muted"><?= htmlspecialchars($row["Email_address"]) ?></small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary-subtle text-primary"><?= htmlspecialchars($row["Job_Title"]) ?></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info-subtle text-info"><?= htmlspecialchars($row["Department"]) ?></span>
+                                            </td>
+                                            <td>
+                                                <i class="fa fa-phone text-primary me-2"></i><?= htmlspecialchars($row["Phone_Number"]) ?>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success text-white px-3 rounded-pill"><?= htmlspecialchars($row["Status"]) ?></span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <button class="btn btn-sm btn-light" onclick="window.location.href='staff-list.php?edit=<?= $row['id'] ?>'" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="fa fa-edit text-primary"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-light" onclick="window.location.href='staff-list.php?deact_id=<?= $row['id'] ?>'" data-bs-toggle="tooltip" title="Deactivate">
+                                                        <i class="fa-solid fa-user-xmark text-danger"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                <?php
+                                    }
                                 }
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade <?php echo $show_modal ? 'show' : ''; ?>" id="updateModal" tabindex="-1"
-        aria-labelledby="updateModalLabel" aria-hidden="true"
-        style="<?php echo $show_modal ? 'display: block; background-color: rgba(0,0,0,0.5);' : ''; ?>">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateModalLabel">Update staff</h5>
-                    <a href="staff-list.php" class="btn-close" aria-label="Close"></a>
-                </div>
-                <form action="staff-list.php" method="POST">
-                    <div class="modal-body" style="overflow-y: scroll; height:75vh">
-                        <input type="hidden" name="staff_id" value="<?php echo $edit_id; ?>">
-                        <input type="hidden" name="staff_acc_id" value="<?php echo $edit_acc_id; ?>">
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noDataMessageFromActiveTable" class="text-center py-5" style="display: none;">
+                        <i class="fas fa-user-xmark fa-2x text-secondary mb-3"></i>
+                        <h6 class="text-muted">No active accounts found</h6>
+                        <p class="text-muted small mb-0">All active accounts will appear here.</p>
+                    </div>
 
-                        <h6 class="mb-2">Personal Information</h6>
-                        <div class="alert alert-success p-2" role="alert">
-                            <span style="font-size: 14px;" class="fst-italic"> Please fill the required field</span>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-4"> <input type="text" class="form-control mb-4" id="first_name" name="first_name"
-                                    value="<?php echo $edit_first_name; ?>" required></div>
-                            <div class="col-lg-4"> <input type="text" class="form-control mb-4" id="middle_name" name="middle_name"
-                                    value="<?php echo $edit_middle_name; ?>"></div>
-                            <div class="col-lg-4"> <input type="text" class="form-control mb-4" id="last_name" name="last_name"
-                                    value="<?php echo $edit_last_name; ?>" required></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-3"><input name="age" type="number" value="<?php echo $edit_age; ?>" class=" form-control mb-4" placeholder="Age *"></div>
-                            <div class="col-lg-3">
-                                <select name="gender" class="form-select">
-                                    <option value="">Select Gender</option>
-                                    <option value="Male" <?php echo ($edit_gender == 'Male') ? 'selected' : ''; ?>>Male</option>
-                                    <option value="Female" <?php echo ($edit_gender == 'Female') ? 'selected' : ''; ?>>Female</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-3"><input type="text" id="birthdate" name="birthdate" value="<?php echo $edit_birthdate; ?>" class="form-control mb-4" placeholder="Date of Birth *" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
-                            </div>
-                            <div class="col-lg-3"><input name="pnum" type="tel" value="<?php echo $edit_phone; ?>" class=" form-control mb-4" placeholder="Phone number *"></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-6"><input name="address" type="text" value="<?php echo $edit_home_address; ?>" class=" form-control mb-4" placeholder="Home Address *"></div>
-                            <div class="col-lg-6"><input name="emailaddress" type="email" value="<?php echo $edit_email; ?>" class=" form-control" placeholder="Email address *"></div>
-                        </div>
-                        <hr>
-                        <h6 class="mb-2">Professional Information</h6>
-                        <div class="alert alert-success p-2" role="alert">
-                            <span style="font-size: 14px;" class="fst-italic"> Please fill the required field</span>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12"><input name="specialization" type="text" value="<?php echo $edit_specialization; ?>" class=" form-control mb-4" placeholder="Specialization *"></div>
-                            <div class="col-lg-12"><input name="mnl" type="text" value="<?php echo $edit_mnl; ?>" class=" form-control mb-4" placeholder="Medical License Number *"></div>
-                            <div class="col-lg-12"><input name="affiliation" type="text" value="<?php echo $edit_affiliation; ?>" class=" form-control mb-4" placeholder="Affiliation *"></div>
-                            <div class="col-lg-12"><textarea style="height: 120px" name="biography" class=" form-control" placeholder="Your biography here.."><?php echo $edit_biography; ?></textarea></div>
-                        </div>
-                        <hr>
-                        <h6 class="mb-2 mt-2">Account Information</h6>
-                        <div class="alert alert-success p-2" role="alert">
-                            <span style="font-size: 14px;" class="fst-italic"> Please fill the required field</span>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-6"><input name="username" type="text" value="<?php echo $edit_username; ?>" class=" form-control mb-4" placeholder="User name *"></div>
-                            <div class="col-lg-6"><input name="password" type="password" value="<?php echo $edit_password; ?>" class=" form-control mb-4" placeholder="Password *"></div>
-                        </div>
+                </div>
+                <!-- Deactivated Staff Table -->
+                <div class="tab-pane fade" id="nav-deact" role="tabpanel" aria-labelledby="nav-deact-tab">
+                    <div class=" table-responsive">
+                        <table id="deactStaffTable" class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Staff ID</th>
+                                    <th>Staff Info</th>
+                                    <th>Job Title</th>
+                                    <th>Department</th>
+                                    <th>Contact</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $sql = "SELECT * FROM stafftb WHERE Status = 'Deactivated' ORDER BY id DESC";
+                                $result = $con->query($sql);
+                                $deactHasData = false;
+                                if ($result->num_rows > 0) {
+                                    $deactHasData = true;
+                                    while ($row = $result->fetch_assoc()) {
+                                        $profile_image = !empty($row['Profile_img']) && file_exists('../images/' . $row['Profile_img'])
+                                            ? '../images/' . $row['Profile_img']
+                                            : '../images/team_placeholder.jpg';
+                                ?>
+                                        <tr>
+                                            <td><span class="fw-bold">#<?= htmlspecialchars($row["id"]) ?></span></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="<?= htmlspecialchars($profile_image) ?>" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                                                    <div class="ms-3">
+                                                        <h6 class="mb-0"><?= htmlspecialchars($row["First_Name"] . " " . $row["Last_Name"]) ?></h6>
+                                                        <small class="text-muted"><?= htmlspecialchars($row["Email_address"]) ?></small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary-subtle text-primary"><?= htmlspecialchars($row["Job_Title"]) ?></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info-subtle text-info"><?= htmlspecialchars($row["Department"]) ?></span>
+                                            </td>
+                                            <td>
+                                                <i class="fa fa-phone text-primary me-2"></i><?= htmlspecialchars($row["Phone_Number"]) ?>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success text-white px-3 rounded-pill"><?= htmlspecialchars($row["Status"]) ?></span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <button class="btn btn-sm btn-light" onclick="window.location.href='staff-list.php?edit=<?= $row['id'] ?>'" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="fa fa-edit text-primary"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-light" onclick="window.location.href='staff-list.php?deact_id=<?= $row['id'] ?>'" data-bs-toggle="tooltip" title="Deactivate">
+                                                        <i class="fa-solid fa-user-xmark text-danger"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                <?php }
+                                }
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="modal-footer">
-                        <a href="staff-list.php" class="btn btn-secondary">Close</a>
-                        <input type="submit" class="btn btn-primary" name="btnupdate" value="Save changes">
+                    <div id="noDataMessageFromDeactTable" class="text-center py-5" style="display: none;">
+                       <i class="fas fa-user-xmark fa-2x text-secondary mb-3"></i>
+                        <h6 class="text-muted">No deactivated accounts found</h6>
+                        <p class="text-muted small mb-0">All deactivated accounts will appear here.</p>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999999">
-        <div id="loginToast" class="toast <?php echo $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header <?php echo $isSuccess ? 'bg-success text-white' : 'bg-danger text-white'; ?>">
-                <strong class="me-auto" id="toastTitle"><?php echo $isSuccess ? 'Success' : 'Error'; ?></strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="toastMessage">
-                <?php echo $showToast ? $toastMessage : ''; ?>
-            </div>
-        </div>
-    </div>
-    <script>
-        // Handle closing the modal with backdrop click
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('.modal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    window.location.href = 'staff-list.php';
+    <!-- Modals for Edit, Deactivate, Reactivate (copy structure from doctor-list.php and adjust fields) -->
+    <!-- Toast notification (copy from doctor-list.php) -->
+</div>
+<?php include "../includes/script.php"; ?>
+<script>
+    const activeHasData = <?= json_encode($activeHasData) ?>;
+    const deactHasData = <?= json_encode($deactHasData) ?>;
+    const showModal = <?= json_encode($show_modal) ?>;
+</script>
+<script>
+    $(document).ready(function() {
+        if (activeHasData) {
+            // Initialize DataTable only if there's data
+            $('#activeStaffTable').DataTable({
+                "dom": '<"row"<"col-md-6"l><"col-md-6"f>>rtip',
+                "pageLength": 10,
+                "ordering": true,
+                "autoWidth": false,
+                "responsive": true,
+                "columnDefs": [{
+                    "targets": [6], // Actions column
+                    "orderable": false,
+                    "searchable": false
+                }],
+                "language": {
+                    "search": "<i class='fa fa-search'></i>",
+                    "searchPlaceholder": "Search appointments...",
+                    "lengthMenu": "_MENU_ per page",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ appointments",
+                    "infoEmpty": "No appointments found",
+                    "infoFiltered": "(filtered from _MAX_ total appointments)",
+                    "emptyTable": "No upcoming appointments found",
+                    "zeroRecords": "No matching appointments found"
+                },
+                "initComplete": function() {
+                    console.log('DataTable initialized successfully');
+                },
+                "drawCallback": function() {
+                    // Reinitialize tooltips after each draw
+                    $('[data-bs-toggle="tooltip"]').tooltip();
                 }
             });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
-            var toastList = toastElList.map(function(toastEl) {
-                return new bootstrap.Toast(toastEl, {
-                    autohide: true,
-                    delay: 5000
-                });
+
+        } else {
+            // Hide the table and show the no data message
+            $('#activeStaffTable').hide();
+            $('#noDataMessageFromActiveTable').show();
+            console.log('No data available - DataTable not initialized');
+        }
+
+        if (deactHasData) {
+            // Initialize DataTable only if there's data
+            $('#deactStaffTable').DataTable({
+                "dom": '<"row"<"col-md-6"l><"col-md-6"f>>rtip',
+                "pageLength": 10,
+                "ordering": true,
+                "autoWidth": false,
+                "responsive": true,
+                "columnDefs": [{
+                    "targets": [6], // Actions column
+                    "orderable": false,
+                    "searchable": false
+                }],
+                "language": {
+                    "search": "<i class='fa fa-search'></i>",
+                    "searchPlaceholder": "Search staff...",
+                    "lengthMenu": "_MENU_ per page",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ staff",
+                    "infoEmpty": "No appointments found",
+                    "infoFiltered": "(filtered from _MAX_ total staff)",
+                    "emptyTable": "No deactivated accounts found",
+                    "zeroRecords": "No deactivated accounts found"
+                },
+                "initComplete": function() {
+                    console.log('DataTable initialized successfully');
+                },
+                "drawCallback": function() {
+                    // Reinitialize tooltips after each draw
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
             });
 
-            <?php if ($showToast): ?>
-                toastList[0].show();
-            <?php endif; ?>
+
+        } else {
+            // Hide the table and show the no data message
+            $('#deactStaffTable').hide();
+            $('#noDataMessageFromDeactTable').show();
+            console.log('No data available - DataTable not initialized');
+        }
+        // Initialize tooltips for the table data
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl =>
+            new bootstrap.Tooltip(tooltipTriggerEl)
+        );
+    });
+
+    // Tab persistence
+    document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(function(tabButton) {
+        tabButton.addEventListener('shown.bs.tab', function(event) {
+            const target = event.target.getAttribute('data-bs-target');
+            localStorage.setItem('activeTab', target);
         });
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('#myTable').DataTable();
-        });
-    </script>
-<?php include "../includes/script.php";?>
+    });
+    window.addEventListener('DOMContentLoaded', function() {
+        const activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            const tabToActivate = document.querySelector(`button[data-bs-target="${activeTab}"]`);
+            if (tabToActivate) {
+                new bootstrap.Tab(tabToActivate).show();
+            }
+        }
+    });
+</script>

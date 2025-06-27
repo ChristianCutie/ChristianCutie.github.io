@@ -9,16 +9,6 @@ $toastMessage = '';
 $isSuccess = true;
 session_start();
 
-// if(isset($_SESSION["user_id"])){
-//     header("Location: ../admin/dashboard.php");
-//     exit();
-// }
-// else
-// {
-//      header("Location: ../login.php");
-//     exit();
-// }
-
 
 if (isset($_POST['login'])) {
 

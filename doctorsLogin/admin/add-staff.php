@@ -142,6 +142,7 @@ if (isset($_POST['save'])) {
             </div>
         </div>
     </div>
+    <?php include "../includes/script.php"?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var toastElList = [].slice.call(document.querySelectorAll('.toast'));

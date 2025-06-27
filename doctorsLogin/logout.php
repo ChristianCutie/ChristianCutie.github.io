@@ -1,7 +1,10 @@
 <?php
 session_start();
-session_unset();
-session_destroy();
-header("Location: ../login.php");
-exit();
+
+if(session_destroy()){
+    header("Location: login.php");
+    exit();
+} else {
+    echo "Error logging out. Please try again.";
+}
 ?>

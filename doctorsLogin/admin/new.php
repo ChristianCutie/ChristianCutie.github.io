@@ -9,6 +9,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $con = connection();
 
+
+
 // Initialize variables for form handling
 $showToast = false;
 $toastMessage = '';

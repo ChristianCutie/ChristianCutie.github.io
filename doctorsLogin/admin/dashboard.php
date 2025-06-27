@@ -3,6 +3,12 @@ include "../includes/header.php";
 include "../includes/sidebar-admin.php";
 require_once "../connection/globalConnection.php";
 
+
+if(!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
 $con = connection();
 /*Doctor List count*/
 $sql = "SELECT COUNT(*) AS doctor_count FROM doctortb";

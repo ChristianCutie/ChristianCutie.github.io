@@ -259,206 +259,201 @@ if (isset($_POST['reactivateButton'])) {
                     <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Deactivated</button>
                 </div>
             </nav>
-            <div class="tab-content" id="nav-tabContent">
+            <div class="tab-content pt-3" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                    <table id="myTable" class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Patient ID</th>
-                                <th>Patient Info</th>
-                                <th>Contact Details</th>
-                                <th>Medical Info</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $sql = "SELECT * FROM patienttb WHERE status = 'Active' ORDER BY patient_acc_id DESC";
-                            $result = $con->query($sql);
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
-                            ?>
-                                    <tr>
-                                        <td>
-                                            <span class="fw-bold">#<?= htmlspecialchars($row["patient_acc_id"]) ?></span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="position-relative">
-                                                    <?php
-                                                    $profile_image = !empty($row['Profile_img']) && file_exists('../images/' . $row['Profile_img'])
-                                                        ? '../images/' . $row['Profile_img']
-                                                        : '../images/team_placeholder.jpg';
-                                                    ?>
-                                                    <img src="<?= htmlspecialchars($profile_image) ?>"
-                                                        class="rounded-circle"
-                                                        width="40" height="40"
-                                                        style="object-fit: cover;">
-                                                </div>
-                                                <div class="ms-3">
-                                                    <h6 class="mb-0">
-                                                        <?= htmlspecialchars($row["First_Name"] . " " . $row["Last_Name"]) ?>
-                                                    </h6>
-                                                    <small class="text-muted">
-                                                        <?= htmlspecialchars($row["Email_address"]) ?>
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="small">
-                                                <div><i class="fa fa-phone text-primary me-2"></i><?= htmlspecialchars($row["Phone_Number"]) ?></div>
-                                                <div><i class="fa fa-map-marker text-primary me-2"></i><?= htmlspecialchars($row["Address"]) ?></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex gap-2">
-                                                <span class="badge bg-primary-subtle text-primary">
-                                                    <?= htmlspecialchars($row["Blood_Type"]) ?>
-                                                </span>
-                                                <span class="badge bg-info-subtle text-info">
-                                                    Age: <?= htmlspecialchars($row["Age"]) ?>
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-success-subtle text-success px-3 rounded-pill">
-                                                Active
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex justify-content-end gap-2">
-                                                <button class="btn btn-sm btn-light"
-                                                    onclick="window.location.href='patient-list.php?edit=<?= $row['patient_id'] ?>'"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Edit">
-                                                    <i class="fa fa-edit text-primary"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-light"
-                                                    onclick="window.location.href='patient-list.php?deact_id=<?= $row['patient_id'] ?>'"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Deactivate">
-                                                    <i class="fa-solid fa-user-xmark text-danger"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php
-                                }
-                            } else {
-                                ?>
+                    <div class="table-responsive">
+                        <table id="activeTable" class="table table-hover align-middle">
+                            <thead>
                                 <tr>
-                                    <td colspan="6" class="text-center py-5">
-                                        <i class="fa-solid fa-circle-xmark fa-2x"></i>
-                                        <h6 class="text-muted">No patients found</h6>
-                                        <a href="../admin/add-patient.php" class="btn btn-primary btn-sm mt-3">
-                                            <i class="fa fa-plus me-2"></i>Add New Patient
-                                        </a>
-                                    </td>
+                                    <th>Patient ID</th>
+                                    <th>Patient Info</th>
+                                    <th>Contact Details</th>
+                                    <th>Medical Info</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
                                 </tr>
-                            <?php
-                            }
-                            ?>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $sql = "SELECT * FROM patienttb WHERE status = 'Active' ORDER BY patient_acc_id DESC";
+                                $result = $con->query($sql);
+                                $activeUserData = false;
+                                if ($result->num_rows > 0) {
+                                    $activeUserData = true;
+                                    while ($row = $result->fetch_assoc()) {
+                                ?>
+                                        <tr>
+                                            <td>
+                                                <span class="fw-bold">#<?= htmlspecialchars($row["patient_acc_id"]) ?></span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="position-relative">
+                                                        <?php
+                                                        $profile_image = !empty($row['Profile_img']) && file_exists('../images/' . $row['Profile_img'])
+                                                            ? '../images/' . $row['Profile_img']
+                                                            : '../images/team_placeholder.jpg';
+                                                        ?>
+                                                        <img src="<?= htmlspecialchars($profile_image) ?>"
+                                                            class="rounded-circle"
+                                                            width="40" height="40"
+                                                            style="object-fit: cover;">
+                                                    </div>
+                                                    <div class="ms-3">
+                                                        <h6 class="mb-0">
+                                                            <?= htmlspecialchars($row["First_Name"] . " " . $row["Last_Name"]) ?>
+                                                        </h6>
+                                                        <small class="text-muted">
+                                                            <?= htmlspecialchars($row["Email_address"]) ?>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="small">
+                                                    <div><i class="fa fa-phone text-primary me-2"></i><?= htmlspecialchars($row["Phone_Number"]) ?></div>
+                                                    <div><i class="fa fa-map-marker text-primary me-2"></i><?= htmlspecialchars($row["Address"]) ?></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    <span class="badge bg-primary-subtle text-primary">
+                                                        <?= htmlspecialchars($row["Blood_Type"]) ?>
+                                                    </span>
+                                                    <span class="badge bg-info-subtle text-info">
+                                                        Age: <?= htmlspecialchars($row["Age"]) ?>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success-subtle text-success px-3 rounded-pill">
+                                                    Active
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <button class="btn btn-sm btn-light"
+                                                        onclick="window.location.href='patient-list.php?edit=<?= $row['patient_id'] ?>'"
+                                                        data-bs-toggle="tooltip"
+                                                        title="Edit">
+                                                        <i class="fa fa-edit text-primary"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-light"
+                                                        onclick="window.location.href='patient-list.php?deact_id=<?= $row['patient_id'] ?>'"
+                                                        data-bs-toggle="tooltip"
+                                                        title="Deactivate">
+                                                        <i class="fa-solid fa-user-xmark text-danger"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                <?php
+                                    }
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noDataMessageFromActiveTable" class="text-center py-5" style="display: none;">
+                        <i class="fas fa-user-xmark fa-2x text-secondary mb-3"></i>
+                        <h6 class="text-muted">No active accounts found</h6>
+                        <p class="text-muted small mb-0">All active accounts will appear here.</p>
+                    </div>
+
                 </div>
                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                    <table id="myTable" class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Patient ID</th>
-                                <th>Patient Info</th>
-                                <th>Contact Details</th>
-                                <th>Medical Info</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $sql = "SELECT * FROM patienttb WHERE status != 'Active' ORDER BY patient_acc_id DESC";
-                            $result = $con->query($sql);
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
-                            ?>
-                                    <tr>
-                                        <td>
-                                            <span class="fw-bold">#<?= htmlspecialchars($row["patient_acc_id"]) ?></span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="position-relative">
-                                                    <?php
-                                                    $profile_image = !empty($row['Profile_img']) && file_exists('../images/' . $row['Profile_img'])
-                                                        ? '../images/' . $row['Profile_img']
-                                                        : '../images/team_placeholder.jpg';
-                                                    ?>
-                                                    <img src="<?= htmlspecialchars($profile_image) ?>"
-                                                        class="rounded-circle"
-                                                        width="40" height="40"
-                                                        style="object-fit: cover;">
-                                                </div>
-                                                <div class="ms-3">
-                                                    <h6 class="mb-0">
-                                                        <?= htmlspecialchars($row["First_Name"] . " " . $row["Last_Name"]) ?>
-                                                    </h6>
-                                                    <small class="text-muted">
-                                                        <?= htmlspecialchars($row["Email_address"]) ?>
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="small">
-                                                <div><i class="fa fa-phone text-primary me-2"></i><?= htmlspecialchars($row["Phone_Number"]) ?></div>
-                                                <div><i class="fa fa-map-marker text-primary me-2"></i><?= htmlspecialchars($row["Address"]) ?></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex gap-2">
-                                                <span class="badge bg-primary-subtle text-primary">
-                                                    <?= htmlspecialchars($row["Blood_Type"]) ?>
-                                                </span>
-                                                <span class="badge bg-info-subtle text-info">
-                                                    Age: <?= htmlspecialchars($row["Age"]) ?>
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-danger text-white px-3 rounded-pill">
-                                                <?= htmlspecialchars($row["Status"]) ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex justify-content-end gap-2">
-                                                <button class="btn btn-sm btn-light"
-                                                    onclick="window.location.href='patient-list.php?react_id=<?= $row['patient_id'] ?>'"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Reactivate">
-                                                    <i class="fa-solid fa-user-check text-success"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php
-                                }
-                            } else {
-                                ?>
+                    <div class="table-responsive">
+                        <table id="deactTable" class="table table-hover align-middle">
+                            <thead>
                                 <tr>
-                                    <td colspan="6" class="text-center py-5">
-                                        <i class="fa-solid fa-circle-xmark fa-2x"></i>
-                                        <h6 class="text-muted">No patients found</h6>
-                                        <a href="../admin/add-patient.php" class="btn btn-primary btn-sm mt-3">
-                                            <i class="fa fa-plus me-2"></i>Add New Patient
-                                        </a>
-                                    </td>
+                                    <th>Patient ID</th>
+                                    <th>Patient Info</th>
+                                    <th>Contact Details</th>
+                                    <th>Medical Info</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
                                 </tr>
-                            <?php
-                            }
-                            ?>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $sql = "SELECT * FROM patienttb WHERE status != 'Active' ORDER BY patient_acc_id DESC";
+                                $result = $con->query($sql);
+                                $deactUserData = false;
+                                if ($result->num_rows > 0) {
+                                    $deactUserData = true;
+                                    while ($row = $result->fetch_assoc()) {
+                                ?>
+                                        <tr>
+                                            <td>
+                                                <span class="fw-bold">#<?= htmlspecialchars($row["patient_acc_id"]) ?></span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="position-relative">
+                                                        <?php
+                                                        $profile_image = !empty($row['Profile_img']) && file_exists('../images/' . $row['Profile_img'])
+                                                            ? '../images/' . $row['Profile_img']
+                                                            : '../images/team_placeholder.jpg';
+                                                        ?>
+                                                        <img src="<?= htmlspecialchars($profile_image) ?>"
+                                                            class="rounded-circle"
+                                                            width="40" height="40"
+                                                            style="object-fit: cover;">
+                                                    </div>
+                                                    <div class="ms-3">
+                                                        <h6 class="mb-0">
+                                                            <?= htmlspecialchars($row["First_Name"] . " " . $row["Last_Name"]) ?>
+                                                        </h6>
+                                                        <small class="text-muted">
+                                                            <?= htmlspecialchars($row["Email_address"]) ?>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="small">
+                                                    <div><i class="fa fa-phone text-primary me-2"></i><?= htmlspecialchars($row["Phone_Number"]) ?></div>
+                                                    <div><i class="fa fa-map-marker text-primary me-2"></i><?= htmlspecialchars($row["Address"]) ?></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    <span class="badge bg-primary-subtle text-primary">
+                                                        <?= htmlspecialchars($row["Blood_Type"]) ?>
+                                                    </span>
+                                                    <span class="badge bg-info-subtle text-info">
+                                                        Age: <?= htmlspecialchars($row["Age"]) ?>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-danger text-white px-3 rounded-pill">
+                                                    <?= htmlspecialchars($row["Status"]) ?>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <button class="btn btn-sm btn-light"
+                                                        onclick="window.location.href='patient-list.php?react_id=<?= $row['patient_id'] ?>'"
+                                                        data-bs-toggle="tooltip"
+                                                        title="Reactivate">
+                                                        <i class="fa-solid fa-user-check text-success"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                <?php
+                                    }
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noDataMessageFromDeactTable" class="text-center py-5" style="display: none;">
+                        <i class="fas fa-user-xmark fa-2x text-secondary mb-3"></i>
+                        <h6 class="text-muted">No deactivated accounts found</h6>
+                        <p class="text-muted small mb-0">All deactivated accounts will appear here.</p>
+                    </div>
                 </div>
             </div>
 
@@ -779,6 +774,111 @@ if (isset($_POST['reactivateButton'])) {
     </div>
 </div>
 <!-- /REACTIVATE PATIENT MODAL -->
+
+<?php include "../includes/script.php"; ?>
+<script>
+    const activeUserData = <?= json_encode($activeUserData) ?>;
+    const deactUserData = <?= json_encode($deactUserData) ?>;
+    const showModal = <?= json_encode($show_modal) ?>;
+</script>
+<script>
+    $(document).ready(function() {
+        if (activeUserData) {
+            // Initialize DataTable only if there's data
+            $('#activeTable').DataTable({
+                "dom": '<"row"<"col-md-6"l><"col-md-6"f>>rtip',
+                "pageLength": 10,
+                "ordering": true,
+                "autoWidth": false,
+                "responsive": true,
+                "columnDefs": [{
+                    "targets": [5], // Actions column
+                    "orderable": false,
+                    "searchable": false
+                }],
+                "language": {
+                    "search": "<i class='fa fa-search'></i>",
+                    "searchPlaceholder": "Search patient...",
+                    "lengthMenu": "_MENU_ per page",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ patients",
+                    "infoEmpty": "No appointments found",
+                    "infoFiltered": "(filtered from _MAX_ total patients)",
+                    "emptyTable": "No upcoming appointments found",
+                    "zeroRecords": "No matching appointments found"
+                },
+                "initComplete": function() {
+                    console.log('DataTable initialized successfully');
+                },
+                "drawCallback": function() {
+                    // Reinitialize tooltips after each draw
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
+            });
+        } else {
+            // Hide the table and show the no data message
+            $('#activeTable').hide();
+            $('#noDataMessageFromActiveTable').show();
+            console.log('No data available - DataTable not initialized');
+        }
+
+        if (deactUserData) {
+            // Initialize DataTable only if there's data
+            $('#deactTable').DataTable({
+                "dom": '<"row"<"col-md-6"l><"col-md-6"f>>rtip',
+                "pageLength": 10,
+                "ordering": true,
+                "autoWidth": false,
+                "responsive": true,
+                "columnDefs": [{
+                    "targets": [5],
+                    "orderable": false,
+                    "searchable": false
+                }],
+                "language": {
+                    "search": "<i class='fa fa-search'></i>",
+                    "searchPlaceholder": "Search patient...",
+                    "lengthMenu": "_MENU_ per page",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ patients",
+                    "infoEmpty": "No appointments found",
+                    "infoFiltered": "(filtered from _MAX_ total patients)",
+                    "emptyTable": "No upcoming appointments found",
+                    "zeroRecords": "No matching appointments found"
+                },
+                "initComplete": function() {
+                    console.log('DataTable initialized successfully');
+                },
+                "drawCallback": function() {
+                    // Reinitialize tooltips after each draw
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
+            });
+        } else {
+            // Hide the table and show the no data message
+            $('#deactTable').hide();
+            $('#noDataMessageFromDeactTable').show();
+            console.log('No data available - DataTable not initialized');
+        }
+
+
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl =>
+            new bootstrap.Tooltip(tooltipTriggerEl)
+        );
+    });
+</script>
+<script>
+        function setupConfirmInput(inputId, buttonId) {
+            const input = document.getElementById(inputId);
+            const button = document.getElementById(buttonId);
+            if (input && button) {
+                input.addEventListener('input', function() {
+                    button.disabled = (this.value !== 'CONFIRM');
+                });
+            }
+        }
+
+        setupConfirmInput('confirmInputPatient', 'confirmButtonPatient');
+    </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Show toast if needed
@@ -805,52 +905,10 @@ if (isset($_POST['reactivateButton'])) {
             modalReact.show();
         <?php endif; ?>
 
-        // Enable/disable deactivate button
-        const input = document.getElementById('confirmInputPatient');
-        const button = document.getElementById('confirmButtonPatient');
-        if (input && button) {
-            input.addEventListener('input', function() {
-                button.disabled = (this.value !== 'CONFIRM');
-            });
-        }
+       
     });
 </script>
 <script>
-    $(document).ready(function() {
-        // Initialize DataTable
-        $('#myTable').DataTable({
-            "dom": '<"row"<"col-md-6"l><"col-md-6"f>>rtip',
-            "pageLength": 10,
-            "ordering": true,
-            "autoWidth": false,
-            "responsive": true,
-            "language": {
-                "search": "<i class='fa fa-search'></i>",
-                "searchPlaceholder": "Search patients...",
-                "lengthMenu": "_MENU_ per page",
-                "info": "Showing _START_ to _END_ of _TOTAL_ patients",
-                "infoEmpty": "No patients found",
-                "infoFiltered": "(filtered from _MAX_ total patients)"
-            }
-        });
-
-        // Initialize tooltips
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl =>
-            new bootstrap.Tooltip(tooltipTriggerEl)
-        );
-    });
-
-    function editPatient(patientId) {
-        window.location.href = `edit-patient.php?id=${patientId}`;
-    }
-
-    function deletePatient(patientId) {
-        if (confirm('Are you sure you want to delete this patient?')) {
-            window.location.href = `patient-list.php?delete=${patientId}`;
-        }
-    }
-
     function previewImage(input) {
         const file = input.files[0];
         const reader = new FileReader();
@@ -972,5 +1030,3 @@ if (isset($_POST['reactivateButton'])) {
         }
     });
 </script>
-
-<?php include "../includes/script.php"; ?>

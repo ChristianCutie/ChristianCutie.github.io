@@ -5,13 +5,14 @@ include_once(__DIR__ . "/../connection/globalConnection.php");
 $con = connection();
 session_start();
 
+$user_id = $_SESSION['user_id'];
+
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /login.php');
+    header('Location: login.php');
     exit();
 } else {
     $con->connect_error;
 }
-$user_id = $_SESSION['user_id'];
 
 $query = "SELECT * FROM s_admintb WHERE id = '$user_id'";
 $result = $con->query(query: $query);
