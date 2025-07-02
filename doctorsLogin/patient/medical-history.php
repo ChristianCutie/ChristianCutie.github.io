@@ -2,22 +2,26 @@
 include "../includes/header.php";
 include "../includes/sidebar-patient.php";
 require_once "../connection/globalConnection.php";
-if (session_status()  == PHP_SESSION_NONE) {
+if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 $con = connection();
 if (!isset($_SESSION['user_id'])) {
     header('Location: /login.php');
     exit();
-} else {    
-    $con->connect_error;
 }
 $user_id = $_SESSION['user_id'];
-$sql = "SELECT * FROM patienttb WHERE patient_acc_id = '$user_id'"; 
-$result = $con->query($sql);
-$user_name = $result->fetch_assoc();
 
-$fullname = $user_name['First_Name'] . " " . $user_name['Last_Name'];
+// Initialize variables for modal and toast
+$showToast = false;
+$toastMessage = '';
+$isSuccess = false;
+
+// Use prepared statement for patient info
+$stmt = $con->prepare("SELECT * FROM patienttb WHERE patient_acc_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 if ($result === false) {
     die("Error fetching user data: " . htmlspecialchars($con->error));
 }
@@ -25,17 +29,70 @@ if ($result->num_rows === 0) {
     header('Location: /login.php');
     exit();
 }
-if ($user_name === null) {
+$user_name = $result->fetch_assoc();
+if (!$user_name) {
     die("User not found.");
-}   
-if ($user_name === false) {
-    die("Error fetching user data: " . htmlspecialchars($con->error));
 }
 
-// Fetch medical history data
-$sql_history = "SELECT * FROM medical_historytb WHERE patient_id = '$user_id' ORDER BY record_date DESC";
-$history_result = $con->query($sql_history);
+// Fetching medical history data
+
+
+if (isset($_POST['save_record'])) {
+    $patient_id     = $_POST['patient_id'];
+    $condition_name = $_POST['condition_name'];
+    $diagnosis      = $_POST['diagnosis'];
+    $medications    = $_POST['medications'];
+    $treatment      = $_POST['treatment'];
+    $record_date    = $_POST['record_date'];
+    // Prepare and bind
+    $stmt_insert = $con->prepare("INSERT INTO medical_historytb (patient_id, condition_name, diagnosis, medications, treatment, record_date) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt_insert->bind_param("isssss", $patient_id, $condition_name, $diagnosis, $medications, $treatment, $record_date);
+    
+    // Execute the statement
+    if ($stmt_insert->execute()) {
+       $showToast = true;
+        $toastMessage = 'Medical record added successfully.';
+        $isSuccess = true;
+    } else {
+        $showToast = true;
+        $toastMessage = 'Error adding medical record: ' . htmlspecialchars($stmt_insert->error);
+        $isSuccess = false;
+    }
+    
+    // Close the statement
+    $stmt_insert->close();
+}
+
+
+$fullname = $user_name['First_Name'] . " " . $user_name['Last_Name'];
+
+// Use prepared statement for medical history
+$stmt_history = $con->prepare("SELECT * FROM medical_historytb WHERE patient_id = ? ORDER BY record_date DESC");
+$stmt_history->bind_param("i", $user_id);
+$stmt_history->execute();
+$history_result = $stmt_history->get_result();
 ?>
+
+<style>
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 2px;
+    background: #dee2e6;
+}
+
+@media print {
+    .sidebar, .navbar, .btn {
+        display: none !important;
+    }
+    .timeline::before {
+        display: none !important;
+    }
+}
+</style>
 <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
     <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
         <span class="sr-only">Loading...</span>
@@ -95,9 +152,9 @@ $history_result = $con->query($sql_history);
                 <?php endwhile; 
                 else: ?>
                     <div class="text-center py-5">
-                           <i class="fa-solid fa-file-excel fa-2x text-secondary mb-3"></i>
+                        <i class="fa-solid fa-file-excel fa-2x text-secondary mb-3"></i>
                         <h6 class="text-muted">No medical records found</h6>
-                        <button class="btn btn-primary btn-sm mt-3  rounded-0" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+                        <button class="btn btn-primary btn-sm mt-3 rounded-0" data-bs-toggle="modal" data-bs-target="#addRecordModal">
                             <i class="fa-solid fa-plus me-2"></i>Add First Record
                         </button>
                     </div>
@@ -116,7 +173,8 @@ $history_result = $con->query($sql_history);
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <form action="add_medical_record.php" method="POST">
+                <form action="" method="POST">
+                    <input type="hidden" name="patient_id" value="<?= htmlspecialchars($user_id) ?>">
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Condition/Disease</label>
                         <input type="text" class="form-control bg-light border-0" name="condition_name" required>
@@ -138,33 +196,42 @@ $history_result = $con->query($sql_history);
                         <input type="date" class="form-control bg-light border-0" name="record_date" required>
                     </div>
                     <div class="text-end mt-4">
-                        <button type="button" class="btn btn-light  btn-sm rounded-0" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary btn-sm rounded-0"> <i class="fa-solid fa-floppy-disk"></i> Save Record</button>
+                        <button type="button" class="btn btn-light btn-sm rounded-0" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm rounded-0" name="save_record">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Record
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+  <!-- Toast Notification -->
+    <div class="position-fixed bottom-0 start-0 p-3" style="z-index: 9999;">
+        <div id="loginToast" class="toast <?php echo $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header <?php echo $isSuccess ? 'bg-success text-white' : 'bg-danger text-white'; ?>">
+                <strong class="me-auto" id="toastTitle"><?php echo $isSuccess ? 'Success' : 'Error'; ?></strong>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                <?php echo $showToast ? $toastMessage : ''; ?>
+            </div>
+        </div>
+    </div>
 <?php include "../includes/script.php";?>
 
-<style>
-.timeline::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 2px;
-    background: #dee2e6;
-}
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function(toastEl) {
+                return new bootstrap.Toast(toastEl, {
+                    autohide: true,
+                    delay: 5000
+                });
+            });
 
-@media print {
-    .sidebar, .navbar, .btn {
-        display: none !important;
-    }
-    .timeline::before {
-        display: none !important;
-    }
-}
-</style>
+            <?php if ($showToast): ?>
+                toastList[0].show();
+            <?php endif; ?>
+        });
+    </script>

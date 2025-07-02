@@ -27,6 +27,18 @@ $sql = "SELECT * FROM patienttb WHERE patient_acc_id = '$user_id'";
 $result = $con->query($sql);
 $user_name = $result->fetch_assoc();
 
+// Fetch Medical History
+$stmt_history = $con->prepare("SELECT * FROM medical_historytb WHERE patient_id = ? ORDER BY record_date DESC LIMIT 3");
+$stmt_history->bind_param("i", $user_id);
+$stmt_history->execute();
+$history_result = $stmt_history->get_result();
+
+// Fetch Health Reports
+$stmt_reports = $con->prepare("SELECT * FROM health_recordstb WHERE patient_id = ? ORDER BY report_date DESC LIMIT 3");
+$stmt_reports->bind_param("i", $user_id);
+$stmt_reports->execute();
+$reports_result = $stmt_reports->get_result();
+
 $fullname = $user_name['First_Name'] . " " . $user_name['Last_Name'];
 if ($result === false) {
     die("Error fetching user data: " . htmlspecialchars($con->error));
@@ -168,10 +180,39 @@ if (!empty($user_name['Profile_img']) && file_exists('../images/' . $user_name['
             <div class="bg-light rounded p-4 mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="mb-0">Medical History</h6>
-                    <button class="btn btn-sm btn-outline-primary rounded-0">View All</button>
+                    <a href="medical-history.php" class="btn btn-sm btn-outline-primary rounded-0">View All</a>
                 </div>
                 <div class="border-top pt-3">
-                    <p class="text-muted">No medical history available.</p>
+                    <?php if ($history_result && $history_result->num_rows > 0): ?>
+                        <?php while ($record = $history_result->fetch_assoc()): ?>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <strong><?= htmlspecialchars($record['condition_name']) ?></strong>
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill">
+                                        <?= date('M d, Y', strtotime($record['record_date'])) ?>
+                                    </span>
+                                </div>
+                                <div class="text-muted small mb-1 text-light"><?= htmlspecialchars($record['diagnosis']) ?></div>
+                                <div>
+                                    <?php if (!empty($record['medications'])): ?>
+                                        <span class="badge bg-info-subtle text-info">
+                                            <i class="fa-solid fa-pills me-1"></i>
+                                            <?= htmlspecialchars($record['medications']) ?>
+                                    </span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($record['treatment'])): ?>
+                                        <span class="badge bg-success-subtle text-success">
+                                            <i class="fa-solid fa-stethoscope me-1"></i>
+                                            <?= htmlspecialchars($record['treatment']) ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <hr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p class="text-muted">No medical history available.</p>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -179,10 +220,28 @@ if (!empty($user_name['Profile_img']) && file_exists('../images/' . $user_name['
             <div class="bg-light rounded p-4 mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="mb-0">Health Reports</h6>
-                    <button class="btn btn-sm btn-outline-primary rounded-0">View All</button>
+                    <a href="health-reports.php" class="btn btn-sm btn-outline-primary rounded-0">View All</a>
                 </div>
                 <div class="border-top pt-3">
-                    <p class="text-muted">No health reports available.</p>
+                    <?php if ($reports_result && $reports_result->num_rows > 0): ?>
+                        <?php while ($report = $reports_result->fetch_assoc()): ?>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <strong><?= htmlspecialchars($report['report_title']) ?></strong>
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill">
+                                        <?= date('M d, Y', strtotime($report['report_date'])) ?>
+                                    </span>
+                                </div>
+                                <div class="text-muted small mb-1"><?= htmlspecialchars($report['report_details']) ?></div>
+                                <?php if (!empty($report['file_path'])): ?>
+                                    <a href="<?= htmlspecialchars($report['file_path']) ?>" target="_blank" class="btn btn-sm btn-link p-0">View Attachment</a>
+                                <?php endif; ?>
+                            </div>
+                            <hr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p class="text-muted">No health reports available.</p>
+                    <?php endif; ?>
                 </div>
             </div>
 

@@ -16,33 +16,44 @@ if (isset($_POST['login'])) {
     $password = $_POST['password'];
 
     $query = "SELECT * FROM userlogintb WHERE User_Name = '$username' AND Password = '$password'";
-    $result =$con-> query($query);
-   
+    $result = $con->query($query);
 
-  if ($result && $result->num_rows == 1) {
+
+    if ($result && $result->num_rows == 1) {
         $rows = $result->fetch_assoc();
 
-        if($rows['User_Type'] === 'Super Admin'){
+        if ($rows['Status'] !== 'Active') {
 
-             $_SESSION['user_id'] = $rows['id'];
-            header("Location: /doctorsLogin/admin/dashboard.php");
-        exit();
+            $showToast = true;
+            $toastMessage = "Your account is not active. Please contact support.";
+            $isSuccess = false;
 
-        }
-        else if($rows['User_Type'] === 'Doctor'){
-              $_SESSION['user_id'] = $rows['id'];
-            header("Location: /doctorsLogin/doctor/dashboard.php");
-        exit();
-        }
-        else if($rows['User_Type'] === 'Patient'){
-              $_SESSION['user_id'] = $rows['id'];
-            header("Location: /doctorsLogin/patient/dashboard.php");
-        exit(); 
-        }
-        else if($rows['User_Type'] === 'Staff'){
-              $_SESSION['user_id'] = $rows['id'];
-            header("Location: /doctorsLogin/staff/dashboard.php");
-        exit(); 
+        } else {
+
+            if ($rows['User_Type'] === 'Super Admin') {
+
+                $_SESSION['user_id'] = $rows['id'];
+                header("Location: /doctorsLogin/admin/dashboard.php");
+                exit();
+
+            } else if ($rows['User_Type'] === 'Doctor') {
+
+                $_SESSION['user_id'] = $rows['id'];
+                header("Location: /doctorsLogin/doctor/dashboard.php");
+                exit();
+
+            } else if ($rows['User_Type'] === 'Patient') {
+
+                $_SESSION['user_id'] = $rows['id'];
+                header("Location: /doctorsLogin/patient/dashboard.php");
+                exit();
+
+            } else if ($rows['User_Type'] === 'Staff') {
+
+                $_SESSION['user_id'] = $rows['id'];
+                header("Location: /doctorsLogin/staff/dashboard.php");
+                exit();
+            }
         }
     } else {
 
@@ -56,6 +67,7 @@ if (isset($_POST['login'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -88,7 +100,7 @@ if (isset($_POST['login'])) {
         .login-card {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -116,7 +128,7 @@ if (isset($_POST['login'])) {
         .feature-icon {
             width: 45px;
             height: 45px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -201,6 +213,7 @@ if (isset($_POST['login'])) {
         }
     </style>
 </head>
+
 <body>
     <div class="login-wrapper">
         <div class="login-card">
@@ -211,7 +224,7 @@ if (isset($_POST['login'])) {
                         Back to Home
                     </a>
                     <h2>Welcome to<br>Telemedicine</h2>
-                    
+
                     <div class="feature-item">
                         <div class="feature-icon">
                             <i class="fas fa-user-md"></i>
@@ -248,7 +261,7 @@ if (isset($_POST['login'])) {
                         <h3 class="fw-bold mb-4">Sign In</h3>
                         <form action="" method="post">
                             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                            
+
                             <div class="mb-4">
                                 <label class="form-label">Username</label>
                                 <input type="text" class="form-control" name="username" required>
@@ -273,7 +286,7 @@ if (isset($_POST['login'])) {
                             </button>
 
                             <p class="text-center mt-4">
-                                Don't have an account? 
+                                Don't have an account?
                                 <a href="registration-form.php" class="signup-link">Sign up</a>
                             </p>
                         </form>
@@ -287,7 +300,7 @@ if (isset($_POST['login'])) {
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         <div id="loginToast" class="toast <?php echo $showToast ? 'show' : ''; ?>" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header <?php echo $isSuccess ? 'bg-success text-white' : 'bg-danger text-white'; ?>">
-                <strong class="me-auto"><?php echo $isSuccess ? 'Success' : 'Error'; ?></strong>
+                <strong class="me-auto"><?php echo $isSuccess ? 'Success' : 'Invalid'; ?></strong>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
@@ -302,7 +315,7 @@ if (isset($_POST['login'])) {
         document.getElementById('togglePassword').addEventListener('click', function() {
             const passwordInput = document.getElementById('password');
             const icon = this.querySelector('i');
-            
+
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 icon.classList.remove('fa-eye');
@@ -330,4 +343,5 @@ if (isset($_POST['login'])) {
         });
     </script>
 </body>
+
 </html>

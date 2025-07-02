@@ -9,7 +9,7 @@ if (session_status()  == PHP_SESSION_NONE) {
 }
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /login.php');
+    header('Location: ../login.php');
     exit();
 } else {
     $con->connect_error;
@@ -161,7 +161,7 @@ if (!empty($row['Profile_img']) && file_exists('../images/' . $row['Profile_img'
                     <span class="d-none d-lg-inline-flex"><?= $row['First_Name'] . " " . $row['Last_Name'] ?></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                    <a href="../patient/profile.php" class="dropdown-item">
+                    <a href="../patient/profile.php" class="dropdown-item <?= in_array($current_page, ['profile.php']) ? 'active' : '' ?></a>">
                         <i class="fa-solid fa-user me-2"></i>My Profile
                     </a>
                     <a href="../patient/change-pass.php" class="dropdown-item">

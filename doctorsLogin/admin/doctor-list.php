@@ -244,6 +244,23 @@ if (isset($_POST['btnupdate'])) {
     }
 }
 ?>
+<style>
+    .nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    font-weight: 500;
+    background: none;
+    border-radius: 0;
+    transition: color 0.2s;
+}
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    border-bottom: 2px solid #0d6efd;
+    background: none;
+}
+</style>
 <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
     <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
         <span class="sr-only">Loading...</span>
@@ -324,13 +341,19 @@ if (isset($_POST['btnupdate'])) {
         </div>
 
         <div class="table-responsive">
-            <nav>
-                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Active</button>
-                    <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Deactivated</button>
-                </div>
-            </nav>
-            <div class="tab-content pt-3" id="nav-tabContent">
+            <ul class="nav nav-tabs mb-4" id="staffTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-active" aria-selected="true">
+                        Active
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">
+                      Deactivated
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                     <div class="table-responsive">
                         <table id="activeTable" class="table table-hover align-middle">
@@ -355,7 +378,7 @@ if (isset($_POST['btnupdate'])) {
                                 ?>
                                         <tr>
                                             <td>
-                                                <span class="fw-bold">#<?= htmlspecialchars($row["doctor_id"]) ?></span>
+                                                <span class="fw-bold">#<?= htmlspecialchars($row["doctor_acc_id"]) ?></span>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -447,7 +470,7 @@ if (isset($_POST['btnupdate'])) {
                                 ?>
                                         <tr>
                                             <td>
-                                                <span class="fw-bold">#<?= htmlspecialchars($row["doctor_id"]) ?></span>
+                                                <span class="fw-bold">#<?= htmlspecialchars($row["doctor_acc_id"]) ?></span>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -492,7 +515,7 @@ if (isset($_POST['btnupdate'])) {
                                                         onclick="window.location.href='doctor-list.php?react_id=<?= $row['doctor_id'] ?>'"
                                                         data-bs-toggle="tooltip"
                                                         title="Reactivate">
-                                                        <i class="fa-solid fa-trash-arrow-up text-danger"></i>
+                                                        <i class="fa-solid fa-user-check text-success"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -1018,24 +1041,22 @@ if (isset($_POST['btnupdate'])) {
         setupConfirmInput('confirmInput1', 'confirmButton1');
     </script>
     <script>
-        // Save the active tab when changed
-        document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(function(tabButton) {
-            tabButton.addEventListener('shown.bs.tab', function(event) {
-                const target = event.target.getAttribute('data-bs-target');
-                localStorage.setItem('activeTab', target);
-            });
+         // Tab persistence
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(function(tabLink) {
+        tabLink.addEventListener('shown.bs.tab', function(event) {
+            const target = event.target.getAttribute('href');
+            localStorage.setItem('activeTab', target);
         });
-
-        // Restore the active tab on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            const activeTab = localStorage.getItem('activeTab');
-            if (activeTab) {
-                const tabToActivate = document.querySelector(`button[data-bs-target="${activeTab}"]`);
-                if (tabToActivate) {
-                    new bootstrap.Tab(tabToActivate).show();
-                }
+    });
+    window.addEventListener('DOMContentLoaded', function() {
+        const activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            const tabToActivate = document.querySelector(`a[href="${activeTab}"]`);
+            if (tabToActivate) {
+                new bootstrap.Tab(tabToActivate).show();
             }
-        });
+        }
+    });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

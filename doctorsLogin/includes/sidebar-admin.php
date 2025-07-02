@@ -8,7 +8,7 @@ session_start();
 $user_id = $_SESSION['user_id'];
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../login.php');
     exit();
 } else {
     $con->connect_error;
@@ -71,18 +71,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle <?= in_array($current_page, ['patient-list.php', 'doctor-list.php', 'add-doctor.php', 'add-patient.php', 'staff-list.php']) ? 'active show' : '' ?>"
+                <a href="#" class="nav-link dropdown-toggle <?= in_array($current_page, ['patient-list.php', 'doctor-list.php', 'add-doctor.php', 'add-patient.php', 'staff-list.php', 'add-staff.php']) ? 'active show' : '' ?>"
                     data-bs-toggle="dropdown">
                     <i class="fa fa-user me-2"></i>Account
                 </a>
-                <div class="dropdown-menu bg-transparent border-0 <?= in_array($current_page, ['patient-list.php', 'doctor-list.php', 'add-doctor.php', 'add-patient.php', 'staff-list.php']) ? 'show' : '' ?>">
+                <div class="dropdown-menu bg-transparent border-0 <?= in_array($current_page, ['patient-list.php', 'doctor-list.php', 'add-doctor.php', 'add-patient.php', 'staff-list.php','add-staff.php']) ? 'show' : '' ?>">
                     <a href="../admin/doctor-list.php" class="dropdown-item <?= in_array($current_page, ['doctor-list.php', 'add-doctor.php']) ? 'active' : '' ?>">
                         <i class="fa-solid fa-user-doctor me-2"></i>Doctor
                     </a>
                     <a href="../admin/patient-list.php" class="dropdown-item <?= in_array($current_page, ['patient-list.php', 'add-patient.php']) ? 'active' : '' ?>">
                         <i class="fa-solid fa-hospital-user me-2"></i>Patient
                     </a>
-                    <a href="../admin/staff-list.php" class="dropdown-item <?= $current_page == 'staff-list.php' ? 'active' : '' ?>">
+                    <a href="../admin/staff-list.php" class="dropdown-item <?= in_array($current_page, ['staff-list.php', 'add-staff.php']) ? 'active' : '' ?>">
                         <i class="fa-solid fa-user-nurse me-2"></i>Staff
                     </a>
                 </div>

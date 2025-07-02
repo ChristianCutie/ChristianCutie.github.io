@@ -341,10 +341,10 @@ if ($result === false) {
 
                             <!-- Form Buttons -->
                             <div class="col-12 mt-4">
-                                <button type="submit" name="update_profile" class="btn btn-primary rounded-0">
+                                <button type="submit" name="update_profile" class="btn btn-primary rounded-0 btn-sm">
                                     <i class="fa-solid fa-save me-1"></i> Save Changes
                                 </button>
-                                <a href="../patient/profile.php" class="btn btn-light rounded-0">
+                                <a href="../patient/profile.php" class="btn btn-light rounded-0 btn-sm">
                                     <i class="fa-solid fa-times me-1"></i> Cancel
                                 </a>
                             </div>

@@ -1,23 +1,6 @@
 <?php
 include "../includes/header.php";
 include "../includes/sidebar-admin.php";
-require_once "../connection/globalConnection.php";
-
-
-if(!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
-}
-
-$con = connection();
-/*Doctor List count*/
-$sql = "SELECT COUNT(*) AS doctor_count FROM doctortb";
-$result = $con->query($sql);
-$doctor_count = 0;
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $doctor_count = $row["doctor_count"];
-}
 ?>
 
 <!-- Loader -->
@@ -45,7 +28,7 @@ if ($result->num_rows > 0) {
             <div class="bg-light rounded d-flex align-items-center p-4 position-relative overflow-hidden">
                 <div class="d-flex flex-column">
                     <h6 class="text-muted mb-1">Total Doctors</h6>
-                    <h2 class="mb-0"><?php echo $doctor_count; ?></h2>
+                    <h2 class="mb-0">25</h2>
                     <span class="text-success mt-2">
                         <i class="fas fa-arrow-up me-1"></i>5% increase
                     </span>

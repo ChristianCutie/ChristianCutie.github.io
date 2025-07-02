@@ -9,8 +9,6 @@ $con = connection();
 if (!isset($_SESSION['user_id'])) {
     header('Location: /login.php');
     exit();
-} else {
-    $con->connect_error;
 }
 $user_id = $_SESSION['user_id'];
 $sql = "SELECT * FROM patienttb WHERE patient_acc_id = '$user_id'";
@@ -22,12 +20,16 @@ if ($result === false) {
 }
 
 // Fetch patient's health data
-// $sql_health = "SELECT * FROM health_recordstb WHERE patient_id = '$user_id' ORDER BY record_date DESC LIMIT 1";
-// $health_result = $con->query($sql_health);
-// $health_data = $health_result->fetch_assoc();
+$sql_health = "SELECT * FROM health_recordstb WHERE patient_id = '$user_id' ORDER BY record_date DESC LIMIT 1";
+$health_result = $con->query($sql_health);
+$health_data = $health_result && $health_result->num_rows > 0 ? $health_result->fetch_assoc() : [];
 
-// Fetch recent appointments
-$sql_appointments = "SELECT * FROM appointmenttb WHERE patient_app_acc_id = '$user_id' ORDER BY appt_date DESC LIMIT 5";
+// Fetch recent appointments with doctor name
+$sql_appointments = "SELECT a.*, d.First_Name AS doctor_first, d.Last_Name AS doctor_last
+    FROM appointmenttb a
+    LEFT JOIN doctortb d ON a.doctor_app_acc_id = d.doctor_id
+    WHERE a.patient_app_acc_id = '$user_id'
+    ORDER BY a.appt_date DESC LIMIT 5";
 $appointments_result = $con->query($sql_appointments);
 ?>
 <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
@@ -54,14 +56,14 @@ $appointments_result = $con->query($sql_appointments);
                 <div class="card-body p-4">
                     <div class="row align-items-center">
                         <?php
-                            if (!empty($user_name['Profile_img']) && file_exists('../images/' . $user_name['Profile_img'])) {
-                                $profile_photo_default = '../images/' . $user_name['Profile_img'];
-                            } else {
-                                $profile_photo_default = '../images/team_placeholder.jpg';
-                            }
-                            ?>
+                        if (!empty($user_name['Profile_img']) && file_exists('../images/' . $user_name['Profile_img'])) {
+                            $profile_photo_default = '../images/' . $user_name['Profile_img'];
+                        } else {
+                            $profile_photo_default = '../images/team_placeholder.jpg';
+                        }
+                        ?>
                         <div class="col-auto">
-                            <img src="<?= htmlspecialchars($profile_photo_default)?>" class="rounded-circle" width="80" height="80">
+                            <img src="<?= htmlspecialchars($profile_photo_default) ?>" class="rounded-circle" width="80" height="80">
                         </div>
                         <div class="col">
                             <h5 class="mb-1"><?= htmlspecialchars($fullname) ?></h5>
@@ -79,7 +81,7 @@ $appointments_result = $con->query($sql_appointments);
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h6 class="mb-0">Blood Pressure</h6>
                         <span class="bg-primary-subtle text-primary rounded-pill px-2 py-1 small">
-                            <?= date('M d, Y', strtotime($health_data['record_date'] ?? 'now')) ?>
+                            <?= isset($health_data['record_date']) ? date('M d, Y', strtotime($health_data['record_date'])) : 'N/A' ?>
                         </span>
                     </div>
                     <h3 class="mb-0 text-primary"><?= $health_data['blood_pressure'] ?? 'N/A' ?></h3>
@@ -133,7 +135,9 @@ $appointments_result = $con->query($sql_appointments);
                                             <div class="d-flex align-items-center">
                                                 <img src="../images/team_placeholder.jpg" class="rounded-circle me-2" width="32" height="32">
                                                 <div>
-                                                    <h6 class="mb-0"><?= htmlspecialchars($appointment['doctor_name']) ?></h6>
+                                                    <h6 class="mb-0">
+                                                        <?= htmlspecialchars(($appointment['doctor_first'] ?? '') . ' ' . ($appointment['doctor_last'] ?? '')) ?>
+                                                    </h6>
                                                     <small class="text-muted"><?= htmlspecialchars($appointment['appt_type']) ?></small>
                                                 </div>
                                             </div>
@@ -155,10 +159,7 @@ $appointments_result = $con->query($sql_appointments);
         </div>
     </div>
 </div>
-<?php
-include "../includes/script.php";
-?>
-
+<?php include "../includes/script.php"; ?>
 <style>
     @media print {
 

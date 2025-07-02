@@ -188,6 +188,24 @@ if (isset($_POST['reactivateButton'])) {
     }
 }
 ?>
+<style>
+    .nav-tabs .nav-link {
+        border: none;
+        color: #6c757d;
+        padding: 0.5rem 1rem;
+        margin-right: 1rem;
+        font-weight: 500;
+        background: none;
+        border-radius: 0;
+        transition: color 0.2s;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        border-bottom: 2px solid #0d6efd;
+        background: none;
+    }
+</style>
 <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
     <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
         <span class="sr-only">Loading...</span>
@@ -253,13 +271,19 @@ if (isset($_POST['reactivateButton'])) {
         </div>
 
         <div class="table-responsive">
-            <nav>
-                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Active</button>
-                    <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Deactivated</button>
-                </div>
-            </nav>
-            <div class="tab-content pt-3" id="nav-tabContent">
+            <ul class="nav nav-tabs mb-4" id="staffTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-active" aria-selected="true">
+                        Active
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">
+                        Deactivated
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                     <div class="table-responsive">
                         <table id="activeTable" class="table table-hover align-middle">
@@ -326,8 +350,8 @@ if (isset($_POST['reactivateButton'])) {
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-success-subtle text-success px-3 rounded-pill">
-                                                    Active
+                                                <span class="badge bg-success text-white px-3 rounded-pill">
+                                                    <?= htmlspecialchars($row["Status"]) ?>
                                                 </span>
                                             </td>
                                             <td>
@@ -475,7 +499,7 @@ if (isset($_POST['reactivateButton'])) {
 <div class="modal fade <?php echo $show_modal ? 'show' : ''; ?>" id="editPatientModal" tabindex="-1"
     aria-labelledby="editPatientModalLabel" aria-hidden="true"
     style="<?php echo $show_modal ? 'display: block; background-color: rgba(0,0,0,0.5);' : ''; ?>">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content rounded-0">
             <div class="modal-header bg-light border-0">
                 <h5 class="modal-title" id="editPatientModalLabel">
@@ -867,18 +891,18 @@ if (isset($_POST['reactivateButton'])) {
     });
 </script>
 <script>
-        function setupConfirmInput(inputId, buttonId) {
-            const input = document.getElementById(inputId);
-            const button = document.getElementById(buttonId);
-            if (input && button) {
-                input.addEventListener('input', function() {
-                    button.disabled = (this.value !== 'CONFIRM');
-                });
-            }
+    function setupConfirmInput(inputId, buttonId) {
+        const input = document.getElementById(inputId);
+        const button = document.getElementById(buttonId);
+        if (input && button) {
+            input.addEventListener('input', function() {
+                button.disabled = (this.value !== 'CONFIRM');
+            });
         }
+    }
 
-        setupConfirmInput('confirmInputPatient', 'confirmButtonPatient');
-    </script>
+    setupConfirmInput('confirmInputPatient', 'confirmButtonPatient');
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Show toast if needed
@@ -905,7 +929,7 @@ if (isset($_POST['reactivateButton'])) {
             modalReact.show();
         <?php endif; ?>
 
-       
+
     });
 </script>
 <script>
@@ -921,19 +945,17 @@ if (isset($_POST['reactivateButton'])) {
     }
 </script>
 <script>
-    // Save the active tab when changed
-    document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(function(tabButton) {
-        tabButton.addEventListener('shown.bs.tab', function(event) {
-            const target = event.target.getAttribute('data-bs-target');
+    // Tab persistence
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(function(tabLink) {
+        tabLink.addEventListener('shown.bs.tab', function(event) {
+            const target = event.target.getAttribute('href');
             localStorage.setItem('activeTab', target);
         });
     });
-
-    // Restore the active tab on page load
     window.addEventListener('DOMContentLoaded', function() {
         const activeTab = localStorage.getItem('activeTab');
         if (activeTab) {
-            const tabToActivate = document.querySelector(`button[data-bs-target="${activeTab}"]`);
+            const tabToActivate = document.querySelector(`a[href="${activeTab}"]`);
             if (tabToActivate) {
                 new bootstrap.Tab(tabToActivate).show();
             }
