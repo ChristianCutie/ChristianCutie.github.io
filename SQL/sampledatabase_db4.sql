@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3390
--- Generation Time: Jun 27, 2025 at 11:41 PM
+-- Generation Time: Jul 07, 2025 at 11:06 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -34,7 +34,7 @@ CREATE TABLE `appointmenttb` (
   `patient_name` varchar(100) NOT NULL,
   `doctor_name` varchar(100) NOT NULL,
   `appt_type` varchar(100) NOT NULL,
-  `appt_date` varchar(100) NOT NULL,
+  `appt_date` date NOT NULL,
   `appt_time` varchar(30) NOT NULL,
   `notes` varchar(225) NOT NULL,
   `status` char(20) NOT NULL
@@ -45,11 +45,9 @@ CREATE TABLE `appointmenttb` (
 --
 
 INSERT INTO `appointmenttb` (`appt_id`, `patient_app_acc_id`, `doctor_app_acc_id`, `patient_name`, `doctor_name`, `appt_type`, `appt_date`, `appt_time`, `notes`, `status`) VALUES
-(1, 4, 3, 'Jolet Santos', 'Patricksss Bulak Balak', 'Cardiology', '2025-06-11', '12:36', 'This is a test', 'Approved'),
-(3, 4, 6, 'Jolet Santos', 'Kaloy E Enriquez', 'Cardiology', '2025-06-20', '', 'asd', 'Approved'),
-(4, 4, 3, 'Jolet Santos', 'Patricksss Bulak Balak', 'Cardiology', '2025-06-10', '', 'Hello this is a test', 'Pending'),
-(5, 2, 12, 'Christian Buenaflor', 'Papa Dutdut Dudut', 'Dentist', '2025-06-27', '', 'Hello Doctor!', 'Pending'),
-(6, 4, 6, '', '', '', '2025-06-29', '14:22', 'hello World', 'Approved');
+(1, 4, 6, 'Jolet Santos', 'Kaloy E Enriquez', 'Cardiology', '2025-07-18', '10:30', 'Hello', 'Pending'),
+(2, 4, 6, 'Jolet Santos', 'Kaloy E Enriquez', 'Cardiology', '2025-07-09', '09:00', 'hello', 'Pending'),
+(3, 4, 6, 'Jolet Santos', 'Kaloy E Enriquez', 'Cardiology', '2025-07-09', '09:30', 'Not feeling well', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -1101,7 +1099,7 @@ CREATE TABLE `doctortb` (
 --
 
 INSERT INTO `doctortb` (`doctor_id`, `doctor_acc_id`, `First_Name`, `Middle_Name`, `Last_Name`, `Gender`, `Age`, `Date_Birth`, `Phone_Number`, `Address`, `Email_address`, `Specialization`, `Med_lic_num`, `Affiliation`, `Biography`, `Status`, `Profile_img`) VALUES
-(1, 3, 'Patricbs', 'Bulak', 'Balak', 'Male', 33, '1999-10-03', 94613215, '620 Treeline Rd', 'pat@testing.com', 'Cardiology', 'OB-126767', 'City Heart Care Hospital', 'hahah mabait naman ako pogi lang konti', 'Active', '1750860381_464985878_8898276163558248_4640390795751884220_new.jpg'),
+(1, 3, 'Patricbs', 'Bulak', 'Balak', 'Male', 33, '1999-10-03', 94613215, '620 Treeline Rd', 'pat@testing.com', 'Cardiology', 'OB-126767', 'City Heart Care Hospital', 'hahah mabait naman ako pogi lang konti', 'Deactivated', '1750860381_464985878_8898276163558248_4640390795751884220_new.jpg'),
 (2, 6, 'Kaloy', 'E', 'Enriquez', 'Male', 52, '', 963453462, 'Testing', 'test@mail.com', 'Cardiology', 'OB-126767', 'City Heart Care Hospital', 'He hehehehe', 'Active', '1750863161_Pete-Mellides.jpg'),
 (3, 10, 'Edie', 'Bulak', 'Namoka', 'Female', 50, '1974-11-21', 9543216, '600 25th St. N', 'edie@testing.com', 'Psychiatrist ', 'ABC-12345', 'ACE Medical Center', 'A professional doctor in the world', 'Active', '1748534492_Pete-Mellides.jpg'),
 (4, 11, 'test', 'De Ver', 'test', 'Female', 47, '1977-10-07', 2147483647, 'Testingtest', 'test@mail.com', 'OB-GYN', 'DMC-55845', 'ACE Medical Center', 'I am a good doctor', 'Active', ''),
@@ -1128,6 +1126,29 @@ CREATE TABLE `doctor_notestb` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `health_recordstb`
+--
+
+CREATE TABLE `health_recordstb` (
+  `id` int(11) NOT NULL,
+  `patient_id` int(11) NOT NULL,
+  `doctor_id` int(11) NOT NULL,
+  `appt_id` int(11) NOT NULL,
+  `record_date` date NOT NULL,
+  `blood_pressure` varchar(20) DEFAULT NULL,
+  `heart_rate` int(11) DEFAULT NULL,
+  `temperature` decimal(4,1) DEFAULT NULL,
+  `respiratory_rate` int(11) DEFAULT NULL,
+  `weight` decimal(5,2) DEFAULT NULL,
+  `height` decimal(5,2) DEFAULT NULL,
+  `bmi` decimal(5,2) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `medical_historytb`
 --
 
@@ -1141,6 +1162,15 @@ CREATE TABLE `medical_historytb` (
   `record_date` date DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `medical_historytb`
+--
+
+INSERT INTO `medical_historytb` (`record_id`, `patient_id`, `condition_name`, `diagnosis`, `medications`, `treatment`, `record_date`, `created_at`) VALUES
+(1, 4, 'Hypertension', 'High blood pressure', 'Amlodipine, Lisinopril', 'Lifestyle changes, antihypertensive therapy', '2025-07-11', '2025-07-01 21:57:35'),
+(2, 4, 'Osteoarthritis', 'Degeneration of joint cartilage', 'NSAIDs, Glucosamine supplements', 'Physical therapy, joint injections', '2025-07-05', '2025-07-01 21:58:29'),
+(3, 4, 'Migraine', 'Recurrent severe headaches', 'Sumatriptan, Ibuprofen', 'Avoid triggers, pain relief, rest', '2025-08-01', '2025-07-02 13:55:19');
 
 -- --------------------------------------------------------
 
@@ -1175,7 +1205,7 @@ CREATE TABLE `patienttb` (
 
 INSERT INTO `patienttb` (`patient_id`, `patient_acc_id`, `First_Name`, `Middle_Name`, `Last_Name`, `Blood_Type`, `Date_Birth`, `Age`, `Gender`, `Phone_Number`, `Address`, `Email_address`, `Civil_Status`, `Nationality`, `Occupation`, `Medical_Conditions`, `Status`, `Profile_img`) VALUES
 (1, 2, 'Christian', 'Eumague', 'Buenaflor', 'A-', '1990-11-07', 0, 'Male', '09484413543', 'Malolos Bulacan', 'chris.kanski@gmail.com', 'Single', 'PHL', 'WordPress Developer', '', 'Active', '1750784057_Profile-Tim.jpg'),
-(2, 4, 'Jolet', 'De Vera', 'Santos', 'O+', '1991-06-27', 35, 'Male', '0948843216', '620 Treeline Rd', 'jolet@sample.com', 'Single', 'PHL', 'Web Developer', 'Asthma, skin allergy, trypophobia', 'Deactivated', '1750783773_Profile-Jake.jpg');
+(2, 4, 'Jolet', 'De Vera', 'Santos', 'O+', '1991-06-27', 35, 'Male', '0948843216', '620 Treeline Rd', 'jolet@sample.com', 'Single', 'PHL', 'Web Developer', 'Asthma, skin allergy, trypophobia', 'Active', '1750783773_Profile-Jake.jpg');
 
 -- --------------------------------------------------------
 
@@ -1187,8 +1217,10 @@ CREATE TABLE `stafftb` (
   `id` int(11) NOT NULL,
   `staff_acc_id` int(11) NOT NULL,
   `First_Name` varchar(50) NOT NULL,
+  `Middle_Name` text NOT NULL,
   `Last_Name` varchar(50) NOT NULL,
   `Age` int(11) NOT NULL,
+  `Gender` varchar(20) NOT NULL,
   `Date_Birth` varchar(50) NOT NULL,
   `Address` varchar(50) NOT NULL,
   `Email_address` varchar(225) NOT NULL,
@@ -1198,15 +1230,15 @@ CREATE TABLE `stafftb` (
   `Specialization` varchar(50) NOT NULL,
   `Med_lic_num` varchar(20) NOT NULL,
   `Status` text NOT NULL,
-  `Profile_img` int(11) NOT NULL
+  `Profile_img` varchar(225) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `stafftb`
 --
 
-INSERT INTO `stafftb` (`id`, `staff_acc_id`, `First_Name`, `Last_Name`, `Age`, `Date_Birth`, `Address`, `Email_address`, `Phone_Number`, `Job_Title`, `Department`, `Specialization`, `Med_lic_num`, `Status`, `Profile_img`) VALUES
-(1, 9, 'test', 'test', 44, '', 'Testing', 'test@mail.com', 2147483647, '', '', '', '', 'Active', 0);
+INSERT INTO `stafftb` (`id`, `staff_acc_id`, `First_Name`, `Middle_Name`, `Last_Name`, `Age`, `Gender`, `Date_Birth`, `Address`, `Email_address`, `Phone_Number`, `Job_Title`, `Department`, `Specialization`, `Med_lic_num`, `Status`, `Profile_img`) VALUES
+(1, 9, 'Ownly', 'testsss', 'louie', 44, 'Male', '1996-06-01', 'Testing', 'test@mail.com', 2147483647, 'asd', 'asdggg', 'asd', 'asd', 'Active', '1751379064_7f2c4d0f201cc697930287bddcae9e88677124d9-5026x3458.jpg');
 
 -- --------------------------------------------------------
 
@@ -1250,13 +1282,13 @@ CREATE TABLE `userlogintb` (
 INSERT INTO `userlogintb` (`id`, `User_Name`, `Password`, `User_Type`, `Status`) VALUES
 (1, 'sadmin', 'sadmin123', 'Super Admin', 'Active'),
 (2, 'christian@1', '@Hakdog01', 'Patient', 'Active'),
-(3, 'pat@1', 'pat123', 'Doctor', 'Active'),
-(4, 'jolet@1', '@Jolet123', 'Patient', 'Deactivated'),
+(3, 'pat@1', 'pat123', 'Doctor', 'Deactivated'),
+(4, 'jolet@1', '@Jolet123', 'Patient', 'Active'),
 (5, 'chano@gmail.com', '1234', 'Staff', 'Active'),
 (6, 'kaloy@gmail.com', 'akloy123', 'Doctor', 'Active'),
 (7, 'chano@gmail.com', '123', 'Staff', 'Active'),
 (8, 'qweqwe', '123', 'Staff', 'Active'),
-(9, 'asd123', '123123', 'Staff', 'Active'),
+(9, 'asdasd123123', '123123', 'Staff', 'Active'),
 (10, 'edie123', '@Edie123', 'Doctor', 'Active'),
 (11, 'chano@gmail.com', '12345', 'Doctor', 'Active'),
 (12, 'papadudut123', 'papadudut@123', 'Doctor', 'Active');
@@ -1292,6 +1324,13 @@ ALTER TABLE `doctor_notestb`
   ADD PRIMARY KEY (`note_id`);
 
 --
+-- Indexes for table `health_recordstb`
+--
+ALTER TABLE `health_recordstb`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_patient_id` (`patient_id`);
+
+--
 -- Indexes for table `medical_historytb`
 --
 ALTER TABLE `medical_historytb`
@@ -1301,7 +1340,8 @@ ALTER TABLE `medical_historytb`
 -- Indexes for table `patienttb`
 --
 ALTER TABLE `patienttb`
-  ADD PRIMARY KEY (`patient_id`);
+  ADD PRIMARY KEY (`patient_id`),
+  ADD UNIQUE KEY `patient_acc_id` (`patient_acc_id`);
 
 --
 -- Indexes for table `stafftb`
@@ -1329,7 +1369,7 @@ ALTER TABLE `userlogintb`
 -- AUTO_INCREMENT for table `appointmenttb`
 --
 ALTER TABLE `appointmenttb`
-  MODIFY `appt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `appt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `crud_tb`
@@ -1350,10 +1390,16 @@ ALTER TABLE `doctor_notestb`
   MODIFY `note_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `health_recordstb`
+--
+ALTER TABLE `health_recordstb`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `medical_historytb`
 --
 ALTER TABLE `medical_historytb`
-  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `patienttb`
@@ -1378,6 +1424,16 @@ ALTER TABLE `s_admintb`
 --
 ALTER TABLE `userlogintb`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `health_recordstb`
+--
+ALTER TABLE `health_recordstb`
+  ADD CONSTRAINT `fk_patient_id` FOREIGN KEY (`patient_id`) REFERENCES `patienttb` (`patient_acc_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

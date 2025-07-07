@@ -98,15 +98,15 @@ if (isset($_GET['edit'])) {
     }
 
     $health_report = null;
-if (!empty($appointment_details['patient_app_acc_id'])) {
-    $stmt = $con->prepare("SELECT * FROM health_recordstb WHERE patient_id = ? ORDER BY record_date DESC LIMIT 1");
-    $stmt->bind_param("i", $appointment_details['patient_app_acc_id']);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result && $result->num_rows > 0) {
-        $health_report = $result->fetch_assoc();
+    if (!empty($appointment_details['patient_app_acc_id'])) {
+        $stmt = $con->prepare("SELECT * FROM health_recordstb WHERE patient_id = ? ORDER BY record_date DESC LIMIT 1");
+        $stmt->bind_param("i", $appointment_details['patient_app_acc_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result && $result->num_rows > 0) {
+            $health_report = $result->fetch_assoc();
+        }
     }
-}
 }
 // Handle mark as approved request
 if (isset($_POST['markApprove']) && isset($_POST['appointment_id'])) {
@@ -179,7 +179,7 @@ if (isset($_GET['calendar_events'])) {
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
-        $patient_name = trim($row['patient_name']) ?: 'Patient';
+        $patient_name = trim($row['patient_ame']) ?: 'Patient';
         $status = ucfirst(strtolower($row['status']));
         $events[] = [
             'id' => $row['appt_id'],
@@ -192,6 +192,37 @@ if (isset($_GET['calendar_events'])) {
     echo json_encode($events);
     exit;
 }
+
+// Handle follow-up scheduling
+if (isset($_POST['schedule_followup'])) {
+    $patient_id = $_POST['patient_id'];
+    $doctor_id = $_POST['doctor_id'];
+    $patient_name = $_POST['patient_Name'];
+    $doctor_name = $_POST['doctor_Name'] ?? '';
+    $date = $_POST['followup_date'];
+    $time = $_POST['followup_time'];
+    $notes = $_POST['followup_notes'] ?? '';
+    $status = 'Pending';
+
+    $sql = "INSERT INTO appointmenttb (patient_app_acc_id, doctor_app_acc_id, patient_name, doctor_name, appt_date, appt_time, notes, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("iissssss", $patient_id, $doctor_id, $patient_name, $doctor_name, $date, $time, $notes, $status);
+    if ($stmt->execute()) {
+        $showToast = true;
+        $toastMessage = 'Follow-up scheduled successfully!';
+        $isSuccess = true;
+        // Optionally, reload modal with new follow-up
+        header("Location: upcoming.php?edit=" . $_GET['edit']);
+        exit;
+    } else {
+        $showToast = true;
+        $toastMessage = 'Error scheduling follow-up.';
+        $isSuccess = false;
+    }
+}
+
+$followupCheckbox = isset($_POST['followupCheckbox']) ? 'checked' : '';
 ?>
 <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
     <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -318,11 +349,11 @@ if (isset($_GET['calendar_events'])) {
                                                 </td>
                                                 <td>
                                                     <div class="float-end">
-                                                        <button type="button" class="btn btn-sm btn-light me-2" onclick="viewDetails(<?php echo $appointment['appt_id']; ?>)">
+                                                        <button data-bs-toggle="tooltip" title="View Appointment" type="button" class="btn btn-sm btn-light me-2" onclick="viewDetails(<?php echo $appointment['appt_id']; ?>)">
                                                             <i class="fas fa-eye text-primary"></i>
                                                         </button>
-                                                        <button type="button" class="btn btn-sm btn-light" onclick="markAsComplete(<?php echo $appointment['appt_id']; ?>)">
-                                                            <i class="fas fa-check text-success"></i>
+                                                        <button data-bs-toggle="tooltip" title="Reschedule Appointment" type="button" class="btn btn-sm btn-light" onclick="markAsComplete(<?php echo $appointment['appt_id']; ?>)">
+                                                            <i class="fas fa-clock-rotate-left text-success"></i>
                                                         </button>
                                                     </div>
                                                 </td>
@@ -355,210 +386,250 @@ if (isset($_GET['calendar_events'])) {
     <div class="modal fade <?php echo $show_modal ? 'show' : ''; ?>" id="viewDetailsModal" tabindex="-1"
         aria-labelledby="viewDetailsModalLabel" aria-hidden="true"
         style="<?php echo $show_modal ? 'display: block; background-color: rgba(0,0,0,0.5);' : ''; ?>">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content border-0 rounded-0 d-flex flex-column" style="height: 100vh;">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content border-0 rounded-0" style="height: auto;">
                 <div class="modal-header bg-light border-0 flex-shrink-0">
                     <h5 class="modal-title" id="viewDetailsModalLabel">
                         <i class="fas fa-calendar-check me-2"></i>Appointment Details
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="" method="POST" class="d-flex flex-column h-100">
+                <form action="" method="POST" class="h-100">
                     <div class="modal-body p-4 flex-grow-1 overflow-auto">
                         <?php if ($appointment_details): ?>
-                        <div class="row g-4">
-                            <!-- Left Column: Appointment & Patient/Doctor Info -->
-                            <div class="col-md-6">
-                                <!-- Patient & Doctor Info Cards -->
-                                <div class="row g-4 mb-4">
-                                    <!-- Patient Card -->
-                                    <div class="col-md-6">
-                                        <div class="card h-100 border-0 bg-light">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center mb-3">
-                                                    <img src="<?= !empty($appointment_details['patient_img']) ? '../images/' . htmlspecialchars($appointment_details['patient_img']) : '../images/team_placeholder.jpg' ?>"
-                                                        class="rounded-circle border"
-                                                        width="60" height="60"
-                                                        style="object-fit: cover;"
-                                                        alt="Patient Image">
-                                                    <div class="ms-3">
-                                                        <h6 class="mb-1">Patient Information</h6>
-                                                        <span class="text-muted small">Patient Details</span>
+                            <div class="row g-4">
+                                <!-- Left Column: Appointment & Patient/Doctor Info -->
+                                <div class="col-md-5">
+                                    <!-- Patient & Doctor Info Cards -->
+                                    <div class="row g-4 mb-4">
+                                        <!-- Patient Card -->
+                                        <div class="col-md-12">
+                                            <div class="card h-100 border-0 bg-light">
+                                                <div class="card-body">
+                                                    <input type="hidden" name="doctor_Name" value="<?= htmlspecialchars($appointment_details['doctor_name']) ?>">
+                                                    <input type="hidden" name="patient_Name" value="<?= htmlspecialchars($appointment_details['patient_name']) ?>">
+                                                    <div class="d-flex align-items-center mb-3">
+                                                        <img src="<?= !empty($appointment_details['patient_img']) ? '../images/' . htmlspecialchars($appointment_details['patient_img']) : '../images/team_placeholder.jpg' ?>"
+                                                            class="rounded-circle border"
+                                                            width="60" height="60"
+                                                            style="object-fit: cover;"
+                                                            alt="Patient Image">
+                                                        <div class="ms-3">
+                                                            <h6 class="mb-1">Patient Information</h6>
+                                                            <span class="text-muted small">Patient Details</span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="list-group list-group-flush">
-                                                    <div class="list-group-item bg-transparent px-0">
-                                                        <small class="text-muted d-block">Full Name</small>
-                                                        <span><?= htmlspecialchars($appointment_details['patient_name']) ?></span>
-                                                    </div>
-                                                    <div class="list-group-item bg-transparent px-0">
-                                                        <small class="text-muted d-block">Phone</small>
-                                                        <span><?= htmlspecialchars($appointment_details['patient_phone'] ?? 'N/A') ?></span>
-                                                    </div>
-                                                    <div class="list-group-item bg-transparent px-0">
-                                                        <small class="text-muted d-block">Email</small>
-                                                        <span><?= htmlspecialchars($appointment_details['patient_email'] ?? 'N/A') ?></span>
+                                                    <div class="list-group list-group-flush">
+                                                        <div class="list-group-item bg-transparent px-0">
+                                                            <small class="text-muted d-block">Full Name</small>
+                                                            <span><?= htmlspecialchars($appointment_details['patient_name'] ?? 'Unknown') ?></span>
+                                                        </div>
+                                                        <div class="list-group-item bg-transparent px-0">
+                                                            <small class="text-muted d-block">Phone</small>
+                                                            <span><?= htmlspecialchars($appointment_details['patient_phone'] ?? 'N/A') ?></span>
+                                                        </div>
+                                                        <div class="list-group-item bg-transparent px-0">
+                                                            <small class="text-muted d-block">Email</small>
+                                                            <span><?= htmlspecialchars($appointment_details['patient_email'] ?? 'N/A') ?></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Doctor Card -->
-                                    <div class="col-md-6">
-                                        <div class="card h-100 border-0 bg-light">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center mb-3">
-                                                    <img src="<?= !empty($appointment_details['doctor_profile_img']) ? '../images/' . htmlspecialchars($appointment_details['doctor_profile_img']) : '../images/team_placeholder.jpg' ?>"
-                                                        class="rounded-circle border"
-                                                        width="60" height="60"
-                                                        style="object-fit: cover;"
-                                                        alt="Doctor Image">
-                                                    <div class="ms-3">
-                                                        <h6 class="mb-1">Doctor Information</h6>
-                                                        <span class="badge bg-primary-subtle text-primary"><?= htmlspecialchars($appointment_details['Specialization']) ?></span>
+                                    <!-- Appointment Details Card -->
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title mb-4">
+                                                <i class="fas fa-info-circle me-2"></i>Appointment Details
+                                            </h6>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Appointment ID</small>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-hashtag text-primary me-2"></i>
+                                                            <span><?= htmlspecialchars($appointment_details['appt_id']) ?></span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="list-group list-group-flush">
-                                                    <div class="list-group-item bg-transparent px-0">
-                                                        <small class="text-muted d-block">Doctor Name</small>
-                                                        <span>Dr. <?= htmlspecialchars($appointment_details['doctor_name']) ?></span>
+                                                <div class="col-md-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Status</small>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-info-circle text-warning me-2"></i>
+                                                            <span class="badge bg-warning text-white"><?= htmlspecialchars($appointment_details['status']) ?></span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Appointment Details Card -->
-                                <div class="card border-0 bg-light">
-                                    <div class="card-body">
-                                        <h6 class="card-title mb-4">
-                                            <i class="fas fa-info-circle me-2"></i>Appointment Details
-                                        </h6>
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Appointment ID</small>
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="fas fa-hashtag text-primary me-2"></i>
-                                                        <span><?= htmlspecialchars($appointment_details['appt_id']) ?></span>
+                                                <div class="col-md-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Date</small>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="far fa-calendar text-primary me-2"></i>
+                                                            <span><?= date('F d, Y', strtotime($appointment_details['appt_date'])) ?></span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Status</small>
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="fas fa-info-circle text-warning me-2"></i>
-                                                        <span class="badge bg-warning text-white"><?= htmlspecialchars($appointment_details['status']) ?></span>
+                                                <div class="col-md-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Time</small>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="far fa-clock text-primary me-2"></i>
+                                                            <span><?= date('h:i A', strtotime($appointment_details['appt_time'])) ?></span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Date</small>
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="far fa-calendar text-primary me-2"></i>
-                                                        <span><?= date('F d, Y', strtotime($appointment_details['appt_date'])) ?></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Time</small>
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="far fa-clock text-primary me-2"></i>
-                                                        <span><?= date('h:i A', strtotime($appointment_details['appt_time'])) ?></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Reason for Visit</small>
-                                                    <p class="mb-0"><?= htmlspecialchars($appointment_details['notes'] ?? 'No reason provided') ?></p>
-                                                </div>
-                                            </div>
-                                            <?php if (!empty($appointment_details['symptoms'])): ?>
                                                 <div class="col-12">
                                                     <div class="p-3 bg-white rounded">
-                                                        <small class="text-muted d-block">Symptoms</small>
-                                                        <p class="mb-0"><?= htmlspecialchars($appointment_details['symptoms']) ?></p>
+                                                        <small class="text-muted d-block">Reason for Visit</small>
+                                                        <p class="mb-0"><?= htmlspecialchars($appointment_details['notes'] ?? 'No reason provided') ?></p>
                                                     </div>
+                                                </div>
+                                                <?php if (!empty($appointment_details['symptoms'])): ?>
+                                                    <div class="col-12">
+                                                        <div class="p-3 bg-white rounded">
+                                                            <small class="text-muted d-block">Symptoms</small>
+                                                            <p class="mb-0"><?= htmlspecialchars($appointment_details['symptoms']) ?></p>
+                                                        </div>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Follow-up Checkup Card -->
+                                    <div class="card border-0 bg-light mt-4">
+                                        <div class="card-body">
+                                            <h6 class="card-title mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span><i class="fas fa-repeat me-2"></i>Follow-up Checkup</span>
+                                                    <span><input type="checkbox" style="width: 17px; height: 17px;;" name="followupCheckbox"></span>
+                                                </div>
+                                            </h6>
+                                            <?php
+                                            // Fetch the next follow-up for this patient (after this appointment)
+                                            $followup_sql = "SELECT * FROM appointmenttb 
+                                            WHERE patient_app_acc_id = ? 
+                                              AND doctor_app_acc_id = ? 
+                                              AND appt_date > ? 
+                                              AND status IN ('Pending','Approved') 
+                                            ORDER BY appt_date ASC, appt_time ASC LIMIT 1";
+                                            $stmt = $con->prepare($followup_sql);
+                                            $stmt->bind_param("iis", $appointment_details['patient_app_acc_id'], $doctor_id, $appointment_details['appt_date']);
+                                            $stmt->execute();
+                                            $followup = $stmt->get_result()->fetch_assoc();
+                                            ?>
+                                            <?php if ($followup): ?>
+                                                <div class="alert alert-info mb-2">
+                                                    <strong>Next Follow-up:</strong><br>
+                                                    <i class="far fa-calendar"></i> <?= date('F d, Y', strtotime($followup['appt_date'])) ?>
+                                                    <br>
+                                                    <i class="far fa-clock"></i> <?= date('h:i A', strtotime($followup['appt_time'])) ?>
+                                                    <br>
+                                                    <span class="badge bg-warning"><?= htmlspecialchars($followup['status']) ?></span>
+                                                </div>
+                                            <?php else: ?>
+                                                <div id="followupForm" class="d-none">
+                                                    <form method="post" class="row g-2">
+                                                        <input type="hidden" name="schedule_followup" value="1">
+                                                        <input type="hidden" name="patient_id" value="<?= htmlspecialchars($appointment_details['patient_app_acc_id']) ?>">
+                                                        <input type="hidden" name="doctor_id" value="<?= htmlspecialchars($doctor_id) ?>">
+                                                        <div class="col-6">
+                                                            <label class="form-label small mb-1">Date</label>
+                                                            <input type="date" name="followup_date" class="form-control form-control-sm" required>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <label class="form-label small mb-1">Time</label>
+                                                            <input type="time" name="followup_time" class="form-control form-control-sm" required>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <label class="form-label small mb-1">Notes</label>
+                                                            <input type="text" name="followup_notes" class="form-control form-control-sm">
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                                                <i class="fas fa-plus me-1"></i>Schedule Follow-up
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div id="followupAlert" class="alert alert-primary" role="alert">
+                                                    <span class="text-muted small"><strong>No follow-up scheduled yet.</strong> You can schedule a follow-up checkup after this appointment.</span>
                                                 </div>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Right Column: Health Report -->
-                            <div class="col-md-6">
-                                <div class="card border-0 bg-light h-100">
-                                    <div class="card-body">
-                                        <h6 class="card-title mb-4">
-                                            <i class="fas fa-notes-medical me-2"></i>Health Report
-                                        </h6>
-                                        <div class="row g-3">
-                                            <div class="col-sm-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Blood Pressure</small>
-                                                    <input type="text" class="form-control" name="blood_pressure">
+                                <!-- Right Column: Health Report -->
+                                <div class="col-md-7">
+                                    <div class="card border-0 bg-light h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title mb-4">
+                                                <i class="fas fa-notes-medical me-2"></i>Health Report
+                                            </h6>
+                                            <div class="row g-3">
+                                                <div class="col-sm-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Blood Pressure</small>
+                                                        <input type="text" class="form-control" name="blood_pressure">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Heart Rate</small>
-                                                    <input type="text" class="form-control" name="heart_rate">
+                                                <div class="col-sm-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Heart Rate</small>
+                                                        <input type="text" class="form-control" name="heart_rate">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Temperature</small>
-                                                    <input type="text" class="form-control" name="temperature">
+                                                <div class="col-sm-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Temperature</small>
+                                                        <input type="text" class="form-control" name="temperature">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Respiratory Rate</small>
-                                                    <input type="text" class="form-control" name="respiratory_rate">
+                                                <div class="col-sm-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Respiratory Rate</small>
+                                                        <input type="text" class="form-control" name="respiratory_rate">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Weight (kg)</small>
-                                                    <input type="text" class="form-control" name="weight">
+                                                <div class="col-sm-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Weight (kg)</small>
+                                                        <input type="text" class="form-control" name="weight">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Height (cm)</small>
-                                                    <input type="text" class="form-control" name="height">
+                                                <div class="col-sm-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Height (cm)</small>
+                                                        <input type="text" class="form-control" name="height">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">BMI</small>
-                                                    <input type="text" class="form-control" name="bmi">
+                                                <div class="col-sm-6">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">BMI</small>
+                                                        <input type="text" class="form-control" name="bmi">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Notes</small>
-                                                    <textarea class="form-control" name="notes" rows="2"></textarea>
+                                                <div class="col-12">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Notes</small>
+                                                        <textarea class="form-control" name="notes" rows="2"></textarea>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="p-3 bg-white rounded">
-                                                    <small class="text-muted d-block">Record Date</small>
-                                                    <input type="date" class="form-control" name="record_date">
+                                                <div class="col-12">
+                                                    <div class="p-3 bg-white rounded">
+                                                        <small class="text-muted d-block">Record Date</small>
+                                                        <input type="date" class="form-control" name="record_date">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         <?php else: ?>
                             <div class="text-center py-4">
                                 <i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i>
@@ -567,17 +638,23 @@ if (isset($_GET['calendar_events'])) {
                             </div>
                         <?php endif; ?>
                     </div>
-                    <div class="modal-footer border-0 bg-white flex-shrink-0 border-top" style="position: sticky; bottom: 0; z-index: 1050;">
-                        <div class="d-flex align-items-center w-100">
-                            <input type="hidden" name="appointment_id" value="<?= htmlspecialchars($appointment_details['appt_id']) ?>">
-                            <button type="submit" name="markApprove" class="btn btn-primary rounded-0 me-3 btn-sm">
-                                <i class="fas fa-check me-2"></i> Mark as Approve
-                            </button>
-                            <button type="submit" name="markCompleted" class="btn btn-success rounded-0 btn-sm">
-                                <i class="fas fa-check me-2"></i>Mark as Complete
-                            </button>
+                    <?php if ($appointment_details): ?>
+                        <div class="modal-footer bg-white border-top" style="position: sticky; bottom: 0; z-index: 10;">
+                            <div id="completeButton" >
+                                <input type="hidden" name="appointment_id" value="<?= htmlspecialchars($appointment_details['appt_id']) ?>">
+                                <button type="submit" name="markCompleted" class="btn btn-success rounded-0 btn-sm">
+                                    <i class="fas fa-check me-2"></i>Mark as Complete
+                                </button>
+                            </div>
+                            <div id="followupScheduleButton" class="d-none">
+                                <button type="submit" name="markApprove" class="btn btn-primary rounded-0 me-3 btn-sm">
+                                    <i class="fas fa-check me-2"></i> Save Follow-up
+                                </button>
+                            </div>
                         </div>
-                    </div>
+
+
+                    <?php endif; ?>
                 </form>
             </div>
         </div>
@@ -767,6 +844,26 @@ if (isset($_GET['calendar_events'])) {
                 }
             });
         });
+
+        $(document).on('change', 'input[name="followupCheckbox"]', function() {
+            if ($(this).is(':checked')) {
+                $('#followupForm').removeClass('d-none');
+                $('#followupAlert').hide();
+                $('#followupScheduleButton').removeClass('d-none');
+                $('#completeButton').hide();
+            } else {
+                $('#followupForm').addClass('d-none');
+                $('#followupAlert').show(); 
+                $('#followupScheduleButton').addClass('d-none');
+                $('#completeButton').show();
+            }
+        });
+
+        // If the form is present and hidden, check the checkbox and show the form
+        // if ($('#followupForm').length && $('#followupForm').hasClass('d-none')) {
+        //     const $checkbox = $('input[name="followupCheckbox"]');
+        //     $checkbox.prop('checked', true).trigger('change');
+        // }
     });
 
     function viewDetails(appointmentId) {
@@ -800,39 +897,38 @@ if (isset($_GET['calendar_events'])) {
             });
         }
     }
-
 </script>
 <script>
     let calendar; // Make calendar variable accessible
 
-   function initCalendar() {
-    var calendarEl = document.getElementById('calendar');
-    if (calendarEl && !calendar) {
-        calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            initialDate: new Date(),
-            height: 600,
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            events: 'upcoming.php?calendar_events=1', // Loads your PHP JSON
-            eventClick: function(info) {
-                window.location.href = 'upcoming.php?edit=' + info.event.id;
-            },
-            eventDidMount: function(info) {
-                var tooltip = new bootstrap.Tooltip(info.el, {
-                    title: info.event.title,
-                    placement: 'top',
-                    trigger: 'hover',
-                    container: 'body'
-                });
-            }
-        });
-        calendar.render();
+    function initCalendar() {
+        var calendarEl = document.getElementById('calendar');
+        if (calendarEl && !calendar) {
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                initialDate: new Date(),
+                height: 600,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: 'upcoming.php?calendar_events=1', // Loads your PHP JSON
+                eventClick: function(info) {
+                    window.location.href = 'upcoming.php?edit=' + info.event.id;
+                },
+                eventDidMount: function(info) {
+                    var tooltip = new bootstrap.Tooltip(info.el, {
+                        title: info.event.title,
+                        placement: 'top',
+                        trigger: 'hover',
+                        container: 'body'
+                    });
+                }
+            });
+            calendar.render();
+        }
     }
-}
 
     $(document).ready(function() {
         // ...existing DataTable and modal code...

@@ -547,7 +547,7 @@ if (isset($_POST['btnupdate'])) {
                     <h5 class="modal-title" id="updateModalLabel">
                         <i class="fa-solid fa-user-doctor me-2 text-primary"></i>Update Doctor Information
                     </h5>
-                    <a href="doctor-list.php" class="btn-close" aria-label="Close"></a>
+                    <a href="doctor-list.php" class="btn-close" aria-label="Close" data-bs-dismiss="modal"></a>
                 </div>
                 <form action="doctor-list.php" method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
                     <div class="modal-body" style="overflow-y: auto; max-height: 75vh;">

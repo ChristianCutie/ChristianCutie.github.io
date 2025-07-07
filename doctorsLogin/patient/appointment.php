@@ -22,7 +22,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$sql = "SELECT * FROM appointmenttb WHERE patient_app_acc_id = '{$_SESSION['user_id']}'";
+$sql = "SELECT * FROM appointmenttb WHERE patient_app_acc_id = '{$_SESSION['user_id']}' ORDER BY appt_date DESC, appt_time DESC";
 $result = $con->query($sql);
 if ($result === false) {
     die("Error fetching appointments: " . htmlspecialchars($con->error));
@@ -87,7 +87,7 @@ if ($cancelled_result === false) {
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="bg-light rounded d-flex align-items-center p-4">
-                <i class="fa fa-xmark-circle fa-3x text-danger"></i>
+                <i class="fa fa-xmark-circle fa-3x text-primary"></i>
                 <div class="ms-3">
                     <p class="mb-2">Cancelled Appointments</p>
                     <h6 class="mb-0"><?= htmlspecialchars($cancelled_count) ?></h6>
@@ -96,7 +96,7 @@ if ($cancelled_result === false) {
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="bg-light rounded d-flex align-items-center p-4">
-                <i class="fa fa-clock fa-3x text-warning"></i>
+                <i class="fa fa-clock fa-3x text-primary"></i>
                 <div class="ms-3">
                     <p class="mb-2">Pending Appointments</p>
                     <h6 class="mb-0"><?= htmlspecialchars($pending_count) ?></h6>
@@ -105,7 +105,7 @@ if ($cancelled_result === false) {
         </div>
         <div class="col-sm-6 col-xl-3">
             <div class="bg-light rounded d-flex align-items-center p-4">
-                <i class="fa fa-check-circle fa-3x text-success"></i>
+                <i class="fa fa-check-circle fa-3x text-primary"></i>
                 <div class="ms-3">
                     <p class="mb-2">Completed Appointments</p>
                     <h6 class="mb-0"><?= htmlspecialchars($completed_count) ?></h6>
@@ -140,7 +140,7 @@ if ($cancelled_result === false) {
                 </thead>
                 <tbody>
                     <?php
-                    $sql = "SELECT * FROM appointmenttb WHERE patient_app_acc_id = '{$_SESSION['user_id']}'";
+                    $sql = "SELECT * FROM appointmenttb WHERE patient_app_acc_id = '{$_SESSION['user_id']}' ORDER BY appt_date DESC, appt_time DESC";
                     $result = $con->query($sql);
                     if ($result->num_rows > 0) {
                         while ($rows = $result->fetch_assoc()) {
@@ -170,8 +170,13 @@ if ($cancelled_result === false) {
                                 </td>
                                 <td class="align-middle"><?= htmlspecialchars($rows["appt_type"]) ?></td>
                                 <td class="align-middle">
-                                    <i class="fa fa-calendar-day text-primary me-2"></i>
-                                    <?= date('M d, Y', strtotime($rows["appt_date"])) ?>
+                                    <div class="d-flex align-items-center">
+                                        <div class="position-relative">
+                                            <h6 class="text-muted"><i class="fa fa-calendar-day text-primary me-2"></i>
+                                                <?= date('M d, Y', strtotime($rows["appt_date"])) ?></h6>
+                                            <small class="text-muted"> <i class="fa fa-clock text-primary me-2"></i> <?= date('h:i A', strtotime($rows["appt_time"])) ?></small>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="align-middle">
                                     <div class="d-flex align-items-center">
@@ -287,7 +292,7 @@ if ($cancelled_result === false) {
     </div>
 </div>
 
-<?php include "../includes/script.php";?>
+<?php include "../includes/script.php"; ?>
 <script>
     $(document).ready(function() {
         // Initialize DataTable with custom options
