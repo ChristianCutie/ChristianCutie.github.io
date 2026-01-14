@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- /.website title -->
+<title>Villa Elena Resort Reservation System</title>
+<style type="text/css">
+    .bg-glass {
+        background: rgba(255, 255, 255, 0.44);
+        border-radius: 16px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(7.2px);
+        -webkit-backdrop-filter: blur(7.2px);
+        border: 1px solid rgba(255, 255, 255, 0.19);
+    }
+
+    .float-start-custom {
+        float: left;
+    }
+
+    .float-start {
+        float: left;
+        margin-top: 10px;
+    }
+
+    .float-end {
+        float: right;
+    }
+
+    .mb-3 {
+        margin-bottom: 3em;
+    }
+
+    .mb-1 {
+        margin-bottom: 1em;
+    }
+
+    .mb-2 {
+        margin-bottom: 2em;
+    }
+
+    .mt-3 {
+        margin-top: 3em;
+    }
+
+    .mt-1 {
+        margin-top: 1em;
+    }
+
+    .mt-2 {
+        margin-top: 2em;
+    }
+    iframe{
+        margin: 50px 0 50px 0;
+    }
+.arrow {
+  animation: slideLeft 2s infinite;
+}
+
+@keyframes slideLeft {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-25px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+</style>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
+<!-- CSS Files -->
+<link href="css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+<link href="css/font-awesome.min.css" rel="stylesheet"/>
+<link href="fonts/icon-7-stroke/css/pe-icon-7-stroke.css" rel="stylesheet"/>
+<link href="css/animate.css" rel="stylesheet" media="screen"/>
+<link href="css/owl.theme.css" rel="stylesheet"/>
+<link href="css/owl.carousel.css" rel="stylesheet"/>
+<link href="css/styles.css" rel="stylesheet"/>
+ 
+<link href="css/styles.css" rel="stylesheet" media="screen"/>    
+
+<!-- Google Fonts --> 
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'/>
+<link href='http://fonts.googleapis.com/css?family=Alegreya+Sans:100,300,400,700' rel='stylesheet' type='text/css'/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
+
+<!-- Font Awesome -->
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/> 
+</head>
+<body  data-spy="scroll" data-target="#navbar-scroll">
+ <div id="top"></div>
+    <form id="form1" runat="server">
+        <div id="menu">
+            <nav class="navbar-wrapper navbar-default" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-themers">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand site-name" href="#top"></a>
+                    </div>
+
+                    <div id="navbar-scroll" class="collapse navbar-collapse navbar-themers navbar-right">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#intro">Fishing</a></li>
+                            <li><a href="#amnities">Amenities</a></li>
+                            <li><a href="#feature">Pavilion</a></li>
+                            <li><a href="#tour">Tour</a></li>
+                            <li><a href="#cottage">Cottages</a></li>
+                            <li><a href="#package">Entrance Fees</a></li>
+                            <li><a href="#download">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+<!-- /.parallax full screen background image -->
+<div id="home" class="fullscreen landing parallax banner" style="background-image:url('images/frontbg.jpg');" data-img-width="2000" data-img-height="1325" data-diff="100">
+	
+	<div class="overlay">
+		<div class="container">
+			<div class="row">
+				
+				<div class="col-md-6">
+						<!-- /.main title -->
+						<h1 class="wow fadeInLeft">
+						VILLA ELENA RESORT
+						</h1>
+
+					<!-- /.header paragraph -->
+					<div class="landing-text wow fadeInLeft">
+						<p>Villa Elena Resort in Bulakan, where every visit is a journey to paradise. A haven of relaxation, nature's beauty, and warm hospitality. Discover the magic of our resort, where memories are made, and the essence of escape comes to life.</p>
+					</div>				  
+
+					<!-- /.header button -->
+					<div class="head-btn wow fadeInLeft">
+						<a href="booking.aspx" class=" btn-primary">
+						<span> Book Now!</span>
+						</a>
+						<a href="#amnities" class=" btn-primary">
+						<span> Explore More!</span>
+						</a>
+					</div>
+				</div> 
+				<!-- /.phone image -->
+				<div class="col-md-6">
+				<img style="margin-top: -8px; margin-bottom: 100px" src="images/swimmingpool.png" alt="pool" class="header-phone img-responsive wow fadeInRight"/>
+				</div>
+			</div>
+		</div> 
+	</div> 
+</div>
+   
+<!-- /.intro section -->
+<div id="intro">
+		<div class="container">
+		<div class="row">
+	
+				<h2 class="text-center">Fishing</h2>
+			<div class="title-line wow fadeInRight"></div>
+	<!-- /.feature image -->
+			<div class="col-md-6 feature-2-pic wow fadeInLeft mt-2">
+				<img src="venue/fishing2.jpg" alt="image" class="img-responsive"/>
+			</div>	
+			
+			<!-- /.feature content -->
+			<div class="col-md-6 wow fadeInRight mt-2">
+				<h2>Villa Elena Resort - Attraction Activity</h2>
+				<p>Experience the thrill of fishing at our resort, where you can cast your line into pristine waters, surrounded by breathtaking natural beauty, and reel in unforgettable memories
+				</p>
+                <h3>FISHES ARE NOT FREE</h3>
+                    <ul style="list-style: none;">
+                        <li style="font-size: 25px;" class="mb-1"><strong>BANGUS - </strong>PHP 150/Kilo </li>
+						<li></li>
+						<li style="font-size: 25px;"><strong>TILAPIA - </strong>PHP 100/Kilo </li>
+                    </ul>
+			</div>
+			 			  
+		</div>			  
+  
+	</div>
+</div>
+
+<!-- /.feature section -->
+<div id="amnities">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1 col-sm-12 text-center feature-title">
+
+			<!-- /.feature title -->
+				<h2>Amenities</h2>
+				<p>Here are some amenities we have to provide for the best summer for family!</p>
+			</div>
+		</div>
+		<div style="margin-top: 10px" class="row package-option text-center">
+			
+				<!-- /.feature 1 -->
+                <div class="col-sm-3 col-sm-6">
+			  <div class="price-box wow fadeInUp animated" data-wow-delay="0.3s"  style="visibility: visible; animation-name: fadeInUp; -webkit-animation-name: fadeInUp; background-color: #fff;">
+                        <img width="280" height="280" src="images/pool.png"" class="card-img-top img-responsive" alt="..."/>
+                        <div class="card-body">
+                            <h2 style="margin-top: 60px" class="text-center">Adult & Kiddie pool</h2>
+                        </div>
+                    </div>
+                </div>
+				<!-- /.feature 1 -->
+                <div class="col-sm-3 col-sm-6">
+			  <div class="price-box wow fadeInUp animated" data-wow-delay="0.5s" style="visibility: visible; animation-name: fadeInUp; -webkit-animation-name: fadeInUp; background-color: #fff;">
+                        <img width="280" height="280" src="images/umbrellaAm.png"" class="card-img-top img-responsive" alt="..."/>
+                        <div class="card-body">
+                            <h2 style="margin-top: 5px" class="text-center">Cottages</h2>
+                        </div>
+                    </div>
+                </div>
+			
+				<!-- /.feature 2 -->
+                <div class="col-sm-3">
+			  <div class="price-box wow fadeInUp animated" data-wow-delay="0.7s" style="visibility: visible; animation-name: fadeInUp; -webkit-animation-name: fadeInUp; background-color: #fff;">
+                        <img width="280" height="280" src="images/fishing.png"" class="card-img-top img-responsive" alt="..."/>
+                        <div class="card-body">
+                            <h2 style="margin-top: 2.5em" class="text-center">Fishing</h2>
+                        </div>
+                    </div>
+                </div>
+			
+				<!-- /.feature 3 -->
+                <div class="col-sm-3">
+			  <div class="price-box wow fadeInUp animated" data-wow-delay="0.1s" style="visibility: visible; animation-name: fadeInUp; -webkit-animation-name: fadeInUp; background-color: #fff;">
+                        <img width="280" height="280" src="images/karaoke.png"" class="card-img-top img-responsive" alt="..."/>
+                        <div class="card-body">
+                            <h2 class="text-center">Karaoke</h2>
+                        </div>
+                    </div>
+                </div>
+				<!-- /.feature 3 -->
+                <div class="col-sm-3">
+			  <div class="price-box wow fadeInUp animated" data-wow-delay="0.2s" style="visibility: visible; animation-name: fadeInUp; -webkit-animation-name: fadeInUp; background-color: #fff;">
+                        <img width="280" height="280" src="images/beverages.png"" class="card-img-top img-responsive" alt="..."/>
+                        <div class="card-body">
+                            <h2 class="text-center">Beverages</h2>
+                        </div>
+                    </div>
+                </div>
+				<!-- /.feature 3 -->
+                <div class="col-sm-3 col-sm-6">
+			  <div class="price-box wow fadeInUp animated" data-wow-delay="0.5s" style="visibility: visible; animation-name: fadeInUp; -webkit-animation-name: fadeInUp; background-color: #fff;">
+                        <img width="280" height="280" src="images/grill.png"" class="card-img-top img-responsive" alt="..."/>
+                        <div class="card-body">
+                            <h2 style="margin-top: 57px" class="text-center">Grill</h2>
+                        </div>
+                    </div>
+                </div>
+				<!-- /.feature 3 -->
+                <div class="col-sm-3 col-sm-6">
+			  <div class="price-box wow fadeInUp animated" data-wow-delay="0.3s" style="visibility: visible; animation-name: fadeInUp; -webkit-animation-name: fadeInUp; background-color: #fff;">
+                        <img width="280" height="280" src="images/chair.png"" class="card-img-top img-responsive" alt="..."/>
+                        <div class="card-body">
+                            <h2 style="margin-top: 5px" class="text-center">Chair & Table rental</h2>
+                        </div>
+                    </div>
+                </div>
+				<!-- /.feature 3 -->
+                <div class="col-sm-3 col-sm-6">
+			  <div class="price-box wow fadeInUp animated" data-wow-delay="0.7s" style="visibility: visible; animation-name: fadeInUp; -webkit-animation-name: fadeInUp; background-color: #fff;">
+                        <img width="280" height="280" src="images/events.png"" class="card-img-top img-responsive" alt="..."/>
+                        <div class="card-body">
+                            <h2 style="margin-top: 92px" class="text-center">Event Venue</h2>
+                        </div>
+                    </div>
+                </div>
+			</div>
+	</div>
+</div>
+<div id="feature">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1 col-sm-12 text-center feature-title">
+
+			<!-- /.feature title -->
+				<h2>Riverside Haven Pavilion</h2>
+			<div class="title-line wow fadeInRight"></div>
+                <br />
+			</div>
+		</div>
+		<div class="row">
+                <div class="col-md-4 col-sm-4 wow fadeInRight animated" data-wow-delay=".8s" style="visibility: visible; animation-delay: 0.8s; -webkit-animation-delay: 0.8s; animation-name: fadeInRight; -webkit-animation-name: fadeInRight;">
+                    <h2 class="title"></h2>
+
+                    <div class="feature-item">
+
+                        <div class="media">
+                            <div class="pull-left icon" href="#">
+                                <i style="font-size: 40px" class="fa fa-fan"></i>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">Open Windows and Ceiling Fan Ventilation</h4>
+                                <p>The combination of open windows and ceiling fan ventilation ensures that the space remains well-aerated and pleasantly cool during the hot summer months</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+
+                        <div class="media">
+                            <div class="pull-left icon" href="#">
+                                <i style="font-size: 40px" class="fa fa-sun"></i>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">Chic Chandeliers & Ceiling Lamps</h4>
+                                <p>Discover how Chic Chandeliers & Ceiling Lamps can transform any room, adding a touch of elegance and creating a warm and inviting atmosphere</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+
+                        <div class="media">
+                            <div class="pull-left icon" href="#">
+                                <i style="font-size: 40px" class="fa fa-table-cells"></i>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">Underfoot Elegance: Tiled Flooring at Our Resort</h4>
+                                <p>The beautifully tiled flooring in our resort not only enhances the aesthetic appeal of the spaces but also provides a cool, comfortable surface for guests to walk on, making their stay even more enjoyable</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <div class="col-md-8 col-sm-8 " data-wow-delay=".8s" style="visibility: visible; animation-delay: 0.8s; -webkit-animation-delay: 0.8s; animation-name: fadeInLeft; -webkit-animation-name: fadeInLeft;">
+                <div class="row">
+                    <div class="col-md-12 float-start-custom wow fadeInLeft animated" data-wow-delay=".5s">
+                        <div class="block">
+                            <img style="border: 5px solid white; margin-bottom: -8px" width="370" height="400" class="img-responsive" src="venue/pavilion1.jpg" alt="" />
+                        </div>
+                        <p style="margin-top: -4em; font-size: 30px" class="message text-center float-end"><strong>DAYTIME </strong>PHP 3,000 <span>
+                            <br />
+                        </span>(8 Hours Duration)</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12  wow fadeInLeft animated" data-wow-delay=".2s">
+                        <div class="block">
+                            <img style="border: 5px solid white; margin-top: -8px" width="370" height="400" class="img-responsive float-end" src="venue/pavilion2.jpg" alt="" />
+                        </div>
+                        <p style="margin-top: 4.5em; font-size: 30px" class="message text-center float-start-custom"><strong>NIGHT TIME </strong>PHP 4,000 <span>
+                            <br />
+                        </span>(8 Hours Duration)</p>
+                    </div>
+                </div>
+            </div>
+            </div>
+	</div>
+</div>
+<!-- /.subscribe section -->
+<div id="subscribe">
+	<div class="subscribe fullscreen parallax" style="background-image:url('images/frontbg.jpg');" data-img-width="1920" data-img-height="1281" data-diff="100">
+		<div class="overlay">
+			<div class="container">
+                <div class="row">
+					<div class="col-md-8">
+					<center>
+				<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1929.0555468306197!2d120.89953747316412!3d14.762770603955195!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b2cbef1942b5%3A0x434154a16c7699cc!2sVilla%20Elena%20Private%20Resort!5e0!3m2!1sen!2sph!4v1699757789636!5m2!1sen!2sph" width="650" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+					</center>
+				</div>
+					<div class="col-md-4 text-center">
+					<p style="font-size: 30px; margin-top: 5em;">We are located at Taliptip Bulakan Bulacan</p>
+					<!-- /.subscribe form -->
+					<div class="subscribe-form wow fadeInUp">
+                        <i style="font-size: 100px; font-weight:100;" class=" arrow fa fa-arrow-left-long"></i>
+					</div>					
+				</div>
+                </div>
+				<!-- /.mail icon -->
+				
+				
+
+			</div>	
+		</div>
+	</div>
+</div>
+
+<!-- /.screenshot section -->
+<div id="tour">
+	<div class="container">
+		<div class="text-center">
+			<h2 class="wow fadeInLeft">Site Shots</h2>
+			<div class="title-line wow fadeInRight"></div>
+		</div>
+		<div class="row screenshots">
+			
+			<div id="screenshots" class="owl-carousel">
+
+				<!-- /.screenshot images -->
+				<div class="screen wow fadeInUp">
+					<a href="venue/v1.jpg" data-toggle="lightbox"><img src="venue/v1.jpg" alt="Shots"/></a>
+				</div>
+				
+				<div class="screen wow fadeInUp" data-wow-delay="0.1s">
+					<a href="venue/v2.jpg" data-toggle="lightbox"><img src="venue/v2.jpg" alt="Shots"/></a>
+				</div>
+				
+				<div class="screen wow fadeInUp" data-wow-delay="0.6s">
+					<a href="venue/v7.jpg" data-toggle="lightbox"><img src="venue/v7.jpg" alt="Shots"/></a>
+				</div>
+				
+				<div class="screen wow fadeInUp" data-wow-delay="0.4s">
+					<a href="venue/v5.jpg" data-toggle="lightbox"><img src="venue/v5.jpg" alt="Shots"/></a>
+				</div>
+
+				<div class="screen wow fadeInUp" data-wow-delay="0.5s">
+					<a href="venue/v6.jpg" data-toggle="lightbox"><img src="venue/v6.jpg" alt="Shots"/></a>
+				</div>			
+				
+				<div class="screen wow fadeInUp" data-wow-delay="0.3s">
+					<a href="venue/v4.jpg" data-toggle="lightbox"><img src="venue/v4.jpg" alt="Shots"/></a>
+				</div>
+
+				<div class="screen wow fadeInUp" data-wow-delay="0.7s">
+					<a href="venue/v8.jpg" data-toggle="lightbox"><img src="venue/v8.jpg" alt="Shots"/></a>
+				</div>
+
+				<div class="screen wow fadeInUp" data-wow-delay="0.2s">
+					<a href="venue/v3.jpg" data-toggle="lightbox"><img src="venue/v3.jpg" alt="Shots"/></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- /.clientsmonial section -->
+<div id="cottage">
+	<div class="container">
+		<div class="text-center">
+			<h2 class="wow fadeInLeft">Cottages</h2>
+			<div class="title-line wow fadeInRight"></div>
+		</div>
+		<div class="row">
+			<div class="col-sm-10 col-sm-offset-1">	
+			   <div id="owl-clients" class="owl-carousel owl-theme wow fadeInUp">
+				 
+					<!-- /.clientsmonial 1 -->
+					<div class="clients-item">
+						<div class="client-pic text-center">
+						
+							<!-- /.client photo -->
+							<img src="venue/umbrellact.jpg" alt="Umbrella"/>
+						</div>
+						<div class="box">
+						
+							<!-- /.clientsmonial content -->
+							<p class="message text-center">"As the gentle rain began to fall, guests at the luxurious resort quickly reached for their colorful umbrellas and strolled along the pristine beach, enjoying the refreshing shower without a care in the world."</p>
+						</div>
+						<div class="client-info text-center">
+                            <span><strong>UMBRELLA COTTAGE |</strong>PHP 250.00/day - PHP 250.00/night</span>
+						</div>
+					</div>		
+					
+					<!-- /.clientsmonial 2 -->
+					<div class="clients-item">
+						<div class="client-pic text-center">
+
+							<!-- /.client photo -->
+							<img src="venue/small.jpg" alt="Small Cottage"/>
+						</div>
+						<div class="box">
+
+							<!-- /.clientsmonial content -->
+							<p class="message text-center">"Nestled among the lush tropical gardens, the small cottage at the resort offered a cozy and intimate escape, where guests could unwind in rustic comfort while still enjoying all the amenities."</p>
+						</div>
+						<div class="client-info text-center">
+                            <span><strong>SMALL COTTAGE |</strong>PHP 600.00/day - PHP 800.00/night</span>
+						</div>
+					</div>				
+					
+					<!-- /.clientsmonial 3 -->
+					<div class="clients-item">
+						<div class="client-pic text-center">
+
+							<!-- /.client photo -->
+							<img src="venue/meduim.jpg" alt="Medium Cottage"/>
+						</div>
+						<div class="box">
+
+							<!-- /.clientsmonial content -->
+							<p class="message text-center">"With its well-appointed living spaces and a private garden, the medium cottage at the resort was the ideal choice for families looking for a comfortable and picturesque vacation getaway."</p>
+						</div>
+						<div class="client-info text-center">
+                            <span><strong>MEDIUM COTTAGE |</strong>PHP 900.00/day - PHP 1,000.00/night</span>
+						</div>
+					</div>					
+					
+					<!-- /.clientsmonial 4 -->
+					<div class="clients-item">
+						<div class="client-pic text-center">
+
+							<!-- /.client photo -->
+							<img src="venue/large.jpg" alt="Large Cottage"/>
+						</div>
+						<div class="box">
+
+							<!-- /.clientsmonial content -->
+							<p class="message text-center">"The large cottage at the resort provided a lavish escape for those seeking ultimate luxury, with its sprawling living spaces, a dedicated staff, and a serene, private setting that made for an unforgettable vacation experience."</p>
+						</div>
+						<div class="client-info text-center">
+                            <span><strong>LARGE COTTAGE |</strong>PHP 1,300.00/day - PHP 1,500.00/night</span>					
+						</div>
+					</div>		
+					<!-- /.clientsmonial 5 -->
+					<div class="clients-item">
+						<div class="client-pic text-center">
+
+							<!-- /.client photo -->
+							<img src="venue/family.jpg" alt="Family Cottage"/>
+						</div>
+						<div class="box">
+
+							<!-- /.clientsmonial content -->
+							<p class="message text-center">"With its charming design and convenient amenities, the family cottage at the resort was a welcoming and comfortable home away from home, where parents and children could bond and relax in the midst of the resort's natural beauty."</p>
+						</div>
+						<div class="client-info text-center">
+                            <span><strong>FAMILY COTTAGE |</strong>PHP 1300.00/day - PHP 1500.00/night</span>					
+						</div>
+					</div>
+				 
+				</div>
+			</div>	
+		</div>	
+	</div>
+</div>
+<div id="package">
+	<div class="container">
+		<div class="text-center">
+		
+			<!-- /.pricing title -->
+			<h2 class="wow fadeInLeft animated" style="visibility: visible; animation-name: fadeInLeft; -webkit-animation-name: fadeInLeft;">Entrance Fee</h2>
+			<div class="title-line wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight; -webkit-animation-name: fadeInRight;"></div>
+		</div>
+		<div class="row package-option">
+
+			<!-- /.package 1 -->
+			<div class="col-sm-4">
+			  <div class="price-box wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp; -webkit-animation-name: fadeInUp;">
+			   <div class="price-heading text-center">
+			   
+					
+					<!-- /.package name -->
+					<h3>Child</h3>
+			   </div>
+			   
+			   <!-- /.price -->
+				<div class="price-group text-center">
+					<span class="dollar">PHP</span>
+					<span class="price">100</span>
+					<span class="time">/head</span>
+				</div>
+			
+				<!-- /.package features -->
+			   <ul class="price-feature text-center">
+				  <li><strong>0 - 17</strong> Year Old</li>
+				  <li><strong><i class="fa fa-check text-success text-left float-start"></i></strong> Child Pool Allowed</li>
+				 <li><strong><i class="fa fa-x text-danger text-left float-start"></i></strong> Adult Pool Allowed</li>
+				  <%--		 <li><strike>Webmail Support</strike></li>	--%>			  
+			   </ul>
+			   
+			   <!-- /.package button -->
+			   <div class="price-footer text-center">
+				</div>	
+			  </div>
+			</div>
+			
+			<!-- /.package 3 -->
+			<div class="col-sm-4">
+			  <div class="price-box wow fadeInUp animated" data-wow-delay="0.4s" style="visibility: visible; animation-delay: 0.4s; -webkit-animation-delay: 0.4s; animation-name: fadeInUp; -webkit-animation-name: fadeInUp;">
+			   <div class="price-heading text-center">
+			   
+					 
+				
+					<!-- /.package name -->
+					<h3>Fishing</h3>
+			   </div>
+			   
+			   <!-- /.price -->
+				<div class="price-group text-center">
+					<span class="dollar">PHP</span>
+					<span class="price">50</span>
+					<span class="time">/head</span>
+				</div>
+			
+				<!-- /.package features -->
+			   <ul class="price-feature text-center">
+				 <li><strong><i class="fa fa-check text-success  float-start"></i></strong> Any Age</li>
+		  <li><strong><i  class="fa fa-check text-success float-start"></i></strong> Fishing Rod Provided</li>	
+		  <li><strong><i  class="fa fa-check text-success float-start"></i></strong> Fishing Bait Provided</li>	
+			   </ul>
+			   
+			   <!-- /.package button -->
+			   <div class="price-footer text-center">
+				</div>	
+			  </div>
+			</div>
+			<!-- /.package 2 -->
+			<div class="col-sm-4">
+			  <div class="price-box wow fadeInUp animated" data-wow-delay="0.2s" style="visibility: visible; animation-delay: 0.2s; -webkit-animation-delay: 0.2s; animation-name: fadeInUp; -webkit-animation-name: fadeInUp;">
+			   <div class="price-heading text-center">
+ 
+
+			   <!-- /.package name -->
+				<h3>Adult</h3>
+			   </div>
+			   
+			   <!-- /.price -->
+				<div class="price-group text-center">
+					<span class="dollar">PHP</span>
+					<span class="price">150</span>
+					<span class="time">/head</span>
+				</div>
+			
+				<!-- /.package features -->
+			   <ul class="price-feature text-center">
+				  <li><strong>18 Above</strong> Year Old</li>
+				  <li><strong><i class="fa fa-check text-success float-start"></i></strong> Child Pool Allowed</li>
+				 <li><strong><i class="fa fa-check text-success  float-start"></i></strong> Adult Pool Allowed</li>		  
+			   </ul>
+
+				<!-- /.package button -->
+			   <div class="price-footer text-center">
+				</div>
+			  </div>
+			</div>	
+			
+			
+			 
+
+		</div>
+	</div>
+</div>	
+<!-- /.download section -->
+<div id="download">
+	<div class="action fullscreen parallax" style="background-image:url('images/bg.jpg');" data-img-width="2000" data-img-height="1334" data-diff="100">
+		<div class="overlay downloadSection">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-8 col-md-offset-2 col-sm-12 text-center">
+						<h2 class="wow fadeInLeft">Book Your Joyful Adventure at Our Resort Today!</h2>
+						<p class="download-text wow fadeInRight">Book Your Joyful Adventure at Our Resort and embark on a journey filled with unforgettable experiences, relaxation, and fun, creating cherished memories that will last a lifetime.</p>
+						<div class="btn-section">
+						
+						<a href="booking.aspx" class="btn-primary app-store">
+						<i class="fa fa-bookmark"></i> <span> Book Now</span>
+						</a>
+						
+						</div>
+					</div>					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+ 
+<!-- /.contact section -->
+<div id="contact">
+	<div class="contact">
+		 
+			<div class="container">
+				<div class="row contact-row">
+				
+					
+					
+					<!-- /.contact form -->
+					<div class="col-sm-7 contact-right wow fadeInDown">
+                        <img width="500" height="500" style="margin-top: -2em;" src="images/contactvector.png" alt="" />	
+					</div>
+					
+					<!-- /.address and contact -->
+					<div class="col-sm-5 contact-left wow fadeInUp mt-1">
+						<h2>Contact Us</h2>
+							<ul class="ul-address">
+							<li>#141 Brgy. Taliptip Bulakan, Bulacan
+							</li>
+							<li>+(63) 931-894-9451 <br />
+							+(63) 906-113-2945
+							</li>
+							<li>Look for Ms. Jennifer Ocampo</li>
+							</ul>	
+								
+					</div>
+					
+				 
+			</div>
+		</div>
+	</div>
+</div>
+ 
+<!-- /.footer -->
+<footer id="footer">
+	<div class="container">
+		<div class="col-sm-4 col-sm-offset-4">
+			<!-- /.social links -->
+				<div class="social text-center">
+            <asp:LinkButton ID="btnlink" OnClick="btnlink_Click" CssClass="text-center wow fadeInUp" Text="Admin Login" runat="server" />
+				</div>	
+			<div class="text-center wow fadeInUp" style="font-size: 14px;">&copy; 2023 Villa Elena Resort. All Right Reserved 2023</div>
+			<a href="#" class="scrollToTop"><i class="fa fa-arrow-circle-o-up"></i></a>
+		</div>	
+	</div>	
+</footer>
+	</form>
+	<!-- /.javascript files -->
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="js/jquery.sticky.js"></script>
+	<script src="js/wow.min.js"></script>
+	<script src="js/owl.carousel.min.js"></script>
+	<script src="js/ekko-lightbox-min.js"></script>
+	<script type="text/javascript">
+        $(document).delegate('*[data-toggle="lightbox"]', 'click', function (event) { event.preventDefault(); $(this).ekkoLightbox(); });
+    </script>
+	<script>
+        new WOW().init();
+    </script>
+</body>
+</html>

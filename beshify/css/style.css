@@ -1,0 +1,25 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200&family=Roboto+Mono:wght@300&display=swap');
+form{
+    font-family: 'Oswald', sans-serif;
+font-family: 'Roboto Mono', monospace;
+   color: white;
+}
+h1 img{
+    height: 50px;
+    width: 50px;
+}
+strong{
+    text-transform: uppercase;
+}
+.bg-auto-input{
+    border: 1px solid white;
+    height: 100px;
+    width: 60%;
+}
+
+body {
+    box-sizing: border-box;
+}
+.bg-custom{
+    background-color: #120f2b;
+}
