@@ -1,157 +1,441 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Alt Text Generator</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Alt Text Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-  body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #f6f7f9;
-    padding: 30px;
-  }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-  .container {
-    max-width: 600px;
-    margin: auto;
-    background: #fff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
 
-  h1 {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
 
-  .paste-area {
-    border: 2px dashed #ccc;
-    padding: 30px;
-    text-align: center;
-    border-radius: 10px;
-    color: #666;
-    margin-bottom: 20px;
-  }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
 
-  img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin-top: 10px;
-  }
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            background: #f8f9ff;
+        }
 
-  textarea {
-    width: 100%;
-    min-height: 100px;
-    margin-top: 15px;
-    padding: 12px;
-    font-size: 14px;
-  }
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
 
-  button {
-    margin-top: 10px;
-    padding: 10px 16px;
-    border: none;
-    background: #000;
-    color: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-  }
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8eaff;
+            transform: scale(1.02);
+        }
 
-  button:disabled {
-    background: #888;
-  }
-</style>
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .url-input-section {
+            margin-bottom: 20px;
+        }
+
+        .url-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .preview-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .preview-section.active {
+            display: block;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-section {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .result-label {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .alt-text-display {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            margin-bottom: 15px;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .copy-btn {
+            background: #4caf50;
+            padding: 10px 20px;
+            font-size: 0.9em;
+        }
+
+        .copy-btn:hover {
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+    </style>
 </head>
-
 <body>
-<div class="container">
-  <h1>Online Alt Text Generator</h1>
-  <p>Paste an image from your clipboard (Ctrl + V)</p>
+    <div class="container">
+        <h1>🖼️ AI Alt Text Generator</h1>
+        <p class="subtitle">Upload an image or paste a URL to generate descriptive alt text using AI</p>
 
-  <div class="paste-area" id="pasteArea">
-    Paste image here
-    <img id="preview" hidden>
-  </div>
+        <div class="url-input-section">
+            <div class="url-input-wrapper">
+                <input type="text" id="urlInput" placeholder="Paste image URL here...">
+                <button onclick="loadFromURL()">Load URL</button>
+            </div>
+        </div>
 
-  <textarea id="altText" placeholder="Generated alt text will appear here..."></textarea>
-  <button id="copyBtn" disabled>Copy Alt Text</button>
-</div>
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📤</div>
+            <div class="upload-text">Click to upload or drag & drop</div>
+            <div class="upload-hint">Supports JPG, PNG, GIF, WebP • Or paste from clipboard (Ctrl+V)</div>
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
 
-<script>
-const OPENAI_API_KEY = "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";
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing image with AI...</p>
+        </div>
 
-const preview = document.getElementById("preview");
-const altTextArea = document.getElementById("altText");
-const copyBtn = document.getElementById("copyBtn");
+        <div class="error" id="error"></div>
 
-document.addEventListener("paste", async (event) => {
-  const item = [...event.clipboardData.items].find(i => i.type.includes("image"));
-  if (!item) return;
+        <div class="preview-section" id="previewSection">
+            <img id="imagePreview" class="image-preview" alt="Uploaded image preview">
+            
+            <div class="result-section">
+                <div class="result-label">Generated Alt Text:</div>
+                <div class="alt-text-display" id="altTextDisplay">Alt text will appear here...</div>
+                <button class="copy-btn" onclick="copyAltText()">📋 Copy Alt Text</button>
+            </div>
+        </div>
+    </div>
 
-  const file = item.getAsFile();
-  const reader = new FileReader();
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const urlInput = document.getElementById('urlInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewSection = document.getElementById('previewSection');
+        const altTextDisplay = document.getElementById('altTextDisplay');
+        const loading = document.getElementById('loading');
+        const errorDiv = document.getElementById('error');
 
-  reader.onload = async () => {
-    preview.src = reader.result;
-    preview.hidden = false;
-    altTextArea.value = "Generating alt text...";
-    copyBtn.disabled = true;
+        let currentImageData = null;
 
-    const base64Image = reader.result.split(",")[1];
-    await generateAltText(base64Image);
-  };
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
 
-  reader.readAsDataURL(file);
-});
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
 
-async function generateAltText(base64Image) {
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4.1-mini",
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: "Generate concise, descriptive alt text for accessibility. Max 125 characters." },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/png;base64,${base64Image}`
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleImageFile(file);
+            }
+        });
+
+        // File input
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleImageFile(file);
+            }
+        });
+
+        // Paste from clipboard
+        document.addEventListener('paste', (e) => {
+            const items = e.clipboardData.items;
+            for (let item of items) {
+                if (item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    handleImageFile(file);
+                    break;
                 }
-              }
-            ]
-          }
-        ],
-        max_tokens: 100
-      })
-    });
+            }
+        });
 
-    const data = await response.json();
-    const altText = data.choices[0].message.content;
+        async function handleImageFile(file) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const base64Data = e.target.result.split(',')[1];
+                const mediaType = file.type;
+                imagePreview.src = e.target.result;
+                previewSection.classList.add('active');
+                currentImageData = { base64Data, mediaType };
+                await generateAltText();
+            };
+            reader.readAsDataURL(file);
+        }
 
-    altTextArea.value = altText;
-    copyBtn.disabled = false;
+        async function loadFromURL() {
+            const url = urlInput.value.trim();
+            if (!url) {
+                showError('Please enter a valid image URL');
+                return;
+            }
 
-  } catch (error) {
-    altTextArea.value = "Error generating alt text.";
-    console.error(error);
-  }
-}
+            try {
+                showLoading();
+                hideError();
+                
+                const response = await fetch(url);
+                const blob = await response.blob();
+                
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const base64Data = e.target.result.split(',')[1];
+                    const mediaType = blob.type;
+                    imagePreview.src = e.target.result;
+                    previewSection.classList.add('active');
+                    currentImageData = { base64Data, mediaType };
+                    await generateAltText();
+                };
+                reader.readAsDataURL(blob);
+            } catch (err) {
+                hideLoading();
+                showError('Failed to load image from URL. Make sure the URL is accessible and points to an image.');
+            }
+        }
 
-copyBtn.addEventListener("click", () => {
-  altTextArea.select();
-  document.execCommand("copy");
-  copyBtn.textContent = "Copied!";
-  setTimeout(() => copyBtn.textContent = "Copy Alt Text", 1500);
-});
-</script>
+        async function generateAltText() {
+            if (!currentImageData) return;
+
+            showLoading();
+            hideError();
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 1000,
+                        messages: [{
+                            role: 'user',
+                            content: [
+                                {
+                                    type: 'image',
+                                    source: {
+                                        type: 'base64',
+                                        media_type: currentImageData.mediaType,
+                                        data: currentImageData.base64Data
+                                    }
+                                },
+                                {
+                                    type: 'text',
+                                    text: 'Generate a concise, descriptive alt text for this image that would be suitable for accessibility purposes. The alt text should be 1-2 sentences that clearly describe what is in the image. Do not include phrases like "alt text:" or "description:" - just provide the alt text itself.'
+                                }
+                            ]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.content && data.content[0] && data.content[0].text) {
+                    altTextDisplay.textContent = data.content[0].text;
+                } else {
+                    throw new Error('Invalid response from AI');
+                }
+            } catch (err) {
+                showError('Failed to generate alt text. Please try again.');
+                console.error('Error:', err);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function copyAltText() {
+            const text = altTextDisplay.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        function showLoading() {
+            loading.classList.add('active');
+        }
+
+        function hideLoading() {
+            loading.classList.remove('active');
+        }
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.classList.add('active');
+        }
+
+        function hideError() {
+            errorDiv.classList.remove('active');
+        }
+    </script>
 </body>
 </html>
