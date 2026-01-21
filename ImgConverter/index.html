@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Format Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -358,9 +359,39 @@
             showStatus(`<span class="spinner">⏳</span> Converting ${selectedFiles.length} image(s)...`, 'processing');
 
             try {
+                const zip = new JSZip();
+                const convertedBlobs = [];
+
                 for (let i = 0; i < selectedFiles.length; i++) {
                     const file = selectedFiles[i];
-                    await convertImage(file);
+                    const blob = await convertImage(file);
+                    const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                    const fileName = `${originalName}.${outputFormat}`;
+                    
+                    convertedBlobs.push({ blob, fileName });
+                }
+
+                // If only one image, download directly
+                if (convertedBlobs.length === 1) {
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(convertedBlobs[0].blob);
+                    downloadLink.download = convertedBlobs[0].fileName;
+                    downloadLink.click();
+                    URL.revokeObjectURL(downloadLink.href);
+                } else {
+                    // Multiple images, create ZIP
+                    showStatus(`<span class="spinner">⏳</span> Creating ZIP archive...`, 'processing');
+                    
+                    for (const item of convertedBlobs) {
+                        zip.file(item.fileName, item.blob);
+                    }
+
+                    const zipBlob = await zip.generateAsync({ type: 'blob' });
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(zipBlob);
+                    downloadLink.download = `converted_images_${Date.now()}.zip`;
+                    downloadLink.click();
+                    URL.revokeObjectURL(downloadLink.href);
                 }
 
                 showStatus(`✅ Successfully converted ${selectedFiles.length} image(s)!`, 'success');
@@ -402,15 +433,7 @@
                             canvas.toBlob((blob) => {
                                 const mimeType = outputFormat === 'jpg' ? 'image/jpeg' : 'image/png';
                                 const newBlob = new Blob([blob], { type: mimeType });
-                                
-                                const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-                                const downloadLink = document.createElement('a');
-                                downloadLink.href = URL.createObjectURL(newBlob);
-                                downloadLink.download = `${originalName}.${outputFormat}`;
-                                downloadLink.click();
-                                
-                                URL.revokeObjectURL(downloadLink.href);
-                                resolve();
+                                resolve(newBlob);
                             }, outputFormat === 'jpg' ? 'image/jpeg' : 'image/png', 0.95);
                         } catch (error) {
                             reject(error);
