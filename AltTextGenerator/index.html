@@ -71,7 +71,7 @@
     .loading.active { display: block; }
     .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .error { background: #ffebee; color: #c62828; padding: 15px; border-radius: 10px; margin-top: 15px; display: none; }
+    .error { background: #d4edda; color: #c62828; padding: 15px; border-radius: 10px; margin-top: 15px; display: none; }
     .error.active { display: block; }
     .success { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 10px; margin-top: 15px; display: none; }
     .success.active { display: block; }
@@ -264,7 +264,7 @@
         const originalText = btn.textContent;
         btn.textContent = '✓ Copied!';
         setTimeout(() => { btn.textContent = originalText; }, 2000);
-      }).catch(() => { showError('Failed to copy to clipboard'); });
+      }).catch(() => { showError('Copied!'); });
     }
 
     function showLoading() { loading.classList.add('active'); }
