@@ -117,6 +117,7 @@ const Sidebar = ({onLogout}) => {
             <LogoutIcon className='text-lg' />
             <span>Logout</span>
           </button>
+
         )}
       </div>
     </aside>

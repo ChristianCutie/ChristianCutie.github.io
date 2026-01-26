@@ -153,11 +153,11 @@ export default function Login({ setIsAuth }) {
       >
         <Alert
           onClose={handleClose}
-          severity="success"
+          severity="error"
           variant="filled"
           sx={{ width: "100%" }}
         >
-          Login successful!
+          Invalid username or password!
         </Alert>
       </Snackbar>
     </div>

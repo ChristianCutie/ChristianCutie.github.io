@@ -16,14 +16,14 @@ export default function AppRoutes() {
 
       {/* Protected Dashboard */}
       <Route
-        path="/dashboard"
+        path="/admin/dashboard"
         element={
           isAuthenticated ? <Dashboard setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/" />
         }
       />
 
       {/* Default Redirect */}
-      <Route path="*" element={<Navigate to="/login" />} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }
