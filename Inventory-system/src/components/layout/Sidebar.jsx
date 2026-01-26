@@ -14,7 +14,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import LogoutIcon from '@mui/icons-material/Logout'
 
-const Sidebar = () => {
+const Sidebar = ({onLogout}) => {
   const [isExpanded, setIsExpanded] = useState(true)
   const location = useLocation()
 
@@ -113,7 +113,7 @@ const Sidebar = () => {
           )}
         </div>
         {isExpanded && (
-          <button className='w-full mt-4 px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-medium transition-colors duration-200 text-slate-200 flex items-center justify-center space-x-2'>
+          <button onClick={onLogout} className='w-full mt-4 px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-medium transition-colors duration-200 text-slate-200 flex items-center justify-center space-x-2'>
             <LogoutIcon className='text-lg' />
             <span>Logout</span>
           </button>

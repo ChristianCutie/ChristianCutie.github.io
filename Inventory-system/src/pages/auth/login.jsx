@@ -1,19 +1,28 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
-const Login = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+export default function Login({ setIsAuth }) {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    // Handle login logic here
-    console.log('Login:', { email, password })
-    setTimeout(() => setIsLoading(false), 1000)
-  }
-
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    // Simulate login delay
+    setTimeout(() => {
+      if (username === "admin" && password === "1234") {
+        if (setIsAuth) setIsAuth(true);
+        setIsLoading(false);
+        navigate("/admin/dashboard");
+      } else {
+        alert("Invalid credentials");
+        setIsLoading(false);
+      }
+    }, 500);
+  };
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4'>
       <div className='w-full max-w-md'>
@@ -25,18 +34,18 @@ const Login = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className='space-y-6'>
-            {/* Email Field */}
+          <form onSubmit={handleLogin} className='space-y-6'>
+            {/* Username Field */}
             <div>
-              <label htmlFor='email' className='block text-sm font-medium text-gray-700 mb-2'>
-                Email Address
+              <label htmlFor='username' className='block text-sm font-medium text-gray-700 mb-2'>
+                Username
               </label>
               <input
-                id='email'
-                type='email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder='Enter your email'
+                id='username'
+                type='text'
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder='Enter your username'
                 className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition'
                 required
               />
@@ -112,5 +121,3 @@ const Login = () => {
     </div>
   )
 }
-
-export default Login

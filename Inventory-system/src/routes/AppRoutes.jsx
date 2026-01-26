@@ -1,15 +1,29 @@
-import React from 'react'
-import { useRoutes } from "react-router-dom";
-import Login from '../pages/auth/login';
-import Dashboard from '../pages/admin/Dashboard';
+import React, { useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./login";
+import Dashboard from "./Dashboard";
 
-const AppRoutes = () => {
+export default function AppRoutes() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    const routes = useRoutes([
-       {path: '/', element: <Login />},
-       {path: '/dashboard', element: <Dashboard />},
-    ]);
-  return routes;
+  return (
+    <Routes>
+      {/* Login Page */}
+      <Route
+        path="/"
+        element={<Login setIsAuthenticated={setIsAuthenticated} />}
+      />
+
+      {/* Protected Dashboard */}
+      <Route
+        path="/dashboard"
+        element={
+          isAuthenticated ? <Dashboard setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/" />
+        }
+      />
+
+      {/* Default Redirect */}
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
+  );
 }
-
-export default AppRoutes
