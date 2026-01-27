@@ -19,7 +19,7 @@ export default function Login({ setIsAuth }) {
       if (username === "admin" && password === "1234") {
         if (setIsAuth) setIsAuth(true);
         setOpen(true);
-        setIsLoading(false);
+        setIsLoading(true);
         navigate("/admin/dashboard");
       } else {
         setOpen(true);
