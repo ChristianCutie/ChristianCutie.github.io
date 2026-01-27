@@ -46,7 +46,7 @@ const Dashboard = () => {
   ]
 
   return (
-    <AdminLayout>
+    <AdminLayout setIsAuth={() => {}}>
       <Container fluid>
         <Row className="mb-4">
           <Col>

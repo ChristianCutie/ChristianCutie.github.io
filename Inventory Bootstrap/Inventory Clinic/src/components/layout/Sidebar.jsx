@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Nav, Navbar, Container } from "react-bootstrap";
+import { Nav } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 import {
@@ -14,6 +14,7 @@ import {
 
 const Sidebar = ({ setIsAuth }) => {
   const [isOpen, setIsOpen] = useState(true);
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
 
   const menuItems = [
@@ -51,11 +52,11 @@ const Sidebar = ({ setIsAuth }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    console.log("Logging out");
-    if (setIsAuth) setIsAuth(false);
-    localStorage.removeItem("isAuth");
-    navigate("/");
-  };
+  localStorage.removeItem("isAuth");
+  setIsAuth(false);
+  navigate("/", { replace: true });
+};
+
   return (
     <>
       {/* Mobile Toggle Button */}
