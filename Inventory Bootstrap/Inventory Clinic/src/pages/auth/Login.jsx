@@ -2,15 +2,14 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import Alert from "../../components/common/Alert.jsx";
+import { Toast, ToastContainer } from "react-bootstrap";
 
 const Login = ({ setIsAuth }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const [alert, setAlert] = useState({
+  const [toast, setShowToast] = useState({
     show: false,
     message: "",
     type: "",
@@ -23,7 +22,7 @@ const Login = ({ setIsAuth }) => {
     setLoading(true);
     setTimeout(() => {
       if (!username || !password) {
-        setAlert({
+        setShowToast({
           show: true,
           message: "Please fill in all fields",
           type: "danger",
@@ -35,22 +34,26 @@ const Login = ({ setIsAuth }) => {
       if (username === "admin" && password === "1234") {
         if (setIsAuth) setIsAuth(true);
         localStorage.setItem("isAuth", "true");
-        setAlert({
+        setShowToast({
           show: true,
           message: "Login successful!",
           type: "success",
         });
         setLoading(false);
-        navigate("/admin/dashboard");
+        
+        // Navigate after toast shows
+        setTimeout(() => {
+          navigate("/admin/dashboard");
+        }, 2000);
       } else {
-        setAlert({
+        setShowToast({
           show: true,
           message: "Invalid username or password",
           type: "danger",
         });
         setLoading(false);
       }
-    }, 500);
+    }, 3000);
   };
 
   return (
@@ -72,9 +75,7 @@ const Login = ({ setIsAuth }) => {
                 <Form onSubmit={handleSubmit}>
                   {/* Email Field */}
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-semibold">
-                      Username
-                    </Form.Label>
+                    <Form.Label className="fw-semibold">Username</Form.Label>
                     <Form.Control
                       type="text"
                       placeholder="Enter your username"
@@ -146,12 +147,22 @@ const Login = ({ setIsAuth }) => {
             </div>
           </Col>
         </Row>
-        <Alert
-          show={alert.show}
-          message={alert.message}
-          type={alert.type}
-          onClose={() => setAlert({ ...alert, show: false })}
-        />
+        <ToastContainer position="top-center" className="p-3">
+          <Toast
+            bg={toast.type}
+            show={toast.show}
+            onClose={() => setShowToast(false)}
+            delay={3000}
+            autohide
+          >
+            <Toast.Header>
+              <strong className="me-auto">{toast.message}</strong>
+            </Toast.Header>
+            <Toast.Body className="bg-white">
+              {toast.message}
+            </Toast.Body>
+          </Toast>
+        </ToastContainer>
       </Container>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Nav } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Toast, ToastContainer } from 'react-bootstrap'
 import "./Sidebar.css";
 import {
   House,
@@ -12,9 +13,10 @@ import {
   X,
 } from "react-bootstrap-icons";
 
-const Sidebar = ({ setIsAuth }) => {
+const Sidebar = ({ setIsAuth, onLogout }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [loading, setLoading] = useState(false);
+    const [showToast, setShowToast] = React.useState(false);
   const location = useLocation();
 
   const menuItems = [
@@ -49,13 +51,15 @@ const Sidebar = ({ setIsAuth }) => {
   };
 
   const isActive = (path) => location.pathname === path;
-  const navigate = useNavigate();
 
   const handleLogout = () => {
-  localStorage.removeItem("isAuth");
-  setIsAuth(false);
-  navigate("/", { replace: true });
-};
+    setShowToast(true);
+    setLoading(true);
+    setTimeout(() => {
+      onLogout();
+    }, 3000);
+  };
+
 
   return (
     <>
@@ -107,10 +111,10 @@ const Sidebar = ({ setIsAuth }) => {
         <div className="sidebar-footer">
           <button
             className="btn btn-logout text-primary w-100"
-            onClick={handleLogout}
+            onClick={handleLogout} disabled={loading}
           >
             <BoxArrowRight size={18} />
-            <span>Logout</span>
+            <span>{loading ? "Logging out..." : "Logout"}</span>
           </button>
           <div className="user-info mt-3 pt-3 border-top">
             <div className="user-avatar">A</div>
@@ -129,6 +133,20 @@ const Sidebar = ({ setIsAuth }) => {
           onClick={toggleSidebar}
         ></div>
       )}
+       <ToastContainer position="top-end" className="p-3">
+        <Toast
+          bg="success"
+          show={showToast}
+          onClose={() => setShowToast(false)}
+          delay={3000}
+          autohide
+        >
+          <Toast.Header>
+            <strong className="me-auto">Logout</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">You are now logged out!</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </>
   );
 };
