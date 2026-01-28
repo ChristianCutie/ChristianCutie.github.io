@@ -24,7 +24,7 @@ import {
   Unlock,
 } from 'react-bootstrap-icons'
 
-const Users = () => {
+const Users = ({ setIsAuth }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterRole, setFilterRole] = useState('all')
   const [showModal, setShowModal] = useState(false)
@@ -168,7 +168,7 @@ const Users = () => {
   }
 
   return (
-    <AdminLayout>
+    <AdminLayout setIsAuth={setIsAuth}>
       <Container fluid>
         {/* Header */}
         <Row className="mb-4">

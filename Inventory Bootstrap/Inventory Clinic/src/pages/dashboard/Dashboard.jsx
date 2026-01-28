@@ -9,7 +9,7 @@ import {
   CheckCircle,
 } from 'react-bootstrap-icons'
 
-const Dashboard = () => {
+const Dashboard = ({ setIsAuth }) => {
   const stats = [
     {
       id: 1,
@@ -46,7 +46,7 @@ const Dashboard = () => {
   ]
 
   return (
-    <AdminLayout setIsAuth={() => {}}>
+    <AdminLayout setIsAuth={setIsAuth}>
       <Container fluid>
         <Row className="mb-4">
           <Col>

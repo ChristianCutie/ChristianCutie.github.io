@@ -10,8 +10,10 @@ const App = () => {
     const auth = localStorage.getItem("isAuth");
     if (auth === "true") {
       setIsAuth(true);
+    } else {
+      setIsAuth(false);
     }
-  }, [isAuth]);
+  }, []);
 
   return (
     <>

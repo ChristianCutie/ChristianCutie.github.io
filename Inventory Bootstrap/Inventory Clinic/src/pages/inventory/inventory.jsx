@@ -15,7 +15,7 @@ import AdminLayout from "../../components/layout/AdminLayout";
 import "./inventory.css";
 import { Search, Plus, Pencil, Trash3, Eye } from "react-bootstrap-icons";
 
-const Inventory = () => {
+const Inventory = ({ setIsAuth }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [showModal, setShowModal] = useState(false);
@@ -139,7 +139,7 @@ const Inventory = () => {
   };
 
   return (
-    <AdminLayout>
+    <AdminLayout setIsAuth={setIsAuth}>
       <Container fluid>
         {/* Header */}
         <Row className="mb-4">
