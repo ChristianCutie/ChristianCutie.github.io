@@ -4,6 +4,7 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import Users from "../pages/users/Users";
 import Inventory from "../pages/inventory/inventory";
 import { useEffect } from "react";
+import Register from "../pages/auth/register/Register";
 
 const AppRoutes = ({ isAuth, setIsAuth }) => {
    useEffect(() => {
@@ -38,6 +39,8 @@ const AppRoutes = ({ isAuth, setIsAuth }) => {
         path="/admin/users"
         element={isAuth ? <Users setIsAuth={setIsAuth}  /> : <Navigate to="/" replace />}
       />
+      <Route path="/register" element={<Register setIsAuth={setIsAuth} />} />
+      <Route path="/" element={<Login setIsAuth={setIsAuth} />} />
     </Routes>
   );
 };

@@ -3,6 +3,7 @@ import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { Toast, ToastContainer } from "react-bootstrap";
+import { Link } from "react-router";
 
 const Login = ({ setIsAuth }) => {
   const [username, setUsername] = useState("");
@@ -40,7 +41,7 @@ const Login = ({ setIsAuth }) => {
           type: "success",
         });
         setLoading(false);
-        
+
         // Navigate after toast shows
         setTimeout(() => {
           navigate("/admin/dashboard");
@@ -53,7 +54,7 @@ const Login = ({ setIsAuth }) => {
         });
         setLoading(false);
       }
-    }, 3000);
+    }, 2000);
   };
 
   return (
@@ -132,12 +133,12 @@ const Login = ({ setIsAuth }) => {
                 {/* Sign Up Link */}
                 <p className="text-center text-muted">
                   Don't have an account?{" "}
-                  <a
-                    href="#signup"
+                  <Link
+                    to="/register"
                     className="text-primary text-decoration-none fw-semibold"
                   >
-                    Sign up here
-                  </a>
+                    Sign Up
+                  </Link>
                 </p>
               </Card.Body>
             </Card>
@@ -147,20 +148,21 @@ const Login = ({ setIsAuth }) => {
             </div>
           </Col>
         </Row>
-        <ToastContainer position="top-center" className="p-3">
+        <ToastContainer position="top-end" className="p-3">
           <Toast
             bg={toast.type}
             show={toast.show}
-            onClose={() => setShowToast(false)}
-            delay={3000}
+            onClose={() => setShowToast({ ...toast, show: false })}
+            delay={2000}
             autohide
           >
-            <Toast.Header>
-              <strong className="me-auto">{toast.message}</strong>
+            <Toast.Header closeButton>
+              <strong className="me-auto">
+                {toast.type === "success" ? "Success" : "Error"}
+              </strong>
             </Toast.Header>
-            <Toast.Body className="bg-white">
-              {toast.message}
-            </Toast.Body>
+
+            <Toast.Body className="text-white">{toast.message}</Toast.Body>
           </Toast>
         </ToastContainer>
       </Container>

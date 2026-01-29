@@ -13,6 +13,7 @@ import {
 } from "react-bootstrap";
 import AdminLayout from "../../components/layout/AdminLayout";
 import "./inventory.css";
+import "../../components/assets/style/global.css";
 import { Search, Plus, Pencil, Trash3, Eye } from "react-bootstrap-icons";
 
 const Inventory = ({ setIsAuth }) => {
