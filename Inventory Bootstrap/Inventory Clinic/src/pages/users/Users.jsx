@@ -14,6 +14,7 @@ import {
 } from 'react-bootstrap'
 import AdminLayout from '../../components/layout/AdminLayout'
 import './Users.css'
+import api from '../../config/axios'
 import {
   Search,
   Plus,
@@ -31,73 +32,17 @@ const Users = ({ setIsAuth }) => {
   const [modalType, setModalType] = useState('add') // 'add' or 'edit'
   const [selectedUser, setSelectedUser] = useState(null)
 
-  // Sample users data
+  // Dynamic user data
   const [users, setUsers] = useState([
     {
       id: 1,
-      name: 'Dr. Sarah Johnson',
-      email: 'sarah.johnson@clinic.com',
-      phone: '+1 (555) 123-4567',
-      role: 'Doctor',
-      department: 'General Practitioner',
-      status: 'Active',
-      joinDate: 'Jan 15, 2025',
-      avatar: 'SJ',
-    },
-    {
-      id: 2,
-      name: 'Maria Garcia',
-      email: 'maria.garcia@clinic.com',
-      phone: '+1 (555) 234-5678',
-      role: 'Nurse',
-      department: 'Emergency',
-      status: 'Active',
-      joinDate: 'Mar 20, 2025',
-      avatar: 'MG',
-    },
-    {
-      id: 3,
-      name: 'James Wilson',
-      email: 'james.wilson@clinic.com',
-      phone: '+1 (555) 345-6789',
-      role: 'Admin',
-      department: 'Administration',
-      status: 'Active',
-      joinDate: 'Jan 01, 2025',
-      avatar: 'JW',
-    },
-    {
-      id: 4,
-      name: 'Emily Chen',
-      email: 'emily.chen@clinic.com',
-      phone: '+1 (555) 456-7890',
-      role: 'Receptionist',
-      department: 'Front Desk',
-      status: 'Inactive',
-      joinDate: 'Feb 10, 2025',
-      avatar: 'EC',
-    },
-    {
-      id: 5,
-      name: 'Dr. Michael Brown',
-      email: 'michael.brown@clinic.com',
-      phone: '+1 (555) 567-8901',
-      role: 'Doctor',
-      department: 'Cardiology',
-      status: 'Active',
-      joinDate: 'Feb 01, 2025',
-      avatar: 'MB',
-    },
-    {
-      id: 6,
-      name: 'Lisa Anderson',
-      email: 'lisa.anderson@clinic.com',
-      phone: '+1 (555) 678-9012',
-      role: 'Nurse',
-      department: 'Pediatrics',
-      status: 'Active',
-      joinDate: 'Apr 05, 2025',
-      avatar: 'LA',
+      name: "",
+      email: "",
+      phone: "",
+      role: "",
+      status: "",
+      joinDate: "",
+      avatar: "",
     },
   ])
 
