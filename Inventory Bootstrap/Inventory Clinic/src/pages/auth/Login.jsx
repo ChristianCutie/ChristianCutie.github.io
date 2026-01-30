@@ -4,10 +4,17 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { Toast, ToastContainer } from "react-bootstrap";
 import { Link } from "react-router";
+import api from "../../config/axios";
 
 const Login = ({ setIsAuth }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [toast, setShowToast] = useState({
@@ -16,45 +23,55 @@ const Login = ({ setIsAuth }) => {
     type: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simulate login process
+    if (!formData.email || !formData.password) {
+      setShowToast({
+        show: true,
+        message: "Please fill in all fields",
+        type: "danger",
+      });
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
-      if (!username || !password) {
-        setShowToast({
-          show: true,
-          message: "Please fill in all fields",
-          type: "danger",
-        });
-        setLoading(false);
-        return;
+
+    try {
+      const response = await api.post("/login", formData);
+      console.log("Login response:", response.data);
+
+      // Store auth token if backend returns one
+      if (response.data.token) {
+        localStorage.setItem("authToken", response.data.token);
       }
 
-      if (username === "admin" && password === "1234") {
-        if (setIsAuth) setIsAuth(true);
-        localStorage.setItem("isAuth", "true");
-        setShowToast({
-          show: true,
-          message: "Login successful!",
-          type: "success",
-        });
-        setLoading(false);
+      if (setIsAuth) setIsAuth(true);
+      localStorage.setItem("isAuth", "true");
 
-        // Navigate after toast shows
-        setTimeout(() => {
-          navigate("/admin/dashboard");
-        }, 2000);
-      } else {
-        setShowToast({
-          show: true,
-          message: "Invalid username or password",
-          type: "danger",
-        });
-        setLoading(false);
-      }
-    }, 2000);
+      setShowToast({
+        show: true,
+        message: "Login successful!",
+        type: "success",
+      });
+
+      // Navigate after toast shows
+      setTimeout(() => {
+        navigate("/admin/dashboard");
+      }, 1500);
+    } catch (error) {
+      console.error("Login error:", error);
+      const errorMessage =
+        error.response?.data?.message || "Login failed";
+
+      setShowToast({
+        show: true,
+        message: errorMessage,
+        type: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,12 +93,15 @@ const Login = ({ setIsAuth }) => {
                 <Form onSubmit={handleSubmit}>
                   {/* Email Field */}
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-semibold">Username</Form.Label>
+                    <Form.Label className="fw-semibold">
+                      Email Address
+                    </Form.Label>
                     <Form.Control
-                      type="text"
-                      placeholder="Enter your username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                      type="email"
+                      placeholder="Enter your email address"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
                       className="form-control-lg"
                     />
                     <Form.Text className="text-muted">
@@ -95,8 +115,9 @@ const Login = ({ setIsAuth }) => {
                     <Form.Control
                       type="password"
                       placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
                       className="form-control-lg"
                     />
                   </Form.Group>

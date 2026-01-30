@@ -4,7 +4,7 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import Users from "../pages/users/Users";
 import Inventory from "../pages/inventory/inventory";
 import { useEffect } from "react";
-import Register from "../pages/auth/register/Register";
+import Register from "../pages/auth/register/Register"; 
 
 const AppRoutes = ({ isAuth, setIsAuth }) => {
    useEffect(() => {

@@ -17,7 +17,7 @@ const AdminLayout = ({ children, setIsAuth }) => {
   return (
     <>
     <div className="admin-layout">
-      <Sidebar onLogout={handleLogout} setIsAuth={setIsAuth} />
+      <Sidebar onLogout={handleLogout} setIsAuth={setIsAuth} showToast={showToast} />
       <div className="content-wrapper">
         {children}
       </div>

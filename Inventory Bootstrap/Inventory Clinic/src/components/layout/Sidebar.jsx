@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Nav } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Toast, ToastContainer } from 'react-bootstrap'
+import { Toast, ToastContainer } from "react-bootstrap";
 import "./Sidebar.css";
+import api from "../../config/axios";
 import {
   House,
   Cart3,
@@ -14,9 +15,10 @@ import {
 } from "react-bootstrap-icons";
 
 const Sidebar = ({ setIsAuth, onLogout }) => {
+
   const [isOpen, setIsOpen] = useState(true);
   const [loading, setLoading] = useState(false);
-    const [showToast, setShowToast] = React.useState(false);
+  const [showToast, setShowToast] = React.useState(false);
   const location = useLocation();
 
   const menuItems = [
@@ -46,9 +48,16 @@ const Sidebar = ({ setIsAuth, onLogout }) => {
     },
   ];
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Toggle the sidebar open/closed state.
+   *
+   * @returns {undefined}
+   */
+  /*******  1acb2ef5-a260-427d-b2e9-275fa57fc507  *******/ const toggleSidebar =
+    () => {
+      setIsOpen(!isOpen);
+    };
 
   const isActive = (path) => location.pathname === path;
 
@@ -57,9 +66,12 @@ const Sidebar = ({ setIsAuth, onLogout }) => {
     setLoading(true);
     setTimeout(() => {
       onLogout();
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("isAuth");
+      setIsAuth(false);
+      setLoading(false);
     }, 3000);
   };
-
 
   return (
     <>
@@ -79,7 +91,8 @@ const Sidebar = ({ setIsAuth, onLogout }) => {
         {/* Logo Section */}
         <div className="sidebar-header">
           <div className="logo-container">
-            <div className="logo-icon">IC</div>
+            {/* <div className="logo-icon">IC</div> */}
+            <img src="/src/components/assets/image/vite.svg" alt="Logo" />
             <div className="logo-text">
               <h3>Inventory</h3>
               <p>Clinic</p>
@@ -111,7 +124,8 @@ const Sidebar = ({ setIsAuth, onLogout }) => {
         <div className="sidebar-footer">
           <button
             className="btn btn-logout text-primary w-100"
-            onClick={handleLogout} disabled={loading}
+            onClick={handleLogout}
+            disabled={loading}
           >
             <BoxArrowRight size={18} />
             <span>{loading ? "Logging out..." : "Logout"}</span>
@@ -119,7 +133,7 @@ const Sidebar = ({ setIsAuth, onLogout }) => {
           <div className="user-info mt-3 pt-3 border-top">
             <div className="user-avatar">A</div>
             <div className="user-details">
-              <p className="user-name">Admin User</p>
+              <p className="user-name">Admin user</p>
               <p className="user-email">admin@clinic.com</p>
             </div>
           </div>
@@ -133,7 +147,7 @@ const Sidebar = ({ setIsAuth, onLogout }) => {
           onClick={toggleSidebar}
         ></div>
       )}
-       <ToastContainer position="top-end" className="p-3">
+      <ToastContainer position="top-end" className="p-3">
         <Toast
           bg="success"
           show={showToast}
@@ -144,7 +158,9 @@ const Sidebar = ({ setIsAuth, onLogout }) => {
           <Toast.Header>
             <strong className="me-auto">Logout</strong>
           </Toast.Header>
-          <Toast.Body className="text-white">You are now logged out!</Toast.Body>
+          <Toast.Body className="text-white">
+            You are now logged out!
+          </Toast.Body>
         </Toast>
       </ToastContainer>
     </>

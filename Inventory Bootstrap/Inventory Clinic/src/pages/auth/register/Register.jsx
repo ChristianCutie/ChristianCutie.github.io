@@ -1,28 +1,23 @@
-import React, { useState } from "react";
-import { Container, Row, Col, Form, Button, Card, Toast, ToastContainer } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  Card,
+  Toast,
+  ToastContainer,
+} from "react-bootstrap";
+import { useNavigate, Link } from "react-router-dom";
 import "./Register.css";
-import { Link } from "react-router";
-import axios from "axios";
+import api from "../../../config/axios";
 
 const Register = () => {
-
-    const api = "http://127.0.0.1:8000/api";
-
-    //fetch user
-    const fetchUsers = async () => {
-        try {
-            const response = await axios.get(`${api}/get-users`);
-            console.log("Users fetched:", response.data);
-        }   catch (error) {
-            console.error("Error fetching users:", error);
-        }
-    };
-
   const [formData, setFormData] = useState({
     fullName: "",
+    phone: "",
     email: "",
-    username: "",
     password: "",
     confirmPassword: "",
   });
@@ -41,58 +36,86 @@ const Register = () => {
       [name]: value,
     }));
   };
+  const getInitialsFromFullName = (fullName) => {
+    if (!fullName) return "";
 
-  const handleSubmit = (e) => {
+    const parts = fullName.trim().split(" ");
+    const firstInitial = parts[0]?.charAt(0).toUpperCase() || "";
+    const lastInitial =
+      parts.length > 1 ? parts[parts.length - 1].charAt(0).toUpperCase() : "";
+
+    return firstInitial + lastInitial;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const { fullName, phone, email, password, confirmPassword } = formData;
+
     // Validate form
-    setLoading(true);
-    setTimeout(() => {
-      const { fullName, email, username, password, confirmPassword } = formData;
-
-      if (!fullName || !email || !username || !password || !confirmPassword) {
-        setShowToast({
-          show: true,
-          message: "Please fill in all fields",
-          type: "danger",
-        });
-        setLoading(false);
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        setShowToast({
-          show: true,
-          message: "Passwords do not match",
-          type: "danger",
-        });
-        setLoading(false);
-        return;
-      }
-
-      if (password.length < 6) {
-        setShowToast({
-          show: true,
-          message: "Password must be at least 6 characters",
-          type: "danger",
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Simulate registration success
+    if (!fullName || !phone || !email || !password || !confirmPassword) {
       setShowToast({
         show: true,
-        message: "Registration successful! Redirecting...",
+        message: "Please fill in all fields",
+        type: "danger",
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setShowToast({
+        show: true,
+        message: "Passwords do not match",
+        type: "danger",
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      setShowToast({
+        show: true,
+        message: "Password must be at least 6 characters",
+        type: "danger",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await api.post("/create-user", {
+        name: fullName,
+        email: email,
+        phone: phone,
+        password: password,
+        role: "user",
+        avatar: getInitialsFromFullName(fullName),
+        status: "active",
+      });
+
+      setShowToast({
+        show: true,
+        message: "Registration successful!",
         type: "success",
       });
-      setLoading(false);
 
-      // Navigate after toast shows
+      // Navigate after a short delay
       setTimeout(() => {
         navigate("/");
-      }, 2000);
-    }, 2000);
+      }, 1500);
+    } catch (error) {
+      console.error("Registration error:", error);
+      const errorMessage =
+        error.response?.data?.message || error.message || "Registration failed";
+
+      setShowToast({
+        show: true,
+        message: errorMessage,
+        type: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -141,14 +164,14 @@ const Register = () => {
                     </Form.Text>
                   </Form.Group>
 
-                  {/* Username Field */}
+                  {/* Phone Field */}
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-semibold">Username</Form.Label>
+                    <Form.Label className="fw-semibold">Phone</Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="Choose a username"
-                      name="username"
-                      value={formData.username}
+                      placeholder="Enter your phone number"
+                      name="phone"
+                      value={formData.phone}
                       onChange={handleChange}
                       className="form-control-lg"
                     />
@@ -204,7 +227,10 @@ const Register = () => {
                 {/* Login Link */}
                 <p className="text-center text-muted">
                   Already have an account?{" "}
-                  <Link to="/" className="text-primary text-decoration-none fw-semibold">
+                  <Link
+                    to="/"
+                    className="text-primary text-decoration-none fw-semibold"
+                  >
                     Sign in here
                   </Link>
                 </p>
@@ -230,9 +256,7 @@ const Register = () => {
               </strong>
             </Toast.Header>
 
-            <Toast.Body className="text-white">
-              {toast.message}
-            </Toast.Body>
+            <Toast.Body className="text-white">{toast.message}</Toast.Body>
           </Toast>
         </ToastContainer>
       </Container>

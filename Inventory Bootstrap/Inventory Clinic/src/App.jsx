@@ -6,9 +6,6 @@ import axios from "axios";
 
 const App = () => {
 
-  const api = "http://127.0.0.1:8000/api";
-
-
 
   const [isAuth, setIsAuth] = useState(false);
 
