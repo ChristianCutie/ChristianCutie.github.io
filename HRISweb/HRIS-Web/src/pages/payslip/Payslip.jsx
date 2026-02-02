@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Card, Button, InputGroup, Form } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  InputGroup,
+  Form,
+} from "react-bootstrap";
 import AdminLayout from "../../components/layout/Adminlayout";
 import {
   Search,
@@ -7,29 +15,41 @@ import {
   FileText,
   CurrencyDollar,
   FileEarmarkText,
+  CalendarDate,
+  Download,
 } from "react-bootstrap-icons";
 import "./Payslip.css";
+import Offcanvas from "react-bootstrap/Offcanvas";
+import api from "../../config/axios";
 
-const Payslip = ({ setIsAuth }) => {
+const Payslip = ({ setIsAuth, ...props }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [compactView, setCompactView] = useState(false);
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+
+  
 
   // Sample payslip data
   const payslipData = {
     period: "January 2025",
     periodCount: "1 of 1",
-    grossPay: 6516.00,
-    totalDeductions: 425.00,
-    netPay: 6091.00,
-    attendanceNote: "Jan. 1, 29 absent",
+    dateRange: "January 1-15, 2026",
+    generatedDate: "January 21, 2026 07:33 AM",
+    grossPay: 6516.0,
+    totalDeductions: 425.0,
+    netPay: 6091.0,
+    attendanceNote: "Jan. 1, 2.9 absent",
     allowances: [
-      { name: "Clothing Allowance", amount: 750.00 },
-      { name: "Transportation Allowance", amount: 750.00 },
+      { name: "Clothing Allowance", amount: 750.0 },
+      { name: "Transportation Allowance", amount: 750.0 },
     ],
     deductions: [
-      { name: "Pagibig", amount: 100.00 },
-      { name: "Philhealth", amount: 125.00 },
-      { name: "SSS", amount: 200.00 },
+      { name: "Pagibig", amount: 100.0 },
+      { name: "Philhealth", amount: 125.0 },
+      { name: "SSS", amount: 200.0 },
     ],
   };
 
@@ -38,7 +58,7 @@ const Payslip = ({ setIsAuth }) => {
       <Container fluid className="payslip-container">
         {/* Page Header */}
         <div className="payslip-header">
-          <h2 className="payslip-title">Payslip</h2>
+          <h2 className="payslip-title fw-bold">Payslip</h2>
         </div>
 
         {/* My Payslips Section */}
@@ -165,9 +185,7 @@ const Payslip = ({ setIsAuth }) => {
                     <h6 className="breakdown-title">Allowances</h6>
                     {payslipData.allowances.map((allowance, idx) => (
                       <div key={idx} className="breakdown-item">
-                        <span className="breakdown-name">
-                          {allowance.name}
-                        </span>
+                        <span className="breakdown-name">{allowance.name}</span>
                         <span className="breakdown-amount breakdown-amount-positive">
                           +₱{allowance.amount.toFixed(2)}
                         </span>
@@ -180,9 +198,7 @@ const Payslip = ({ setIsAuth }) => {
                     <h6 className="breakdown-title">Deductions</h6>
                     {payslipData.deductions.map((deduction, idx) => (
                       <div key={idx} className="breakdown-item">
-                        <span className="breakdown-name">
-                          {deduction.name}
-                        </span>
+                        <span className="breakdown-name">{deduction.name}</span>
                         <span className="breakdown-amount breakdown-amount-negative">
                           -₱{deduction.amount.toFixed(2)}
                         </span>
@@ -194,12 +210,114 @@ const Payslip = ({ setIsAuth }) => {
             )}
 
             {/* View Full Details Button */}
-            <Button className="btn-view-details w-100">
-              <FileEarmarkText size={18} className="me-2" />
-              View Full Details
-            </Button>
+            <div className="view-details-button-container">
+              <Button
+                onClick={handleShow}
+                className="btn-view-details"
+              >
+                <FileEarmarkText size={18} className="me-2" />
+                View Full Details
+              </Button>
+            </div>
           </div>
         </div>
+        <Offcanvas
+          show={show}
+          onHide={handleClose}
+          placement="bottom"
+          className="payslip-offcanvas h-75"
+        >
+          <Offcanvas.Header closeButton className="payslip-offcanvas-header">
+            <Offcanvas.Title className="payslip-offcanvas-title">
+              <FileEarmarkText size={20} className="me-2" />
+              Payslip Details
+            </Offcanvas.Title>
+          </Offcanvas.Header>
+          <Offcanvas.Body className="payslip-offcanvas-body p-4">
+            {/* Date Range */}
+            <div className="payslip-detail-section">
+              <div className="detail-date-info">
+                <p className="detail-date-label">
+                  <CalendarDate size={16} className="me-2" />
+                  {payslipData.dateRange}
+                </p>
+                <p className="detail-generated">
+                  Generated: {payslipData.generatedDate}
+                </p>
+              </div>
+            </div>
+
+            {/* Remarks Section */}
+            <div className="payslip-detail-section">
+              <h6 className="detail-section-title">Remarks</h6>
+              <div className="remarks-box">
+                <p className="remarks-text">{payslipData.attendanceNote}</p>
+              </div>
+            </div>
+
+            {/* Summary Boxes */}
+            <Row className="mb-4">
+              <Col xs={4} className="mb-2">
+                <div className="summary-detail-box summary-detail-blue">
+                  <p className="summary-detail-label">Gross Pay</p>
+                  <h6 className="summary-detail-value">
+                    ₱{payslipData.grossPay.toFixed(2)}
+                  </h6>
+                </div>
+              </Col>
+              <Col xs={4} className="mb-2">
+                <div className="summary-detail-box summary-detail-yellow">
+                  <p className="summary-detail-label">Total Deductions</p>
+                  <h6 className="summary-detail-value">
+                    -₱{payslipData.totalDeductions.toFixed(2)}
+                  </h6>
+                </div>
+              </Col>
+              <Col xs={4} className="mb-2">
+                <div className="summary-detail-box summary-detail-green">
+                  <p className="summary-detail-label">Net Pay</p>
+                  <h6 className="summary-detail-value">
+                    ₱{payslipData.netPay.toFixed(2)}
+                  </h6>
+                </div>
+              </Col>
+            </Row>
+
+            {/* Allowances Section */}
+            <div className="payslip-detail-section">
+              <h6 className="detail-section-title">Allowances</h6>
+              {payslipData.allowances.map((allowance, idx) => (
+                <div key={idx} className="allowance-deduction-item">
+                  <span className="item-name">{allowance.name}</span>
+                  <span className="item-amount positive">
+                    +₱{allowance.amount.toFixed(2)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Deductions Section */}
+            <div className="payslip-detail-section">
+              <h6 className="detail-section-title">Deductions</h6>
+              {payslipData.deductions.map((deduction, idx) => (
+                <div key={idx} className="allowance-deduction-item">
+                  <span className="item-name">{deduction.name}</span>
+                  <span className="item-amount negative">
+                    -₱{deduction.amount.toFixed(2)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Download PDF Button */}
+            <div className="d-flex justify-content-end w-100">
+              <Button className="btn-download-pdf w-100 mt-4">
+                <Download size={18} className="me-2" />
+                Download as PDF
+              </Button>
+            </div>
+          </Offcanvas.Body>
+        </Offcanvas>
       </Container>
     </AdminLayout>
   );

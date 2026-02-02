@@ -3,8 +3,6 @@
 }
 
 .payslip-header {
-  padding: 2rem 2rem 1rem 2rem;
-  border-bottom: 1px solid #e5e7eb;
   margin-bottom: 2rem;
 }
 
@@ -15,7 +13,7 @@
 }
 
 .payslip-section {
-  padding: 0 2rem;
+
   margin-bottom: 2rem;
 }
 
@@ -279,6 +277,12 @@
 }
 
 /* View Full Details Button */
+.view-details-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
 .btn-view-details {
   background-color: #2563eb;
   border: none;
@@ -288,6 +292,8 @@
   font-size: 0.95rem;
   font-weight: 600;
   transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
 }
 
 .btn-view-details:hover {
@@ -299,6 +305,15 @@
 @media (max-width: 991px) {
   .payslip-header {
     padding: 1.5rem 1.5rem 1rem 1.5rem;
+  }
+
+  .view-details-button-container {
+    justify-content: stretch;
+  }
+
+  .btn-view-details {
+    width: 100%;
+    justify-content: center;
   }
 
   .payslip-section {
@@ -384,6 +399,162 @@
   }
 }
 
+/* Offcanvas Styles */
+.payslip-offcanvas {
+  width: 100% !important;
+  --bs-offcanvas-padding-y: 0;
+  --bs-offcanvas-padding-x: 0;
+}
+
+.payslip-offcanvas-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.payslip-offcanvas-title {
+  color: #003d82;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.payslip-offcanvas-body {
+  padding: 30px !important;
+  background-color: white;
+}
+
+.payslip-detail-section {
+  margin-bottom: 2rem;
+}
+
+.detail-date-info {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.detail-date-label {
+  color: #1f2937;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.detail-generated {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.detail-section-title {
+  color: #1f2937;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+}
+
+.remarks-box {
+  background-color: #dbeafe;
+  border-left: 4px solid #2563eb;
+  padding: 1rem;
+  border-radius: 0.25rem;
+}
+
+.remarks-text {
+  color: #1e40af;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.summary-detail-box {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.summary-detail-blue {
+  background-color: #dbeafe;
+}
+
+.summary-detail-yellow {
+  background-color: #fef3c7;
+}
+
+.summary-detail-green {
+  background-color: #dcfce7;
+}
+
+.summary-detail-label {
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.summary-detail-value {
+  color: #1f2937;
+  margin: 0;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.allowance-deduction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.allowance-deduction-item:last-child {
+  border-bottom: none;
+}
+
+.item-name {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.item-amount {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.item-amount.positive {
+  color: #16a34a;
+}
+
+.item-amount.negative {
+  color: #dc3545;
+}
+
+.btn-download-pdf {
+  background-color: #2563eb;
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-download-pdf:hover {
+  background-color: #1d4ed8;
+  color: white;
+}
+
 @media (max-width: 575px) {
   .payslip-section {
     padding: 0 0.75rem;
@@ -403,5 +574,9 @@
 
   .section-subtitle {
     font-size: 0.8rem;
+  }
+
+  .payslip-offcanvas {
+    max-width: 100% !important;
   }
 }

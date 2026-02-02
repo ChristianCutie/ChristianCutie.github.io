@@ -76,7 +76,7 @@ const AdminLayout = ({ children, setIsAuth }) => {
             </Button>
             <h5 className="navbar-title">HRIS System</h5>
             <div className="navbar-profile">
-              <p className="profile-name">
+              <p className="profile-name">Welcome!,&nbsp; 
                 {user?.first_name && user?.last_name
                   ? `${user.first_name} ${user.last_name}`
                   : "Loading..."}
