@@ -11,7 +11,7 @@ import {
 } from 'react-bootstrap-icons'
 import './Attendance.css'
 
-const Attendance = () => {
+const Attendance = ({ setIsAuth }) => {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [isCheckedIn, setIsCheckedIn] = useState(true)
 
@@ -35,7 +35,7 @@ const Attendance = () => {
   ]
 
   return (
-    <AdminLayout>
+    <AdminLayout setIsAuth={setIsAuth}>
       <Container fluid className="attendance-container">
         {/* Header Section */}
         <div className="attendance-header">

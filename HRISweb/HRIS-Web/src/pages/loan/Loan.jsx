@@ -4,11 +4,11 @@ import AdminLayout from "../../components/layout/Adminlayout";
 import { PlusCircle } from "react-bootstrap-icons";
 import "./Loan.css";
 
-const Loan = () => {
+const Loan = ({ setIsAuth }) => {
   const loans = [];
 
   return (
-    <AdminLayout>
+    <AdminLayout setIsAuth={setIsAuth}>
       <Container fluid className="loan-container">
         {/* Page Header */}
         <div className="loan-header">

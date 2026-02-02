@@ -1,8 +1,17 @@
 import React, { useState } from "react";
 import { Button, Dropdown } from "react-bootstrap";
-import { List, KeyFill, BoxArrowRight, PersonCircle } from "react-bootstrap-icons";
+import {
+  List,
+  KeyFill,
+  BoxArrowRight,
+  PersonCircle,
+} from "react-bootstrap-icons";
+import { Toast, ToastContainer } from "react-bootstrap";
 import Sidebar from "./Sidebar.jsx";
 import "./AdminLayout.css";
+import api from "../../config/axios.js";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 /**
  * AdminLayout is a higher-order component that wraps the main content
@@ -12,21 +21,40 @@ import "./AdminLayout.css";
  * of the application.
  *
  * @param { React.ReactNode } children - The main content of the application.
+ * @param { Function } setIsAuth - Callback to update auth state in App.jsx
  * @returns { React.ReactElement } A React element representing the layout of the application.
  */
 
-
-const AdminLayout = ({ children }) => {
+const AdminLayout = ({ children, setIsAuth }) => {
   const [sidebarShow, setSidebarShow] = useState(false);
-
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    // Add your logout logic here
-  };
+  const [showToast, setShowToast] = React.useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const handleChangePassword = () => {
     console.log("Change password clicked");
     // Add your change password logic here
+  };
+  const handleLogout = async () => {
+    setLoading(true);
+    setShowToast(true);
+
+    try {
+      await api.post("/logout");
+    } catch (error) {
+      // 401 is OK here — user is already considered logged out
+      if (error.response?.status !== 401) {
+        console.error("Logout error:", error);
+      }
+    } finally {
+      setTimeout(() => {
+        logout();
+        if (setIsAuth) setIsAuth(false);
+        setLoading(false);
+        navigate("/", { replace: true });
+      }, 1500);
+    }
   };
 
   return (
@@ -48,7 +76,11 @@ const AdminLayout = ({ children }) => {
             </Button>
             <h5 className="navbar-title">HRIS System</h5>
             <div className="navbar-profile">
-              <p className="profile-name">Christian Buenaflor</p>
+              <p className="profile-name">
+                {user?.first_name && user?.last_name
+                  ? `${user.first_name} ${user.last_name}`
+                  : "Loading..."}
+              </p>
               <Dropdown className="profile-dropdown" align="end">
                 <Dropdown.Toggle
                   variant="link"
@@ -74,6 +106,7 @@ const AdminLayout = ({ children }) => {
                   </Dropdown.Item>
                   <Dropdown.Divider />
                   <Dropdown.Item
+                    disabled={loading}
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -82,7 +115,7 @@ const AdminLayout = ({ children }) => {
                     className="dropdown-item-custom dropdown-item-logout"
                   >
                     <BoxArrowRight size={16} />
-                    <span>Logout</span>
+                    <span>{loading ? "Logging out..." : "Logout"}</span>
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
@@ -93,6 +126,22 @@ const AdminLayout = ({ children }) => {
         {/* Main Content Area */}
         <div className="admin-main">{children}</div>
       </div>
+      <ToastContainer position="top-end" className="p-3">
+        <Toast
+          bg="success"
+          show={showToast}
+          onClose={() => setShowToast(false)}
+          delay={3000}
+          autohide
+        >
+          <Toast.Header>
+            <strong className="me-auto">Logout</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">
+            You are now logged out!
+          </Toast.Body>
+        </Toast>
+      </ToastContainer>
     </div>
   );
 };

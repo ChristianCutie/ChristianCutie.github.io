@@ -3,24 +3,72 @@ import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
+import api from "../../config/axios";
+import { Toast, ToastContainer } from "react-bootstrap";
+import { useAuth } from "../../context/AuthContext";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  
+const Login = ({ setIsAuth }) => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [toast, setShowToast] = useState({
+    show: false,
+    message: "",
+    type: "",
+  });
 
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    login: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempt with:", { email, password });
+    setLoading(true);
+    console.log("Login attempt with:", formData);
 
-    //static login simulation
-    if (email === "test@gmail.com" && password === "1234") {
-      navigate("/dashboard");
-    } else {
-      alert("Invalid email or password");
+    //dyanmic login simulation
+    try {
+      const response = await api.post("/login", formData);
+      console.log("Login response:", response.data);
+
+      // Store user data and token using AuthContext
+      if (response.data.token && response.data.user) {
+        login(response.data.user, response.data.token);
+      }
+
+      if (setIsAuth) setIsAuth(true);
+      localStorage.setItem("isAuth", "true");
+
+      setShowToast({
+        show: true,
+        message: "Login successful!",
+        type: "success",
+      });
+
+      // Navigate after toast shows
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+    } catch (error) {
+      console.error("Login error:", error);
+      const errorMessage = error.response?.data?.message || "Login failed";
+
+      setShowToast({
+        show: true,
+        message: errorMessage,
+        type: "danger",
+      });
+    } finally {
+      setLoading(false);
     }
+
+    
   };
 
   return (
@@ -38,8 +86,9 @@ const Login = () => {
               <Form.Control
                 type="email"
                 placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.login}
+                name="login"
+                onChange={handleChange}
                 className="form-control-lg login-input"
                 required
               />
@@ -50,8 +99,9 @@ const Login = () => {
               <Form.Control
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                name="password"
+                onChange={handleChange}
                 className="form-control-lg login-input"
                 required
               />
@@ -81,8 +131,9 @@ const Login = () => {
               size="lg"
               type="submit"
               className="w-100 signin-btn mb-4"
+              disabled={loading}
             >
-              Sign In
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
           </Form>
 
@@ -90,6 +141,23 @@ const Login = () => {
           <p className="text-center platform-text">Platform: Web</p>
         </Col>
       </Row>
+      <ToastContainer position="top-end" className="p-3">
+        <Toast
+          bg={toast.type}
+          show={toast.show}
+          onClose={() => setShowToast({ ...toast, show: false })}
+          delay={2000}
+          autohide
+        >
+          <Toast.Header closeButton>
+            <strong className="me-auto">
+              {toast.type === "success" ? "Success" : "Error"}
+            </strong>
+          </Toast.Header>
+
+          <Toast.Body className="text-white">{toast.message}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </Container>
   );
 };

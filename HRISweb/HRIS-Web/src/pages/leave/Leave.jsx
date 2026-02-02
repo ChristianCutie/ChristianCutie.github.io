@@ -4,12 +4,12 @@ import AdminLayout from "../../components/layout/Adminlayout";
 import { CalendarFill, PlusCircle } from "react-bootstrap-icons";
 import "./Leave.css";
 
-const Leave = () => {
+const Leave = ({ setIsAuth }) => {
   const leaveRequests = [];
   const leaveBalance = [];
 
   return (
-    <AdminLayout>
+    <AdminLayout setIsAuth={setIsAuth}>
       <Container fluid className="leave-container">
         {/* Page Header */}
         <div className="leave-header">

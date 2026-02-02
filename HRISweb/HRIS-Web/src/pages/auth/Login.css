@@ -103,13 +103,32 @@
   transition: all 0.3s ease;
 }
 
-.signin-btn:hover {
+.signin-btn:hover:not(:disabled) {
   background-color: #1d4ed8;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
-.signin-btn:active {
+.signin-btn:active:not(:disabled) {
   background-color: #1e40af;
+}
+
+.signin-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.signin-btn:disabled {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .platform-text {

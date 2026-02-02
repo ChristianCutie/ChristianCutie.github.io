@@ -15,7 +15,7 @@ import {
 } from 'react-bootstrap-icons'
 import './Dashboard.css'
 
-const Dashboard = () => {
+const Dashboard = ({ setIsAuth }) => {
   const iconMap = {
     'people-fill': <PeopleFill />,
     'calendar-check-fill': <CalendarCheckFill />,
@@ -75,7 +75,7 @@ const Dashboard = () => {
   ]
 
   return (
-    <AdminLayout>
+    <AdminLayout setIsAuth={setIsAuth}>
       <Container fluid className="dashboard-container">
         {/* Page Header */}
       <Row className="mb-4">
