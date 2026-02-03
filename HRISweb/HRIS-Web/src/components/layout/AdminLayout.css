@@ -102,21 +102,22 @@
 }
 
 .profile-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #e9ecef;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #003d82;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #2563EB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 19px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .profile-avatar:hover {
-  background-color: #dee2e6;
+  background-color: #2563EB;
   transform: scale(1.05);
 }
 

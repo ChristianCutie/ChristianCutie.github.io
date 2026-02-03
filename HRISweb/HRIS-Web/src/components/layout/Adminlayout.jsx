@@ -5,12 +5,13 @@ import {
   KeyFill,
   BoxArrowRight,
   PersonCircle,
+  PersonLinesFill,
 } from "react-bootstrap-icons";
 import { Toast, ToastContainer } from "react-bootstrap";
 import Sidebar from "./Sidebar.jsx";
 import "./AdminLayout.css";
 import api from "../../config/axios.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 
 /**
@@ -31,6 +32,7 @@ const AdminLayout = ({ children, setIsAuth }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [userInitials, setUserInitials] = useState([]);
 
   const handleChangePassword = () => {
     console.log("Change password clicked");
@@ -55,6 +57,14 @@ const AdminLayout = ({ children, setIsAuth }) => {
         navigate("/", { replace: true });
       }, 1500);
     }
+
+    
+  };
+
+    const getUserInitials = (userInitials) => {
+    const first = userInitials.first_name?.charAt(0) || '';
+    const last = userInitials.last_name?.charAt(0) || '';
+    return (first + last).toUpperCase();
   };
 
   return (
@@ -76,7 +86,8 @@ const AdminLayout = ({ children, setIsAuth }) => {
             </Button>
             <h5 className="navbar-title">HRIS System</h5>
             <div className="navbar-profile">
-              <p className="profile-name">Welcome!,&nbsp; 
+              <p className="profile-name">
+                Welcome!,&nbsp;
                 {user?.first_name && user?.last_name
                   ? `${user.first_name} ${user.last_name}`
                   : "Loading..."}
@@ -88,11 +99,19 @@ const AdminLayout = ({ children, setIsAuth }) => {
                   className="profile-avatar-toggle"
                 >
                   <div className="profile-avatar">
-                    <PersonCircle size={24} />
+                    {getUserInitials(user)}
                   </div>
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu className="profile-dropdown-menu">
+                  <Dropdown.Item
+                    as={Link}
+                    to="/profile"
+                    className="dropdown-item-custom"
+                  >
+                    <PersonLinesFill size={16} />
+                    <span>Profile</span>
+                  </Dropdown.Item>
                   <Dropdown.Item
                     href="#"
                     onClick={(e) => {

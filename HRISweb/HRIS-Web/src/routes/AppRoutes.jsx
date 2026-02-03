@@ -6,6 +6,7 @@ import Leave from "../pages/leave/Leave.jsx";
 import Attendance from "../pages/attendance/Attendance.jsx";
 import Loan from "../pages/loan/Loan.jsx";
 import Payslip from "../pages/payslip/Payslip.jsx";
+import Profile from "../pages/profile/Profile.jsx";
 import { useEffect } from "react";
 
 const AppRoutes = ({ isAuth, setIsAuth }) => {
@@ -53,6 +54,11 @@ const AppRoutes = ({ isAuth, setIsAuth }) => {
       <Route
         path="/payslip"
         element={isAuth ? <Payslip setIsAuth={setIsAuth} /> : <Navigate to="/" replace />}
+      />
+      
+      <Route
+        path="/profile"
+        element={isAuth ? <Profile setIsAuth={setIsAuth} /> : <Navigate to="/" replace />}
       />
 
       {/* Fallback */}
