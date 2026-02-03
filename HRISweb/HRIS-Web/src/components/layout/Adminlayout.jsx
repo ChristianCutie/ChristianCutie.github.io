@@ -4,7 +4,6 @@ import {
   List,
   KeyFill,
   BoxArrowRight,
-  PersonCircle,
   PersonLinesFill,
 } from "react-bootstrap-icons";
 import { Toast, ToastContainer } from "react-bootstrap";
@@ -13,6 +12,7 @@ import "./AdminLayout.css";
 import api from "../../config/axios.js";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { PersonCircle } from "react-bootstrap-icons";
 
 /**
  * AdminLayout is a higher-order component that wraps the main content
@@ -32,7 +32,6 @@ const AdminLayout = ({ children, setIsAuth }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [userInitials, setUserInitials] = useState([]);
 
   const handleChangePassword = () => {
     console.log("Change password clicked");
@@ -51,21 +50,34 @@ const AdminLayout = ({ children, setIsAuth }) => {
       }
     } finally {
       setTimeout(() => {
+        // Clear all auth data
         logout();
+        localStorage.removeItem("isAuth");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        
+        // Update App.jsx state
         if (setIsAuth) setIsAuth(false);
+        
         setLoading(false);
+        
+        // Force redirect to login page
         navigate("/", { replace: true });
       }, 1500);
     }
-
-    
   };
 
     const getUserInitials = (userInitials) => {
+    if (!user) return "";
+
     const first = userInitials.first_name?.charAt(0) || '';
     const last = userInitials.last_name?.charAt(0) || '';
     return (first + last).toUpperCase();
   };
+
+   const isActive = (path) => {
+    return location.pathname === path
+  }
 
   return (
     <div className="admin-layout">
@@ -99,7 +111,7 @@ const AdminLayout = ({ children, setIsAuth }) => {
                   className="profile-avatar-toggle"
                 >
                   <div className="profile-avatar">
-                    {getUserInitials(user)}
+                   {user ? getUserInitials(user) : <PersonCircle size={24} />}
                   </div>
                 </Dropdown.Toggle>
 
@@ -107,7 +119,7 @@ const AdminLayout = ({ children, setIsAuth }) => {
                   <Dropdown.Item
                     as={Link}
                     to="/profile"
-                    className="dropdown-item-custom"
+                    className={`dropdown-item-custom ${isActive("/profile") ? "active" : ""}`}
                   >
                     <PersonLinesFill size={16} />
                     <span>Profile</span>

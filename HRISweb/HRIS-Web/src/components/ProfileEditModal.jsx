@@ -336,7 +336,7 @@ const ProfileEditModal = ({ profileData, onClose, onUpdate }) => {
           <div className="modal-footer ">
             <button
               type="button"
-              className="btn-cancel"
+              className="btn btn-secondary"
               onClick={onClose}
               disabled={isSubmitting}
             >
@@ -344,7 +344,7 @@ const ProfileEditModal = ({ profileData, onClose, onUpdate }) => {
             </button>
             <button
               type="submit"
-              className="btn-update"
+              className="btn btn-primary"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Updating..." : "Update Profile"}

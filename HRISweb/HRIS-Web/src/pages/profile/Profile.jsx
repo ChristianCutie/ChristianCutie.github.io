@@ -3,6 +3,7 @@ import "./Profile.css";
 import ProfileEditModal from "../../components/ProfileEditModal";
 import AdminLayout from "../../components/layout/Adminlayout";
 import { PencilSquare } from "react-bootstrap-icons";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 /**
  * Profile component, displays employee profile information
@@ -10,11 +11,12 @@ import { PencilSquare } from "react-bootstrap-icons";
  * @param {boolean} isAuth - Is user authenticated?
  * @returns {JSX.Element} - Profile component
  */
-const Profile = (isAuth) => {
+const Profile = ({isAuth}) => {
   const [profileData, setProfileData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     // Fetch profile data from API
@@ -34,18 +36,18 @@ const Profile = (isAuth) => {
       // Mock data for development
       setProfileData({
         id: 34,
-        employee_id: "EMP-2026-0034",
-        first_name: "Christian",
+        employee_id: user.employee_id,
+        first_name: user.first_name,
         middle_name: null,
-        last_name: "Buenaflor",
-        email: "chrisbuena013@gmail.com",
+        last_name: user.last_name,
+        email: user.email,
         phone: null,
         sex: "Male",
-        date_of_birth: null,
+        date_of_birth: user.date_of_birth,
         place_of_birth: null,
         blood_type: null,
-        citizenship: null,
-        civil_status: null,
+        citizenship: user.citizenship,
+        civil_status: user.civil_status,
         height_m: null,
         weight_kg: null,
         residential_address: null,

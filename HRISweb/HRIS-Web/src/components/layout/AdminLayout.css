@@ -100,6 +100,11 @@
   background: none !important;
   border: none !important;
 }
+.dropdown-item-custom.active {
+  background-color: #e7f1ff;
+  color: #2563EB;
+  border-left-color: #2563EB;
+}
 
 .profile-avatar {
     width: 40px;
