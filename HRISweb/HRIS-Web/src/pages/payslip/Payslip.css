@@ -91,6 +91,12 @@
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+.payroll-summary-2 {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
 
 .summary-header {
   display: flex;
@@ -329,6 +335,9 @@
   .payroll-summary {
     padding: 1.5rem;
   }
+  .payroll-summary-2 {
+    padding: 1.5rem;
+  }
 
   .payslip-search {
     max-width: 100%;
@@ -362,8 +371,17 @@
   .payroll-summary {
     padding: 1rem;
   }
+  .payroll-summary-2 {
+    padding: 1rem;
+  }
 
   .summary-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .summary-header-2 {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
