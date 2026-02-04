@@ -94,3 +94,20 @@
 .toast-container {
   z-index: 9999 !important;
 }
+
+
+/* Keep only this minimal toast style */
+
+.toast-notification {
+  z-index: 999999 !important;
+  position: fixed !important;
+}
+
+/* Ensure modal backdrop doesn't interfere */
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+
+.modal {
+  z-index: 1050 !important;
+}

@@ -6,17 +6,13 @@ import "./Login.css";
 import api from "../../config/axios";
 import { Toast, ToastContainer } from "react-bootstrap";
 import { useAuth } from "../../context/AuthContext";
+import "./../../assets/style/global.css";
 
 const Login = ({ setIsAuth }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [toast, setShowToast] = useState({
-    show: false,
-    message: "",
-    type: "",
-  });
-
+  const [toasts, setToasts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     login: "",
@@ -27,12 +23,48 @@ const Login = ({ setIsAuth }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  /* =======================
+     TOAST FUNCTIONS
+  ======================== */
+  const showToast = (message, type = "success", redirectTo = null) => {
+    const id = Date.now();
+    const newToast = {
+      id,
+      message,
+      type,
+      show: true,
+      redirectTo,
+    };
+    
+    setToasts((prevToasts) => [...prevToasts, newToast]);
+
+    // Auto remove toast after 3 seconds, redirect if needed
+    setTimeout(() => {
+      removeToast(id);
+      if (redirectTo) {
+        setTimeout(() => navigate(redirectTo), 100); // Small delay for smooth transition
+      }
+    }, 3000);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prevToasts) => 
+      prevToasts.map(toast => 
+        toast.id === id ? { ...toast, show: false } : toast
+      )
+    );
+    
+    // Remove from array after fade out animation
+    setTimeout(() => {
+      setToasts((prevToasts) => prevToasts.filter(toast => toast.id !== id));
+    }, 300);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     console.log("Login attempt with:", formData);
 
-    //dyanmic login simulation
     try {
       const response = await api.post("/login", formData);
       console.log("Login response:", response.data);
@@ -45,30 +77,18 @@ const Login = ({ setIsAuth }) => {
       if (setIsAuth) setIsAuth(true);
       localStorage.setItem("isAuth", "true");
 
-      setShowToast({
-        show: true,
-        message: "Login successful!",
-        type: "success",
-      });
+      // Show success toast with dashboard redirect
+      showToast("Login successful! Redirecting to dashboard...", "success", "/dashboard");
 
-      // Navigate after toast shows
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
     } catch (error) {
       console.error("Login error:", error);
       const errorMessage = error.response?.data?.message || "Login failed";
 
-      setShowToast({
-        show: true,
-        message: errorMessage,
-        type: "danger",
-      });
+      // Show error toast (no redirect)
+      showToast(errorMessage, "danger");
     } finally {
       setLoading(false);
     }
-
-    
   };
 
   return (
@@ -141,22 +161,28 @@ const Login = ({ setIsAuth }) => {
           <p className="text-center platform-text">Platform: Web</p>
         </Col>
       </Row>
-      <ToastContainer position="top-end" className="p-3">
-        <Toast
-          bg={toast.type}
-          show={toast.show}
-          onClose={() => setShowToast({ ...toast, show: false })}
-          delay={2000}
-          autohide
-        >
-          <Toast.Header closeButton>
-            <strong className="me-auto">
-              {toast.type === "success" ? "Success" : "Error"}
-            </strong>
-          </Toast.Header>
 
-          <Toast.Body className="text-white">{toast.message}</Toast.Body>
-        </Toast>
+      {/* Toast Container */}
+      <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            bg={toast.type === "success" ? "success" : "danger"}
+            show={toast.show}
+            onClose={() => removeToast(toast.id)}
+            delay={3000}
+            autohide
+          >
+            <Toast.Header closeButton>
+              <strong className="me-auto">
+                {toast.type === "success" ? "Success" : "Error"}
+              </strong>
+            </Toast.Header>
+            <Toast.Body className="text-white">
+              {toast.message}
+            </Toast.Body>
+          </Toast>
+        ))}
       </ToastContainer>
     </Container>
   );

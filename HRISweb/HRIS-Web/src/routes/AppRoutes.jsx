@@ -34,31 +34,59 @@ const AppRoutes = ({ isAuth, setIsAuth }) => {
       {/* Protected routes */}
       <Route
         path="/dashboard"
-        element={isAuth ? <Dashboard setIsAuth={setIsAuth} /> : <Navigate to="/" replace />}
+        element={
+          isAuth ? (
+            <Dashboard setIsAuth={setIsAuth} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
       />
 
       <Route
         path="/attendance"
-        element={isAuth ? <Attendance setIsAuth={setIsAuth} /> : <Navigate to="/" replace />}
+        element={
+          isAuth ? (
+            <Attendance setIsAuth={setIsAuth} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
       />
 
       <Route
         path="/leave"
-        element={isAuth ? <Leave setIsAuth={setIsAuth} /> : <Navigate to="/" replace />}
+        element={
+          isAuth ? <Leave setIsAuth={setIsAuth} /> : <Navigate to="/" replace />
+        }
       />
 
       <Route
         path="/loan"
-        element={isAuth ? <Loan setIsAuth={setIsAuth} /> : <Navigate to="/" replace />}
+        element={
+          isAuth ? <Loan setIsAuth={setIsAuth} /> : <Navigate to="/" replace />
+        }
       />
       <Route
         path="/payslip"
-        element={isAuth ? <Payslip setIsAuth={setIsAuth} /> : <Navigate to="/" replace />}
+        element={
+          isAuth ? (
+            <Payslip setIsAuth={setIsAuth} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
       />
-      
+
       <Route
         path="/profile"
-        element={isAuth ? <Profile setIsAuth={setIsAuth} /> : <Navigate to="/" replace />}
+        element={
+          isAuth ? (
+            <Profile isAuth={isAuth} setIsAuth={setIsAuth} />
+          ) : (
+            <Navigate to="/" />
+          )
+        }
       />
 
       {/* Fallback */}

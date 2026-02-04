@@ -5,6 +5,7 @@ const AuthContext = createContext({
   isAuth: false,
   login: () => {},
   logout: () => {},
+  updateUser: () => {},
 });
 
 export const AuthProvider = ({ children }) => {
@@ -33,8 +34,14 @@ export const AuthProvider = ({ children }) => {
     setIsAuth(false);
   };
 
+  const updateUser = (updatedUserData) => {
+    const newUserData = { ...user, ...updatedUserData };
+    localStorage.setItem("user", JSON.stringify(newUserData));
+    setUser(newUserData);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuth, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuth, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,11 +1,20 @@
 import React, { useState } from "react";
 import "./ProfileEditModal.css";
+import { Toast, ToastContainer } from "react-bootstrap";
 import {PersonFill, PinMap, People, Mortarboard, FileEarmark, Gear } from "react-bootstrap-icons";
 
 const ProfileEditModal = ({ profileData, onClose, onUpdate }) => {
   const [formData, setFormData] = useState(profileData);
   const [activeTab, setActiveTab] = useState("personal");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setShowToast] = useState({
+    show: false,
+    message: "",
+    type: "",
+  });
+
+  // Check if form has changes
+  const hasChanges = JSON.stringify(formData) !== JSON.stringify(profileData);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,6 +29,17 @@ const ProfileEditModal = ({ profileData, onClose, onUpdate }) => {
     setIsSubmitting(true);
     try {
       await onUpdate(formData);
+      setShowToast({
+        show: true,
+        message: "Profile updated successfully!",
+        type: "success",
+      });
+    } catch (error) {
+      setShowToast({
+        show: true,
+        message: error.message || "Error updating profile. Please try again.",
+        type: "danger",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -345,12 +365,32 @@ const ProfileEditModal = ({ profileData, onClose, onUpdate }) => {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !hasChanges}
+              title={!hasChanges ? "No changes detected" : ""}
             >
               {isSubmitting ? "Updating..." : "Update Profile"}
             </button>
           </div>
         </form>
+
+        {/* Toast Notification */}
+        <ToastContainer position="top-end" className="p-3" style={{ position: "fixed", zIndex: 9999 }}>
+          <Toast
+            bg={toast.type === "success" ? "success" : "danger"}
+            show={toast.show}
+            onClose={() => setShowToast({ ...toast, show: false })}
+            delay={3000}
+            autohide
+          >
+            <Toast.Header closeButton>
+              <strong className="me-auto">
+                {toast.type === "success" ? "Success" : "Error"}
+              </strong>
+            </Toast.Header>
+
+            <Toast.Body className="text-white">{toast.message}</Toast.Body>
+          </Toast>
+        </ToastContainer>
       </div>
     </div>
   );

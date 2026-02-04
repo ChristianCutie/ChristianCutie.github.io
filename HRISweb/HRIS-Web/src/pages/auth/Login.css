@@ -151,3 +151,168 @@
     font-size: 0.9rem;
   }
 }
+/* Toast Styles for Login Page */
+.toast-container {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: 9999 !important;
+}
+
+.toast {
+  min-width: 350px !important;
+  max-width: 450px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  margin-bottom: 10px !important;
+}
+
+.toast-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 0.75rem 1rem !important;
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.toast-body {
+  padding: 1rem !important;
+  font-weight: 500 !important;
+}
+
+/* Success Toast */
+.toast.bg-success .toast-header {
+  background-color: rgba(40, 167, 69, 0.9) !important;
+  color: white !important;
+}
+
+.toast.bg-success .toast-body {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+/* Danger Toast */
+.toast.bg-danger .toast-header {
+  background-color: rgba(220, 53, 69, 0.9) !important;
+  color: white !important;
+}
+
+.toast.bg-danger .toast-body {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+/* Toast close button */
+.toast-header .btn-close {
+  filter: invert(1) brightness(100%) !important;
+  opacity: 0.8 !important;
+}
+
+.toast-header .btn-close:hover {
+  opacity: 1 !important;
+}
+
+/* Toast animation */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Add this to your existing Login.css file */
+
+/* Toast notification specific styles */
+.toast-notification {
+  position: fixed !important;
+  top: 80px !important;
+  right: 20px !important;
+  z-index: 999999 !important; /* Very high z-index */
+  pointer-events: auto !important;
+}
+
+.toast-notification .toast {
+  min-width: 350px !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  border: none !important;
+  animation: toastSlideIn 0.3s ease-out !important;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-notification .toast-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.toast-notification .toast-body {
+  padding: 1rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+}
+
+/* Success toast */
+.toast-notification .toast.bg-success {
+  background-color: #28a745 !important;
+}
+
+.toast-notification .toast.bg-success .toast-header {
+  background-color: rgba(40, 167, 69, 0.95) !important;
+  color: white !important;
+}
+
+.toast-notification .toast.bg-success .toast-body {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+/* Danger toast */
+.toast-notification .toast.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.toast-notification .toast.bg-danger .toast-header {
+  background-color: rgba(220, 53, 69, 0.95) !important;
+  color: white !important;
+}
+
+.toast-notification .toast.bg-danger .toast-body {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+/* Toast close button */
+.toast-notification .btn-close {
+  filter: invert(1) brightness(100%) !important;
+  opacity: 0.8 !important;
+}
+
+.toast-notification .btn-close:hover {
+  opacity: 1 !important;
+}

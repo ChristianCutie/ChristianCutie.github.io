@@ -24,8 +24,12 @@ import {
 import api from "../../config/axios.js";
 import "./Attendance.css";
 import "../../assets/style/global.css";
+import { useRef } from "react";
+
+
 
 const Attendance = ({ setIsAuth }) => {
+  const hasFetched = useRef(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [todayRecord, setTodayRecord] = useState(null);
   const [recentAttendance, setRecentAttendance] = useState([]);
@@ -75,6 +79,8 @@ const Attendance = ({ setIsAuth }) => {
   };
 
   useEffect(() => {
+    if (hasFetched.current) return;
+  hasFetched.current = true;
     fetchAttendance();
   }, []);
 

@@ -5,6 +5,7 @@ import {
   KeyFill,
   BoxArrowRight,
   PersonLinesFill,
+  PersonCircle,
 } from "react-bootstrap-icons";
 import { Toast, ToastContainer } from "react-bootstrap";
 import Sidebar from "./Sidebar.jsx";
@@ -12,7 +13,6 @@ import "./AdminLayout.css";
 import api from "../../config/axios.js";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { PersonCircle } from "react-bootstrap-icons";
 
 /**
  * AdminLayout is a higher-order component that wraps the main content

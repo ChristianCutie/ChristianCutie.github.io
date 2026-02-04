@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import PayslipPDF from "../../components/payslip/PayslipPDF";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";

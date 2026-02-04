@@ -215,9 +215,6 @@
   .user-header {
     margin-bottom: 20px;
   }
-  .user-name{
-    color: #fff;
-}
 
   .user-cover {
     height: 150px;
@@ -238,7 +235,7 @@
   }
 
   .user-basic-info h1 {
-    color: #003d82;
+    color: #003d82 !important;
     font-size: 22px;
   }
 
@@ -257,6 +254,27 @@
 
   .user-section-title {
     font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-basic-info h1 {
+    /* Ensure consistent color on mobile */
+    color: #003d82 !important;
+    font-size: 20px;
+  }
+
+  .user-section {
+    padding: 15px;
+  }
+
+  .user-section-grid {
+    gap: 15px;
+  }
+
+  .user-info-item span {
+    font-size: 13px;
+    padding: 6px 10px;
   }
 }
 
