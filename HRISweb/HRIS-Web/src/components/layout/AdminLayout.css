@@ -87,6 +87,7 @@
   border: none !important;
   background: none !important;
   box-shadow: none !important;
+  text-decoration: none !important;
 }
 
 .profile-avatar-toggle::after {
@@ -110,7 +111,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #2563EB;
+    background-color: #474747;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -122,7 +123,7 @@
 }
 
 .profile-avatar:hover {
-  background-color: #2563EB;
+  background-color: #474747;
   transform: scale(1.05);
 }
 
