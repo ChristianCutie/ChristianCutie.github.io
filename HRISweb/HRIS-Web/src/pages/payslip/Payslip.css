@@ -403,7 +403,9 @@
   .summary-title {
     font-size: 1rem;
   }
-
+.attendance-title {
+    font-size: 1.25rem;
+  }
   .breakdown-item {
     padding: 0.5rem 0;
   }

@@ -307,6 +307,7 @@ const Payslip = ({ setIsAuth }) => {
               </h5>
             </div>
             <div className="attendance-note mb-4">
+              <p className="attendance-title">Remarks</p>
               <p className="attendance-text">{payslipData.attendanceNote}</p>
             </div>
 

@@ -9,6 +9,7 @@ import {
 } from "react-bootstrap-icons";
 import { Toast, ToastContainer } from "react-bootstrap";
 import Sidebar from "./Sidebar.jsx";
+import ChangePasswordModal from "../ChangePasswordModal.jsx";
 import "./AdminLayout.css";
 import api from "../../config/axios.js";
 import { useNavigate, Link } from "react-router-dom";
@@ -30,12 +31,36 @@ const AdminLayout = ({ children, setIsAuth }) => {
   const [sidebarShow, setSidebarShow] = useState(false);
   const [showToast, setShowToast] = React.useState(false);
   const [loading, setLoading] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   const handleChangePassword = () => {
-    console.log("Change password clicked");
-    // Add your change password logic here
+    setShowChangePasswordModal(true);
+  };
+
+  const handleChangePasswordUpdate = async (formData) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/change-password",
+        {
+          current_password: formData.current_password,
+          new_password: formData.new_password,
+          new_password_confirmation: formData.new_password_confirmation,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to change password"
+      );
+    }
   };
   const handleLogout = async () => {
     setLoading(true);
@@ -96,7 +121,7 @@ const AdminLayout = ({ children, setIsAuth }) => {
             >
               <List size={24} />
             </Button>
-            <h5 className="navbar-title">HRIS System</h5>
+            <h5 className="navbar-title">HRIS User Management</h5>
             <div className="navbar-profile">
               <p className="profile-name">
                 Welcome!,&nbsp;
@@ -157,6 +182,13 @@ const AdminLayout = ({ children, setIsAuth }) => {
         {/* Main Content Area */}
         <div className="admin-main">{children}</div>
       </div>
+      {showChangePasswordModal && (
+        <ChangePasswordModal
+          onClose={() => setShowChangePasswordModal(false)}
+          onUpdate={handleChangePasswordUpdate}
+        />
+      )}
+
       <ToastContainer position="top-end" className="p-3">
         <Toast
           bg="success"

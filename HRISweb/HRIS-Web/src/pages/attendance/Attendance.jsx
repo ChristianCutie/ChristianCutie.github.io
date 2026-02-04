@@ -406,9 +406,6 @@ const Attendance = ({ setIsAuth }) => {
                       </td>
                       <td>{record.hours_worked} hrs</td>
                       <td>
-                        <Button className="btn-action btn-present">
-                          Present
-                        </Button>
                         <Button
                           className="btn-action btn-adjust"
                           onClick={() => handleOpenAdjustModal(record)}
