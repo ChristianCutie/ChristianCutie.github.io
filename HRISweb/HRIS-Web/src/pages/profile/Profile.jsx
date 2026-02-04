@@ -35,7 +35,7 @@ const Profile = ({isAuth}) => {
       setError(err.message);
       // Mock data for development
       setProfileData({
-        id: 34,
+        id: user.id,
         employee_id: user.employee_id,
         first_name: user.first_name,
         middle_name: null,
@@ -113,7 +113,7 @@ const Profile = ({isAuth}) => {
   const handleUpdateProfile = async (updatedData) => {
     try {
       // Replace with your actual API endpoint
-      const response = await fetch(`/api/employees/${profileData.id}`, {
+      const response = await fetch(`/update-profile/${profileData.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

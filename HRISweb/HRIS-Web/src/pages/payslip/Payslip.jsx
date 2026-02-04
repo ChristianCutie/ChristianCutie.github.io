@@ -44,6 +44,9 @@ const Payslip = ({ setIsAuth }) => {
   //Deductions SSS, Philhealth, Pagibig
   const [allDeductions, setDeductions] = useState([]);
 
+  //Selected Basic Salary
+  const [selectedBasicSalary, setSelectedBasicSalary] = useState(0);
+
   //Remarks
   const [remarks, setRemarks] = useState([]);
 
@@ -53,6 +56,9 @@ const Payslip = ({ setIsAuth }) => {
 
   //All Period Count
   const [periodCount, setPeriodCount] = useState([]);
+
+  //Basic Salary
+  const [basicSalary, setBasicSalary] = useState(0);
 
   //`Payslips Data
   const [payslips, setPayslips] = useState([]);
@@ -140,11 +146,22 @@ const Payslip = ({ setIsAuth }) => {
         const allRemarks = records.map((record) => record.remarks || "");
         setRemarks(allRemarks);
 
+        // Basic Salary
+        const basicSalary = records.map((record) => record.basic_salary || 0);
+        setBasicSalary(basicSalary);
+
         // Flatten deductions
         const allDeductions = records.flatMap(
           (record) => record.deductions || [],
         );
         setDeductions(allDeductions);
+
+        // Basic Salary
+        const totalBasicSalary = basicSalary.reduce(
+          (sum, salary) => sum + Number(String(salary).replace(/,/g, "")),
+          0,
+        );
+        setBasicSalary(totalBasicSalary);
 
         // Flatten allowances
         const allAllowances = records.flatMap(
@@ -183,10 +200,6 @@ const Payslip = ({ setIsAuth }) => {
 
   // Sample payslip data
   const payslipData = {
-    period: "January 2025",
-    periodCount: "1 of 1",
-    dateRange: "January 1-15, 2026",
-    generatedDate: "January 21, 2026 07:33 AM",
     grossPay: totalGross,
     totalDeductions: totalDeductions,
     netPay: totalNetPay,
@@ -302,7 +315,7 @@ const Payslip = ({ setIsAuth }) => {
               <Card className="payslip-details-card mb-4">
                 <Card.Body>
                   <Row className="mb-4">
-                    <Col md={4}>
+                    <Col md={3}>
                       <div className="detail-item">
                         <p className="detail-label">Gross Pay</p>
                         <h6 className="detail-value">
@@ -310,15 +323,23 @@ const Payslip = ({ setIsAuth }) => {
                         </h6>
                       </div>
                     </Col>
-                    <Col md={4}>
+                     <Col md={3}>
                       <div className="detail-item">
-                        <p className="detail-label">Deductions</p>
-                        <h6 className="detail-value detail-value-danger">
-                          {formatPeso(totalDeductions)}
+                        <p className="detail-label">Basic Salary</p>
+                        <h6 className="detail-value detail-value-primary">
+                          {formatPeso(basicSalary)}
                         </h6>
                       </div>
                     </Col>
-                    <Col md={4}>
+                    <Col md={3}>
+                      <div className="detail-item">
+                        <p className="detail-label">Deductions</p>
+                        <h6 className="detail-value detail-value-danger">
+                          - {formatPeso(totalDeductions)}
+                        </h6>
+                      </div>
+                    </Col>
+                    <Col md={3}>
                       <div className="detail-item">
                         <p className="detail-label">Net Pay</p>
                         <h6 className="detail-value detail-value-success">
@@ -494,6 +515,19 @@ const Payslip = ({ setIsAuth }) => {
                 ))}
               </div>
 
+                {/* Basic Salary Section */}
+              <div className="payslip-detail-section">
+                <h6 className="detail-section-title">Daily Rate</h6>
+                  <div  className="allowance-deduction-item">
+                    <span className="item-name">
+                       Basic Salary
+                    </span>
+                    <span className="item-amount positive">
+                     {formatPeso(basicSalary)}
+                    </span>
+                  </div>
+              </div>
+
               {/* Totals Summary */}
               <div className="payslip-detail-section">
                 <div className="allowance-deduction-item">
@@ -512,6 +546,7 @@ const Payslip = ({ setIsAuth }) => {
                     <strong>{formatPeso(totalDeductions)}</strong>
                   </span>
                 </div>
+                
               </div>
 
               {/* Download PDF Button */}

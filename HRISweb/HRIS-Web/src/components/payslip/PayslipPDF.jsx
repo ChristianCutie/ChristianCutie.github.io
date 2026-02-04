@@ -61,6 +61,16 @@ const PayslipPDF = forwardRef(({ payslip, formatPeso }, ref) => {
             <span className="pdf-detail-value">{payslip.days_worked}</span>
           </div>
         </div>
+        <div className="pdf-detail-row">
+          <div className="pdf-detail-item">
+            <label className="pdf-detail-label">Daily Rate:</label>
+            <span className="pdf-detail-value">{formatPeso(Number(String(payslip.daily_rate).replace(/,/g, "")))}</span>
+          </div>
+          <div className="pdf-detail-item">
+            <label className="pdf-detail-label">Basic Salary:</label>
+            <span className="pdf-detail-value">{formatPeso(Number(String(payslip.basic_salary || payslip.gross_base).replace(/,/g, "")))}</span>
+          </div>
+        </div>
       </div>
 
       {/* Earnings and Deductions Tables */}
