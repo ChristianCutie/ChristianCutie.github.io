@@ -16,7 +16,7 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  max-width: 85%;
+  max-width: 87%;
   width: 100%;
 }
 
@@ -140,7 +140,8 @@
 /* Responsive adjustments */
 @media (max-width: 576px) {
   .login-card {
-    margin: 2rem;
+    margin: 1rem;
+    padding: 7% !important;
   }
 
   .welcome-heading {

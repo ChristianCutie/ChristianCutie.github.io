@@ -174,9 +174,7 @@ const Login = ({ setIsAuth }) => {
               )}
             </Button>
           </Form>
-
-          {/* Platform Info */}
-          <p className="text-center platform-text">Platform: Web</p>
+          {/* <p className="text-center platform-text">Platform: Web</p> */}
         </Col>
       </Row>
 
