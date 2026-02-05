@@ -25,10 +25,11 @@ import api from "../../config/axios.js";
 import "./Attendance.css";
 import "../../assets/style/global.css";
 import { useRef } from "react";
-
-
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const Attendance = ({ setIsAuth }) => {
+  const { isAuth } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
   const hasFetched = useRef(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [todayRecord, setTodayRecord] = useState(null);
@@ -63,6 +64,7 @@ const Attendance = ({ setIsAuth }) => {
   ======================== */
   const fetchAttendance = async () => {
     try {
+      setIsLoading(true);
       const res = await api.get("/my-attendance");
 
       setTodayRecord(res.data.todayRecord);
@@ -75,12 +77,14 @@ const Attendance = ({ setIsAuth }) => {
       });
     } catch (error) {
       console.error("Error fetching attendance", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     if (hasFetched.current) return;
-  hasFetched.current = true;
+    hasFetched.current = true;
     fetchAttendance();
   }, []);
 
@@ -95,7 +99,7 @@ const Attendance = ({ setIsAuth }) => {
       type,
       show: true,
     };
-    
+
     setToasts((prevToasts) => [...prevToasts, newToast]);
 
     // Auto remove toast after 5 seconds
@@ -105,15 +109,15 @@ const Attendance = ({ setIsAuth }) => {
   };
 
   const removeToast = (id) => {
-    setToasts((prevToasts) => 
-      prevToasts.map(toast => 
-        toast.id === id ? { ...toast, show: false } : toast
-      )
+    setToasts((prevToasts) =>
+      prevToasts.map((toast) =>
+        toast.id === id ? { ...toast, show: false } : toast,
+      ),
     );
-    
+
     // Remove from array after fade out animation
     setTimeout(() => {
-      setToasts((prevToasts) => prevToasts.filter(toast => toast.id !== id));
+      setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
     }, 300);
   };
 
@@ -177,8 +181,9 @@ const Attendance = ({ setIsAuth }) => {
     } catch (error) {
       console.error("Error clocking in/out:", error);
       showToast(
-        error.response?.data?.message || "Error clocking in/out. Please try again.",
-        "danger"
+        error.response?.data?.message ||
+          "Error clocking in/out. Please try again.",
+        "danger",
       );
     }
   };
@@ -247,7 +252,7 @@ const Attendance = ({ setIsAuth }) => {
       showToast(
         error.response?.data?.message ||
           "Error submitting adjustment request. Please try again.",
-        "danger"
+        "danger",
       );
 
       // Close modal but keep toast showing
@@ -255,11 +260,27 @@ const Attendance = ({ setIsAuth }) => {
     }
   };
 
+  if (!isAuth) {
+    return null;
+  }
+  if (isLoading) {
+    return (
+      <AdminLayout setIsAuth={setIsAuth}>
+        <div className="profile-loading">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading attendance...</span>
+          </div>
+          <p>Loading attendance information...</p>
+        </div>
+      </AdminLayout>
+    );
+  }
   /* =======================
      UI
   ======================== */
+
   return (
-    <AdminLayout setIsAuth={setIsAuth}>
+    <AdminLayout setIsAuth={isAuth}>
       <Container fluid className="attendance-container">
         {/* Header */}
         <div className="attendance-header">
@@ -550,7 +571,11 @@ const Attendance = ({ setIsAuth }) => {
       </Modal>
 
       {/* Toast Container - Fixed position for better visibility */}
-      <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
+      <ToastContainer
+        position="top-end"
+        className="p-3"
+        style={{ zIndex: 9999 }}
+      >
         {toasts.map((toast) => (
           <Toast
             key={toast.id}
@@ -560,9 +585,7 @@ const Attendance = ({ setIsAuth }) => {
             delay={5000}
             autohide
           >
-            <Toast.Body className="text-white">
-              {toast.message}
-            </Toast.Body>
+            <Toast.Body className="text-white">{toast.message}</Toast.Body>
           </Toast>
         ))}
       </ToastContainer>

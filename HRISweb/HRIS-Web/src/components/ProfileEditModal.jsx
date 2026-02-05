@@ -219,29 +219,29 @@ const ProfileEditModal = ({ profileData, onClose, onUpdate }) => {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className="prof-modal-overlay" onClick={onClose}>
+      <div className="prof-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="prof-modal-header">
           <h2>Edit Profile</h2>
-          <button className="modal-close" onClick={onClose}>&times;</button>
+          <button className="prof-modal-close" onClick={onClose}>&times;</button>
         </div>
 
-        <div className="modal-tabs">
+        <div className="prof-modal-tabs">
           {Object.entries(tabs).map(([key, tab]) => (
             <button
               key={key}
-              className={`modal-tab ${activeTab === key ? "active" : ""}`}
+              className={`prof-modal-tab ${activeTab === key ? "active" : ""}`}
               onClick={() => setActiveTab(key)}
               title={tab.label}
             >
-              <span className="tab-icon">{tab.icon}</span>
-              <span className="tab-label">{tab.label}</span>
+              <span className="prof-tab-icon">{tab.icon}</span>
+              <span className="prof-tab-label">{tab.label}</span>
             </button>
           ))}
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
-          <div className="form-fields">
+        <form onSubmit={handleSubmit} className="prof-modal-form">
+          <div className="prof-form-fields">
             {tabs[activeTab].fields.map((fieldName) => {
               const fieldType = getFieldType(fieldName);
               const isEducationField = fieldName.includes("elementary") ||
@@ -261,10 +261,10 @@ const ProfileEditModal = ({ profileData, onClose, onUpdate }) => {
                 if (showHeader) {
                   return (
                     <div key={fieldName}>
-                      <h4 className="education-level">
+                      <h4 className="prof-education-level">
                         {level.charAt(0).toUpperCase() + level.slice(1)}
                       </h4>
-                      <div className="form-group">
+                      <div className="prof-form-group">
                         <label htmlFor={fieldName}>
                           {fieldLabels[fieldName]}
                         </label>
@@ -283,7 +283,7 @@ const ProfileEditModal = ({ profileData, onClose, onUpdate }) => {
               }
 
               return (
-                <div key={fieldName} className="form-group">
+                <div key={fieldName} className="prof-form-group">
                   <label htmlFor={fieldName}>{fieldLabels[fieldName]}</label>
                   {fieldName === "sex" ? (
                     <select
@@ -353,10 +353,10 @@ const ProfileEditModal = ({ profileData, onClose, onUpdate }) => {
             })}
           </div>
 
-          <div className="modal-footer ">
+          <div className="prof-modal-footer ">
             <button
               type="button"
-              className="btn btn-secondary"
+              className="prof-btn-cancel"
               onClick={onClose}
               disabled={isSubmitting}
             >
@@ -364,7 +364,7 @@ const ProfileEditModal = ({ profileData, onClose, onUpdate }) => {
             </button>
             <button
               type="submit"
-              className="btn btn-primary"
+              className="prof-btn-update"
               disabled={isSubmitting || !hasChanges}
               title={!hasChanges ? "No changes detected" : ""}
             >

@@ -394,6 +394,7 @@
 
   .detail-item {
     padding: 0.75rem;
+    margin-bottom: 12px;
   }
 
   .detail-value {
@@ -525,6 +526,9 @@
   margin: 0;
   font-weight: 700;
   font-size: 1rem;
+}
+.summary-detail-value-danger {
+  color: #dc3545;
 }
 
 .allowance-deduction-item {
