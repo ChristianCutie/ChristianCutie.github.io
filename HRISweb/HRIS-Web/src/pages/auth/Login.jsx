@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -14,6 +14,7 @@ const Login = ({ setIsAuth }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pendingRedirect, setPendingRedirect] = useState(null);
   const [formData, setFormData] = useState({
     login: "",
     password: "",
@@ -26,39 +27,42 @@ const Login = ({ setIsAuth }) => {
   /* =======================
      TOAST FUNCTIONS
   ======================== */
-  const showToast = (message, type = "success", redirectTo = null) => {
+  const showToast = (message, type = "success") => {
     const id = Date.now();
     const newToast = {
       id,
       message,
       type,
       show: true,
-      redirectTo,
     };
     
     setToasts((prevToasts) => [...prevToasts, newToast]);
 
-    // Auto remove toast after 3 seconds, redirect if needed
+    // Auto-hide after 2.5 seconds
     setTimeout(() => {
-      removeToast(id);
-      if (redirectTo) {
-        setTimeout(() => navigate(redirectTo), 100); // Small delay for smooth transition
-      }
-    }, 3000);
+      setToasts((prevToasts) => 
+        prevToasts.map(toast => 
+          toast.id === id ? { ...toast, show: false } : toast
+        )
+      );
+      
+      // Clean up after fade animation
+      setTimeout(() => {
+        setToasts((prevToasts) => prevToasts.filter(toast => toast.id !== id));
+      }, 300);
+    }, 2500);
   };
 
-  const removeToast = (id) => {
-    setToasts((prevToasts) => 
-      prevToasts.map(toast => 
-        toast.id === id ? { ...toast, show: false } : toast
-      )
-    );
-    
-    // Remove from array after fade out animation
-    setTimeout(() => {
-      setToasts((prevToasts) => prevToasts.filter(toast => toast.id !== id));
-    }, 300);
-  };
+  // Handle redirect after toast is shown
+  useEffect(() => {
+    if (pendingRedirect) {
+      const timer = setTimeout(() => {
+        navigate(pendingRedirect);
+      }, 2800); // Navigate after toast has been visible
+
+      return () => clearTimeout(timer);
+    }
+  }, [pendingRedirect, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,16 +81,20 @@ const Login = ({ setIsAuth }) => {
       if (setIsAuth) setIsAuth(true);
       localStorage.setItem("isAuth", "true");
 
-      // Show success toast with dashboard redirect
-      showToast("Login successful! Redirecting to dashboard...", "success", "/dashboard");
+      // Show success toast first
+      showToast("Login successful! Redirecting to dashboard...", "success");
+      
+      // Set pending redirect - useEffect will handle the actual navigation
+      setPendingRedirect("/snl-hr-app/dashboard");
 
     } catch (error) {
       console.error("Login error:", error);
-      const errorMessage = error.response?.data?.message || "Login failed";
+      const errorMessage = error.response?.data?.message || "Login failed. Please check your credentials.";
 
       // Show error toast (no redirect)
       showToast(errorMessage, "danger");
-    } finally {
+      
+      // Reset loading state for error case
       setLoading(false);
     }
   };
@@ -111,6 +119,7 @@ const Login = ({ setIsAuth }) => {
                 onChange={handleChange}
                 className="form-control-lg login-input"
                 required
+                disabled={loading}
               />
             </Form.Group>
 
@@ -124,11 +133,13 @@ const Login = ({ setIsAuth }) => {
                 onChange={handleChange}
                 className="form-control-lg login-input"
                 required
+                disabled={loading}
               />
               <button
                 type="button"
                 className="password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
               >
                 <i
                   className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
@@ -153,7 +164,14 @@ const Login = ({ setIsAuth }) => {
               className="w-100 signin-btn mb-4"
               disabled={loading}
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Signing in...
+                </>
+              ) : (
+                "Sign In"
+              )}
             </Button>
           </Form>
 
@@ -162,22 +180,26 @@ const Login = ({ setIsAuth }) => {
         </Col>
       </Row>
 
-      {/* Toast Container */}
-      <ToastContainer position="top-end" className="p-3" style={{ zIndex: 9999 }}>
+      {/* Toast Container - Fixed positioning */}
+      <ToastContainer 
+        position="top-end" 
+        className="p-3 toast-notification-container"
+        style={{ zIndex: 999999 }}
+      >
         {toasts.map((toast) => (
           <Toast
             key={toast.id}
-            bg={toast.type === "success" ? "success" : "danger"}
             show={toast.show}
-            onClose={() => removeToast(toast.id)}
-            delay={3000}
-            autohide
+            onClose={() => {
+              setToasts((prevToasts) => 
+                prevToasts.map(t => 
+                  t.id === toast.id ? { ...t, show: false } : t
+                )
+              );
+            }}
+            className={`custom-toast bg-${toast.type}`}
+            autohide={false}
           >
-            <Toast.Header closeButton>
-              <strong className="me-auto">
-                {toast.type === "success" ? "Success" : "Error"}
-              </strong>
-            </Toast.Header>
             <Toast.Body className="text-white">
               {toast.message}
             </Toast.Body>

@@ -10,6 +10,7 @@ import {
   Speedometer2
 } from 'react-bootstrap-icons'
 import './Sidebar.css'
+import logo from '../../assets/images/cropped-SnL-Logo-480x480.png';
 
 const Sidebar = ({ show, handleClose }) => {
   const location = useLocation()
@@ -24,11 +25,11 @@ const Sidebar = ({ show, handleClose }) => {
   }
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'speedometer2', path: '/dashboard' },
-    { id: 'attendance', label: 'Attendance', icon: 'calendar-check', path: '/attendance' },
-    { id: 'leave', label: 'Leave', icon: 'calendar-x', path: '/leave' },
-    { id: 'loan', label: 'Loan', icon: 'cash-coin', path: '/loan' },
-    { id: 'payslip', label: 'Payslip', icon: 'file-earmark-text', path: '/payslip' },
+    { id: 'dashboard', label: 'Dashboard', icon: 'speedometer2', path: '/snl-hr-app/dashboard' },
+    { id: 'attendance', label: 'Attendance', icon: 'calendar-check', path: '/snl-hr-app/attendance' },
+    { id: 'leave', label: 'Leave', icon: 'calendar-x', path: '/snl-hr-app/leave' },
+    { id: 'loan', label: 'Loan', icon: 'cash-coin', path: '/snl-hr-app/loan' },
+    { id: 'payslip', label: 'Payslip', icon: 'file-earmark-text', path: '/snl-hr-app/payslip' },
   ]
 
   const isActive = (path) => {
@@ -65,7 +66,10 @@ const Sidebar = ({ show, handleClose }) => {
       {/* Desktop Sidebar */}
       <div className="sidebar-desktop">
         <div className="sidebar-header-desktop">
-          <h5 className="sidebar-title">HRIS</h5>
+          <div className="d-flex justify-content-start align-items-center">
+           <img src={logo} alt="SnL Logo" className="sidebar-logo" />
+           <h5 className="sidebar-title mb-0">HRIS</h5>
+          </div>
         </div>
         <Nav className="flex-column sidebar-nav">
           {menuItems.map((item) => (

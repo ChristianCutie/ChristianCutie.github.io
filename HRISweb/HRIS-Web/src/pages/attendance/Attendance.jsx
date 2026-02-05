@@ -560,11 +560,6 @@ const Attendance = ({ setIsAuth }) => {
             delay={5000}
             autohide
           >
-            <Toast.Header closeButton>
-              <strong className="me-auto">
-                {toast.type === "success" ? "Success" : "Error"}
-              </strong>
-            </Toast.Header>
             <Toast.Body className="text-white">
               {toast.message}
             </Toast.Body>

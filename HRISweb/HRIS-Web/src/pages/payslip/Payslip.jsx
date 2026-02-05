@@ -106,19 +106,12 @@ const Payslip = ({ setIsAuth }) => {
       );
     }
   };
-  useEffect(() => {
-
-    if (hasFetched.current) return;
-  hasFetched.current = true;
-    //fetch selected payslip details
-
-    /**
-     * Fetches payslip records from the API and updates the state.
-     * @returns {Promise<void>}
-     */
-    const fetchPayslips = async () => {
-      try {
-        const res = await api.get("/my-payroll-records");
+  // Fetch payslips with pagination
+  const fetchPayslips = async (page = 1) => {
+    try {
+      const res = await api.get("/my-payroll-records", {
+        params: { page },
+      });
 
         const records = res.data?.data || [];
         setPayslips(records);
@@ -150,24 +143,17 @@ const Payslip = ({ setIsAuth }) => {
         const basicSalary = records.map((record) => record.basic_salary || 0);
         setBasicSalary(basicSalary);
 
-        // Flatten deductions
+        // Flatten deductions - REMOVED, keep with individual payslips
         const allDeductions = records.flatMap(
           (record) => record.deductions || [],
         );
-        setDeductions(allDeductions);
+        setDeductions([]);
 
-        // Basic Salary
-        const totalBasicSalary = basicSalary.reduce(
-          (sum, salary) => sum + Number(String(salary).replace(/,/g, "")),
-          0,
-        );
-        setBasicSalary(totalBasicSalary);
-
-        // Flatten allowances
+        // Flatten allowances - REMOVED, keep with individual payslips
         const allAllowances = records.flatMap(
           (record) => record.allowances || [],
         );
-        setAllowances(allAllowances);
+        setAllowances([]);
 
         const totalAllowances = allAllowances.reduce(
           (sum, a) =>
@@ -195,8 +181,19 @@ const Payslip = ({ setIsAuth }) => {
       }
     };
 
-    fetchPayslips();
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    fetchPayslips(1);
   }, []);
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= lastPage) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      fetchPayslips(newPage);
+    }
+  };
 
   // Sample payslip data
   const payslipData = {
@@ -255,6 +252,30 @@ const Payslip = ({ setIsAuth }) => {
                 Page: {currentPage} of {lastPage}
               </p>
             </div>
+            {/* Pagination Controls - Top */}
+            {/* {lastPage > 1 && (
+              <div className="pagination-controls mb-3 d-flex gap-2 align-items-center justify-content-end">
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <span className="pagination-info">
+                  Page {currentPage} of {lastPage}
+                </span>
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === lastPage}
+                >
+                  Next
+                </Button>
+              </div>
+            )} */}
             {/* Summary Cards */}
             <Row className="mb-4">
               <Col md={4} className="mb-3">
@@ -297,120 +318,170 @@ const Payslip = ({ setIsAuth }) => {
             </Row>
           </div>
           {/* End of Payroll Summary */}
-          {/* Attendance Note */}
-          <div className="payroll-summary-2 mt-4">
-            <div className="summary-header">
-              <h5 className="summary-title">
-                {periodCount.map((period, index) => (
-                  <span key={index}>{period}</span>
-                ))}
-              </h5>
-            </div>
-            <div className="attendance-note mb-4">
-              <p className="attendance-title">Remarks</p>
-              <p className="attendance-text">{payslipData.attendanceNote}</p>
-            </div>
+          
+          {/* Payslip Cards - Each Payslip as Separate Card */}
+          <div className="payslip-cards-container mt-4">
+            {payslips
+              .filter((payslip) => {
+                const searchLower = searchTerm.toLowerCase();
+                return (
+                  (payslip.period && payslip.period.toLowerCase().includes(searchLower)) ||
+                  (payslip.remarks && payslip.remarks.toLowerCase().includes(searchLower))
+                );
+              })
+              .map((payslip, index) => (
+              <div key={payslip.record_id} className="payroll-summary-2 mb-4">
+                <div className="summary-header">
+                  <h5 className="summary-title">{payslip.period}</h5>
+                </div>
+                <h6>Remarks</h6>
+                <div className="attendance-note mb-4">
+                  <p className="attendance-text">{payslip.remarks}</p>
+                </div>
 
-            {/* Payslip Details */}
-            {!compactView && (
-              <Card className="payslip-details-card mb-4">
-                <Card.Body>
-                  <Row className="mb-4">
-                    <Col md={3}>
-                      <div className="detail-item">
-                        <p className="detail-label">Gross Pay</p>
-                        <h6 className="detail-value">
-                          {formatPeso(totalGross)}
-                        </h6>
-                      </div>
-                    </Col>
-                     <Col md={3}>
-                      <div className="detail-item">
-                        <p className="detail-label">Basic Salary</p>
-                        <h6 className="detail-value detail-value-primary">
-                          {formatPeso(basicSalary)}
-                        </h6>
-                      </div>
-                    </Col>
-                    <Col md={3}>
-                      <div className="detail-item">
-                        <p className="detail-label">Deductions</p>
-                        <h6 className="detail-value detail-value-danger">
-                          - {formatPeso(totalDeductions)}
-                        </h6>
-                      </div>
-                    </Col>
-                    <Col md={3}>
-                      <div className="detail-item">
-                        <p className="detail-label">Net Pay</p>
-                        <h6 className="detail-value detail-value-success">
-                          {formatPeso(totalNetPay)}
-                        </h6>
-                      </div>
-                    </Col>
-                  </Row>
+                {/* Payslip Details */}
+                {!compactView && (
+                  <Card className="payslip-details-card mb-4">
+                    <Card.Body>
+                      <Row className="mb-4">
+                        <Col md={3}>
+                          <div className="detail-item">
+                            <p className="detail-label">Gross Pay</p>
+                            <h6 className="detail-value">
+                              {formatPeso(
+                                Number(String(payslip.gross_pay).replace(/,/g, "")),
+                              )}
+                            </h6>
+                          </div>
+                        </Col>
+                        <Col md={3}>
+                          <div className="detail-item">
+                            <p className="detail-label">Basic Salary</p>
+                            <h6 className="detail-value detail-value-primary">
+                              {formatPeso(
+                                Number(String(payslip.basic_salary).replace(/,/g, "")),
+                              )}
+                            </h6>
+                          </div>
+                        </Col>
+                        <Col md={3}>
+                          <div className="detail-item">
+                            <p className="detail-label">Deductions</p>
+                            <h6 className="detail-value detail-value-danger">
+                              -{" "}
+                              {formatPeso(
+                                Number(String(payslip.total_deductions).replace(/,/g, "")),
+                              )}
+                            </h6>
+                          </div>
+                        </Col>
+                        <Col md={3}>
+                          <div className="detail-item">
+                            <p className="detail-label">Net Pay</p>
+                            <h6 className="detail-value detail-value-success">
+                              {formatPeso(
+                                Number(String(payslip.net_pay).replace(/,/g, "")),
+                              )}
+                            </h6>
+                          </div>
+                        </Col>
+                      </Row>
 
-                  {/* Allowances Section */}
-                  <div className="breakdown-section mb-4">
-                    <h6 className="breakdown-title">Allowances</h6>
-                    {allowances.map((a, index) => (
-                      <div key={index} className="breakdown-item">
-                        <span className="breakdown-name">
-                          {a.allowance_type}
-                        </span>
-                        <span className="breakdown-amount breakdown-amount-positive">
-                          +{" "}
-                          {formatPeso(
-                            Number(
-                              String(a.allowance_amount).replace(/,/g, ""),
-                            ),
-                          )}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                      {/* Allowances Section */}
+                      {payslip.allowances && payslip.allowances.length > 0 && (
+                        <div className="breakdown-section mb-4">
+                          <h6 className="breakdown-title">Allowances</h6>
+                          {payslip.allowances.map((a, idx) => (
+                            <div key={idx} className="breakdown-item">
+                              <span className="breakdown-name">
+                                {a.allowance_type}
+                              </span>
+                              <span className="breakdown-amount breakdown-amount-positive">
+                                +{" "}
+                                {formatPeso(
+                                  Number(
+                                    String(a.allowance_amount).replace(/,/g, ""),
+                                  ),
+                                )}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
-                  {/* Deductions Section */}
-                  <div className="breakdown-section">
-                    <h6 className="breakdown-title">Deductions</h6>
-                    {allDeductions.map((d, index) => (
-                      <div key={index} className="breakdown-item">
-                        <span className="breakdown-name">
-                          {d.deduction_type}
-                        </span>
-                        <span className="breakdown-amount breakdown-amount-negative">
-                          -{" "}
-                          {formatPeso(
-                            Number(
-                              String(d.deduction_amount).replace(/,/g, ""),
-                            ),
-                          )}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </Card.Body>
-              </Card>
-            )}
+                      {/* Deductions Section */}
+                      {payslip.deductions && payslip.deductions.length > 0 && (
+                        <div className="breakdown-section">
+                          <h6 className="breakdown-title">Deductions</h6>
+                          {payslip.deductions.map((d, idx) => (
+                            <div key={idx} className="breakdown-item">
+                              <span className="breakdown-name">
+                                {d.deduction_type}
+                              </span>
+                              <span className="breakdown-amount breakdown-amount-negative">
+                                -{" "}
+                                {formatPeso(
+                                  Number(
+                                    String(d.deduction_amount).replace(/,/g, ""),
+                                  ),
+                                )}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </Card.Body>
+                  </Card>
+                )}
 
-            {/* View Full Details Button */}
-            {payslips.map((payslip) => (
-              <div
-                key={payslip.record_id}
-                className="view-details-button-container"
-              >
-                <Button
-                  onClick={() => {
-                    fetchPayslipById(payslip.record_id);
-                    handleShow();
-                  }}
-                  className="btn-view-details"
-                >
-                  <FileEarmarkText size={18} className="me-2" />
-                  View Full Details
-                </Button>
+                {/* View Full Details Button */}
+                <div className="view-details-button-container">
+                  <Button
+                    onClick={() => {
+                      fetchPayslipById(payslip.record_id);
+                      handleShow();
+                    }}
+                    className="btn-view-details"
+                  >
+                    <FileEarmarkText size={18} className="me-2" />
+                    View Full Details
+                  </Button>
+                </div>
               </div>
             ))}
+            {payslips.filter((payslip) => {
+              const searchLower = searchTerm.toLowerCase();
+              return (
+                (payslip.period && payslip.period.toLowerCase().includes(searchLower)) ||
+                (payslip.remarks && payslip.remarks.toLowerCase().includes(searchLower))
+              );
+            }).length === 0 && searchTerm && (
+              <div className="alert alert-info text-center mt-4">
+                <p className="mb-0">No payslips found for "{searchTerm}". Try searching with a different period or remark.</p>
+              </div>
+            )}
+            {/* Pagination Controls - Bottom */}
+            {lastPage > 1 && (
+              <div className="pagination-controls mt-4 d-flex gap-2 align-items-center justify-content-center">
+                <Button
+                  variant="outline-primary"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <span className="pagination-info">
+                  Page {currentPage} of {lastPage}
+                </span>
+                <Button
+                  variant="outline-primary"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === lastPage}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </div>
         </div>
         <Offcanvas
@@ -454,7 +525,9 @@ const Payslip = ({ setIsAuth }) => {
                   <div className="summary-detail-box summary-detail-blue">
                     <p className="summary-detail-label">Total Gross Pay</p>
                     <h6 className="summary-detail-value">
-                      {formatPeso(totalGross)}
+                      {formatPeso(
+                        Number(String(selectedPayslip.gross_pay).replace(/,/g, "")),
+                      )}
                     </h6>
                   </div>
                 </Col>
@@ -462,7 +535,9 @@ const Payslip = ({ setIsAuth }) => {
                   <div className="summary-detail-box summary-detail-yellow">
                     <p className="summary-detail-label">Total Deductions</p>
                     <h6 className="summary-detail-value">
-                      {formatPeso(totalDeductions)}
+                      {formatPeso(
+                        Number(String(selectedPayslip.total_deductions).replace(/,/g, "")),
+                      )}
                     </h6>
                   </div>
                 </Col>
@@ -470,7 +545,9 @@ const Payslip = ({ setIsAuth }) => {
                   <div className="summary-detail-box summary-detail-green">
                     <p className="summary-detail-label">Net Pay</p>
                     <h6 className="summary-detail-value">
-                      {formatPeso(totalNetPay)}
+                      {formatPeso(
+                        Number(String(selectedPayslip.net_pay).replace(/,/g, "")),
+                      )}
                     </h6>
                   </div>
                 </Col>
@@ -479,54 +556,62 @@ const Payslip = ({ setIsAuth }) => {
               {/* Allowances Section */}
               <div className="payslip-detail-section">
                 <h6 className="detail-section-title">Allowances</h6>
-                {allowances.map((allowance, idx) => (
-                  <div key={idx} className="allowance-deduction-item">
-                    <span className="item-name">
-                      {allowance.allowance_type}
-                    </span>
-                    <span className="item-amount positive">
-                      +
-                      {formatPeso(
-                        Number(
-                          String(allowance.allowance_amount).replace(/,/g, ""),
-                        ),
-                      )}
-                    </span>
-                  </div>
-                ))}
+                {selectedPayslip.allowances && selectedPayslip.allowances.length > 0 ? (
+                  selectedPayslip.allowances.map((allowance, idx) => (
+                    <div key={idx} className="allowance-deduction-item">
+                      <span className="item-name">
+                        {allowance.allowance_type}
+                      </span>
+                      <span className="item-amount positive">
+                        +
+                        {formatPeso(
+                          Number(
+                            String(allowance.allowance_amount).replace(/,/g, ""),
+                          ),
+                        )}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted">No allowances</p>
+                )}
               </div>
 
               {/* Deductions Section */}
               <div className="payslip-detail-section">
                 <h6 className="detail-section-title">Deductions</h6>
-                {allDeductions.map((deduction, idx) => (
-                  <div key={idx} className="allowance-deduction-item">
-                    <span className="item-name">
-                      {deduction.deduction_type}
-                    </span>
-                    <span className="item-amount negative">
-                      -
-                      {formatPeso(
-                        Number(
-                          String(deduction.deduction_amount).replace(/,/g, ""),
-                        ),
-                      )}
-                    </span>
-                  </div>
-                ))}
+                {selectedPayslip.deductions && selectedPayslip.deductions.length > 0 ? (
+                  selectedPayslip.deductions.map((deduction, idx) => (
+                    <div key={idx} className="allowance-deduction-item">
+                      <span className="item-name">
+                        {deduction.deduction_type}
+                      </span>
+                      <span className="item-amount negative">
+                        -
+                        {formatPeso(
+                          Number(
+                            String(deduction.deduction_amount).replace(/,/g, ""),
+                          ),
+                        )}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted">No deductions</p>
+                )}
               </div>
 
-                {/* Basic Salary Section */}
+              {/* Basic Salary Section */}
               <div className="payslip-detail-section">
                 <h6 className="detail-section-title">Daily Rate</h6>
-                  <div  className="allowance-deduction-item">
-                    <span className="item-name">
-                       Basic Salary
-                    </span>
-                    <span className="item-amount positive">
-                     {formatPeso(basicSalary)}
-                    </span>
-                  </div>
+                <div className="allowance-deduction-item">
+                  <span className="item-name">Basic Salary</span>
+                  <span className="item-amount positive">
+                    {formatPeso(
+                      Number(String(selectedPayslip.basic_salary).replace(/,/g, "")),
+                    )}
+                  </span>
+                </div>
               </div>
 
               {/* Totals Summary */}
@@ -536,7 +621,11 @@ const Payslip = ({ setIsAuth }) => {
                     <strong>Total Gross Pay</strong>
                   </span>
                   <span className="item-amount">
-                    <strong>{formatPeso(totalGross)}</strong>
+                    <strong>
+                      {formatPeso(
+                        Number(String(selectedPayslip.gross_pay).replace(/,/g, "")),
+                      )}
+                    </strong>
                   </span>
                 </div>
                 <div className="allowance-deduction-item">
@@ -544,10 +633,13 @@ const Payslip = ({ setIsAuth }) => {
                     <strong>Total Deductions</strong>
                   </span>
                   <span className="item-amount negative">
-                    <strong>{formatPeso(totalDeductions)}</strong>
+                    <strong>
+                      {formatPeso(
+                        Number(String(selectedPayslip.total_deductions).replace(/,/g, "")),
+                      )}
+                    </strong>
                   </span>
                 </div>
-                
               </div>
 
               {/* Download PDF Button */}

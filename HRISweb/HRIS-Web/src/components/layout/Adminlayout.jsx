@@ -87,7 +87,7 @@ const AdminLayout = ({ children, setIsAuth }) => {
         setLoading(false);
         
         // Force redirect to login page
-        navigate("/", { replace: true });
+        navigate("/snl-hr-app", { replace: true });
       }, 1500);
     }
   };
@@ -143,8 +143,8 @@ const AdminLayout = ({ children, setIsAuth }) => {
                 <Dropdown.Menu className="profile-dropdown-menu">
                   <Dropdown.Item
                     as={Link}
-                    to="/profile"
-                    className={`dropdown-item-custom ${isActive("/profile") ? "active" : ""}`}
+                    to="/snl-hr-app/profile"
+                    className={`dropdown-item-custom ${isActive("/snl-hr-app/profile") ? "active" : ""}`}
                   >
                     <PersonLinesFill size={16} />
                     <span>Profile</span>
@@ -197,9 +197,6 @@ const AdminLayout = ({ children, setIsAuth }) => {
           delay={3000}
           autohide
         >
-          <Toast.Header>
-            <strong className="me-auto">Logout</strong>
-          </Toast.Header>
           <Toast.Body className="text-white">
             You are now logged out!
           </Toast.Body>

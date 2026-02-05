@@ -21,10 +21,10 @@ const AppRoutes = ({ isAuth, setIsAuth }) => {
     <Routes>
       {/* Login */}
       <Route
-        path="/"
+        path="/snl-hr-app"
         element={
           isAuth ? (
-            <Navigate to="/dashboard" replace />
+            <Navigate to="/snl-hr-app/dashboard" replace />
           ) : (
             <Login setIsAuth={setIsAuth} />
           )
@@ -33,64 +33,64 @@ const AppRoutes = ({ isAuth, setIsAuth }) => {
 
       {/* Protected routes */}
       <Route
-        path="/dashboard"
+        path="/snl-hr-app/dashboard"
         element={
           isAuth ? (
             <Dashboard setIsAuth={setIsAuth} />
           ) : (
-            <Navigate to="/" replace />
+            <Navigate to="/snl-hr-app" replace />
           )
         }
       />
 
       <Route
-        path="/attendance"
+        path="/snl-hr-app/attendance"
         element={
           isAuth ? (
             <Attendance setIsAuth={setIsAuth} />
           ) : (
-            <Navigate to="/" replace />
+            <Navigate to="/snl-hr-app" replace />
           )
         }
       />
 
       <Route
-        path="/leave"
+        path="/snl-hr-app/leave"
         element={
-          isAuth ? <Leave setIsAuth={setIsAuth} /> : <Navigate to="/" replace />
+          isAuth ? <Leave setIsAuth={setIsAuth} /> : <Navigate to="/snl-hr-app" replace />
         }
       />
 
       <Route
-        path="/loan"
+        path="/snl-hr-app/loan"
         element={
-          isAuth ? <Loan setIsAuth={setIsAuth} /> : <Navigate to="/" replace />
+          isAuth ? <Loan setIsAuth={setIsAuth} /> : <Navigate to="/snl-hr-app" replace />
         }
       />
       <Route
-        path="/payslip"
+        path="/snl-hr-app/payslip"
         element={
           isAuth ? (
             <Payslip setIsAuth={setIsAuth} />
           ) : (
-            <Navigate to="/" replace />
+            <Navigate to="/snl-hr-app" replace />
           )
         }
       />
 
       <Route
-        path="/profile"
+        path="/snl-hr-app/profile"
         element={
           isAuth ? (
             <Profile isAuth={isAuth} setIsAuth={setIsAuth} />
           ) : (
-            <Navigate to="/" />
+            <Navigate to="/snl-hr-app" replace />
           )
         }
       />
 
       {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/snl-hr-app" replace />} />
     </Routes>
   );
 };
